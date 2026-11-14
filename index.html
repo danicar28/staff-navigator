@@ -2,8 +2,18 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Cannizzaro Staff Navigator - Orientamento e Rubrica</title>
+    
+    <!-- Configurazione PWA & Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#082f49">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cannizzaro Nav">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/082f49/ffffff.png?text=AOEC">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome per icone ospedaliere e UI -->
@@ -147,16 +157,13 @@
         <!-- SEZIONE 1: MAPPA REPARTI & EDIFICI -->
         <section id="view-reparti" class="space-y-2">
             
-            <!-- Filtri Edificio + Preferiti -->
+            <!-- Filtri Edificio + Preferiti (allineati ai codici reali dei reparti) -->
             <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar -mx-2.5 px-2.5 py-0.5">
                 <button onclick="filterBuilding('FAV')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95 flex items-center gap-1" data-bld="FAV">
                     <i class="fa-solid fa-star text-amber-400 text-[11px]"></i>Preferiti
                 </button>
                 <button onclick="filterBuilding('ALL')" class="bld-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition shadow-sm active:scale-95" data-bld="ALL">
                     Tutti
-                </button>
-                <button onclick="filterBuilding('F1')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="F1">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500 mr-1"></span>Ed. F1
                 </button>
                 <button onclick="filterBuilding('F2')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="F2">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1"></span>Ed. F2
@@ -170,23 +177,23 @@
                 <button onclick="filterBuilding('L')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="L">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span>Ed. L
                 </button>
+                <button onclick="filterBuilding('CR')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="CR">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1"></span>Cassa Risp.
+                </button>
                 <button onclick="filterBuilding('S')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="S">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-1"></span>Ed. S (USU)
+                </button>
+                <button onclick="filterBuilding('INF')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="INF">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 mr-1"></span>Infettivi
                 </button>
                 <button onclick="filterBuilding('R')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="R">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1"></span>Ed. R
                 </button>
-                <button onclick="filterBuilding('G')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="G">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1"></span>Ed. G
+                <button onclick="filterBuilding('I')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="I">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500 mr-1"></span>Ed. I
                 </button>
-                <button onclick="filterBuilding('Q')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="Q">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 mr-1"></span>Ed. Q
-                </button>
-                <button onclick="filterBuilding('M1')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="M1">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 mr-1"></span>Ed. M1
-                </button>
-                <button onclick="filterBuilding('N2')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="N2">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 mr-1"></span>Ed. N2
+                <button onclick="filterBuilding('AREE')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="AREE">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-500 mr-1"></span>Altre Aree
                 </button>
             </div>
 
@@ -881,7 +888,6 @@
 
             emptyState.classList.add('hidden');
 
-            // Raggruppamento per edificio secondo BUILDING_ORDER
             const groupsHtml = BUILDING_ORDER.map(bldCode => {
                 const groupDepts = filtered.filter(d => d.building === bldCode);
                 if (groupDepts.length === 0) return '';
@@ -1598,7 +1604,28 @@
             toast.classList.remove('opacity-0');
             setTimeout(() => {
                 toast.classList.add('opacity-0');
-            }, 2200);
+            }, 2000);
+        }
+
+        // ==========================================
+        // REGISTRAZIONE SERVICE WORKER (PER INSTALLAZIONE PWA)
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'cannizzaro-nav-v1';
+                    self.addEventListener('install', (e) => self.skipWaiting());
+                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            fetch(e.request).catch(() => caches.match(e.request))
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(() => {});
+            });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
