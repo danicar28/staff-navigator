@@ -70,7 +70,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased pb-20 md:pb-6 select-none sm:select-auto">
+<body class="text-slate-800 antialiased pb-16 md:pb-6 select-none sm:select-auto">
 
     <!-- Header Compatto con Logo Ufficiale A.O.E. Cannizzaro -->
     <header class="bg-hospital-900 text-white sticky top-0 z-40 shadow-md">
@@ -119,8 +119,8 @@
             </div>
         </div>
 
-        <!-- Barra di Ricerca Compatta -->
-        <div class="bg-hospital-950/50 px-2.5 py-1.5 border-t border-white/10">
+        <!-- Barra di Ricerca Compatta (visibile su Rubrica/Percorsi, compatta altrove) -->
+        <div id="globalSearchWrapper" class="bg-hospital-950/50 px-2.5 py-1.5 border-t border-white/10">
             <div class="max-w-lg md:max-w-4xl mx-auto relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input 
@@ -161,27 +161,27 @@
     </nav>
 
     <!-- Navigazione Tab Mobile Inferiore -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center py-1.5 pb-safe shadow-lg">
-        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-1 px-2 text-hospital-700 font-bold text-[10px] gap-0.5">
-            <i class="fa-solid fa-address-book text-base"></i>
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center py-1 pb-safe shadow-lg">
+        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-0.5 px-2 text-hospital-700 font-bold text-[10px] gap-0.5">
+            <i class="fa-solid fa-address-book text-sm"></i>
             <span>Rubrica</span>
         </button>
-        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
-            <i class="fa-solid fa-syringe text-base"></i>
+        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-0.5 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-syringe text-sm"></i>
             <span>ml/h ↔ Dose</span>
         </button>
-        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
-            <i class="fa-solid fa-capsules text-base"></i>
+        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-0.5 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-capsules text-sm"></i>
             <span>Antibiotici</span>
         </button>
-        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
-            <i class="fa-solid fa-compass text-base"></i>
+        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-0.5 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-compass text-sm"></i>
             <span>Percorsi</span>
         </button>
     </nav>
 
     <!-- Contenuto Principale Ad Alta Densità -->
-    <main class="max-w-lg md:max-w-4xl mx-auto px-2.5 pt-2.5">
+    <main class="max-w-lg md:max-w-4xl mx-auto px-2 pt-2">
 
         <!-- SEZIONE 1: RUBRICA INTERNA (SCHERMATA PRINCIPALE) -->
         <section id="view-rubrica" class="space-y-2">
@@ -237,306 +237,265 @@
             </div>
         </section>
 
-        <!-- SEZIONE 2: CALCOLATORE INFUSIONI (ml/h <-> DOSE) -->
-        <section id="view-infusioni" class="hidden space-y-2.5">
-            <!-- Header Card Calcolatore -->
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2.5">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-hospital-100 text-hospital-700 flex items-center justify-center text-sm shrink-0">
-                            <i class="fa-solid fa-syringe"></i>
+        <!-- SEZIONE 2: CALCOLATORE INFUSIONI (ml/h <-> DOSE) — LAYOUT COMPATTATO PER MOBILE -->
+        <section id="view-infusioni" class="hidden space-y-1.5">
+            <!-- Card Principale Configurazione Farmaco + Diluizione + Peso -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <!-- Selettore Farmaco Compatto -->
+                <div class="flex items-center gap-1.5">
+                    <input type="hidden" id="drugSelect" value="noradrenalina">
+                    <button type="button" onclick="openDrugPickerModal()" class="flex-1 min-w-0 bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600">Farmaco</span>
+                                <span id="finalConcBadge" class="text-[10px] font-mono font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0 rounded border border-emerald-200">--</span>
+                            </div>
+                            <div id="selectedDrugTitle" class="font-extrabold text-[13px] sm:text-sm text-hospital-900 truncate leading-tight">Noradrenalina (2 mg/1 ml)</div>
                         </div>
-                        <div>
-                            <h2 class="font-extrabold text-slate-900 text-sm leading-tight">Calcolatore Infusioni (ml/h ↔ Dose)</h2>
-                            <p class="text-[10px] text-slate-500">Protocolli diluizione standard & alternativa</p>
+                        <div class="w-7 h-7 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
-                    </div>
-                    <button onclick="resetInfusionCalc()" class="text-xs font-semibold text-slate-500 hover:text-hospital-700 px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 active:scale-95">
-                        <i class="fa-solid fa-rotate-left mr-1"></i>Azzera
+                    </button>
+                    <button onclick="resetInfusionCalc()" class="h-11 px-2.5 rounded-xl bg-slate-100 active:bg-slate-200 border border-slate-200 text-slate-600 text-[11px] font-bold flex flex-col items-center justify-center shrink-0" title="Azzera valori">
+                        <i class="fa-solid fa-rotate-left text-xs"></i>
+                        <span class="text-[9px] mt-0.5">Reset</span>
                     </button>
                 </div>
 
-                <!-- Selezione Farmaco -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">1. Seleziona Farmaco</label>
-                        <input type="hidden" id="drugSelect" value="noradrenalina">
-                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border-2 border-hospital-600/30 text-slate-900 rounded-xl px-3 py-3 flex items-center justify-between gap-2 text-left shadow-2xs">
-                            <div class="min-w-0 flex-1">
-                                <div id="selectedDrugTitle" class="font-extrabold text-sm sm:text-base text-hospital-900 truncate">Noradrenalina (2 mg/1 ml)</div>
-                                <div id="drugPrepNote" class="text-[11px] text-hospital-700 font-medium truncate mt-0.5"></div>
-                            </div>
-                            <div class="w-9 h-9 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-chevron-down text-sm"></i>
-                            </div>
-                        </button>
-                        <!-- Box Range Posologico Standard -->
-                        <div id="drugRangeBox" class="mt-1.5 bg-amber-50 border border-amber-200/80 rounded-xl px-2.5 py-2 flex items-start gap-2">
-                            <i class="fa-solid fa-notes-medical text-amber-600 text-xs mt-0.5 shrink-0"></i>
-                            <div class="min-w-0 flex-1">
-                                <div class="text-[10px] font-extrabold uppercase tracking-wide text-amber-800">Range Terapeutico Indicativo</div>
-                                <div id="drugRangeText" class="text-xs font-bold text-amber-950 leading-snug mt-0.5">--</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Selezione Diluizione -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">2. Diluizione / Concentrazione</label>
-                        <div id="dilutionButtons" class="flex flex-wrap gap-1.5 mb-1.5">
+                <!-- Riga Diluizione + Campi Concentrazione sulla stessa fascia -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                        <div id="dilutionButtons" class="flex flex-wrap gap-1">
                             <!-- Popolato da JS -->
                         </div>
-                        <div class="grid grid-cols-3 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Quantità tot.</label>
-                                <input type="number" step="any" id="concAmount" oninput="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-base sm:text-xs font-bold text-slate-900">
-                            </div>
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Unità farmaco</label>
-                                <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-base sm:text-xs font-bold text-slate-900">
-                                    <option value="mg">mg</option>
-                                    <option value="mcg">mcg</option>
-                                    <option value="g">g</option>
-                                    <option value="UI">UI</option>
-                                    <option value="mEq">mEq</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Volume (ml)</label>
-                                <input type="number" step="any" id="concVolume" oninput="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-base sm:text-xs font-bold text-slate-900">
-                            </div>
+                        <span id="drugPrepNote" class="text-[10px] text-hospital-700 font-medium truncate"></span>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-1.5 items-center bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-200">
+                        <div class="col-span-4">
+                            <label class="block text-[8px] font-bold text-slate-500 uppercase leading-none mb-0.5">Q.tà Farmaco</label>
+                            <input type="number" step="any" id="concAmount" oninput="recalcFromCurrentDirection()" class="w-full h-7 bg-white border border-slate-300 rounded px-1.5 text-xs font-extrabold text-slate-900">
                         </div>
-                        <div class="flex justify-between items-center mt-1 px-0.5">
-                            <span class="text-[10px] text-slate-500">Concentrazione finale:</span>
-                            <span id="finalConcBadge" class="text-[11px] font-mono font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">--</span>
+                        <div class="col-span-3">
+                            <label class="block text-[8px] font-bold text-slate-500 uppercase leading-none mb-0.5">Unità</label>
+                            <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-7 bg-white border border-slate-300 rounded px-1 text-xs font-extrabold text-slate-900">
+                                <option value="mg">mg</option>
+                                <option value="mcg">mcg</option>
+                                <option value="g">g</option>
+                                <option value="UI">UI</option>
+                                <option value="mEq">mEq</option>
+                            </select>
+                        </div>
+                        <div class="col-span-5">
+                            <label class="block text-[8px] font-bold text-slate-500 uppercase leading-none mb-0.5">Volume tot. (ml)</label>
+                            <input type="number" step="any" id="concVolume" oninput="recalcFromCurrentDirection()" class="w-full h-7 bg-white border border-slate-300 rounded px-1.5 text-xs font-extrabold text-slate-900">
                         </div>
                     </div>
                 </div>
 
-                <!-- Peso Paziente e Unità di Misura Velocità/Dose -->
-                <div class="grid grid-cols-2 gap-2.5 pt-1 border-t border-slate-100">
+                <!-- Riga Peso + Unità Clinica affiancati -->
+                <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-100">
                     <div id="weightContainer">
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
-                            <i class="fa-solid fa-weight-scale text-hospital-600 mr-1"></i>Peso Paziente (kg)
-                        </label>
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="adjustWeight(-5)" class="w-11 h-11 rounded-xl bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold text-base flex items-center justify-center shrink-0 active:scale-95 transition" aria-label="Riduci peso 5 kg">
-                                <i class="fa-solid fa-minus text-xs"></i>
-                            </button>
-                            <input type="number" step="any" inputmode="decimal" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="w-full h-11 bg-white border border-slate-300 rounded-xl px-2 text-center text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
-                            <button type="button" onclick="adjustWeight(5)" class="w-11 h-11 rounded-xl bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold text-base flex items-center justify-center shrink-0 active:scale-95 transition" aria-label="Aumenta peso 5 kg">
-                                <i class="fa-solid fa-plus text-xs"></i>
-                            </button>
+                        <div class="flex items-center justify-between mb-0.5">
+                            <span class="text-[9px] font-bold text-slate-600 uppercase"><i class="fa-solid fa-weight-scale text-hospital-600 mr-0.5"></i>Peso (kg)</span>
+                            <div class="flex gap-0.5">
+                                <button type="button" onclick="setQuickWeight(60)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 active:bg-slate-200 rounded text-slate-700">60</button>
+                                <button type="button" onclick="setQuickWeight(70)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 active:bg-slate-200 rounded text-slate-700">70</button>
+                                <button type="button" onclick="setQuickWeight(80)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 active:bg-slate-200 rounded text-slate-700">80</button>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-1 mt-1.5">
-                            <button type="button" onclick="setQuickWeight(60)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">60 kg</button>
-                            <button type="button" onclick="setQuickWeight(70)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">70 kg</button>
-                            <button type="button" onclick="setQuickWeight(80)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">80 kg</button>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="adjustWeight(-5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold flex items-center justify-center shrink-0" aria-label="Riduci peso 5 kg">
+                                <i class="fa-solid fa-minus text-[10px]"></i>
+                            </button>
+                            <input type="number" step="any" inputmode="decimal" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-white border border-slate-300 rounded-lg px-1 text-center text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <button type="button" onclick="adjustWeight(5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold flex items-center justify-center shrink-0" aria-label="Aumenta peso 5 kg">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                            </button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
-                            <i class="fa-solid fa-gauge-high text-hospital-600 mr-1"></i>Unità Dose / Velocità
+                        <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">
+                            <i class="fa-solid fa-gauge-high text-hospital-600 mr-0.5"></i>Unità Dose
                         </label>
-                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-11 bg-hospital-50 border border-hospital-200 text-hospital-900 font-extrabold rounded-xl px-3 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
-                            <!-- Popolato dinamicamente in base alla famiglia di unità -->
+                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-8 bg-hospital-50 border border-hospital-200 text-hospital-900 font-extrabold rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <!-- Popolato dinamicamente -->
                         </select>
-                        <p class="text-[10px] text-slate-500 mt-1.5 px-0.5">Seleziona l'unità clinica desiderata</p>
+                    </div>
+                </div>
+
+                <!-- Range Terapeutico in una sola striscia compatta -->
+                <div id="drugRangeBox" class="bg-amber-50 border border-amber-200/80 rounded-lg px-2 py-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-notes-medical text-amber-600 text-[11px] shrink-0"></i>
+                    <div class="min-w-0 flex-1 text-[10px] leading-tight text-amber-950">
+                        <span class="font-extrabold uppercase text-amber-800 mr-1">Range:</span>
+                        <span id="drugRangeText" class="font-semibold">--</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Box Conversione Bidirezionale (ml/h <-> Dose) con tasti grandi Mobile -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <!-- Input/Output ml/h -->
-                <div class="bg-gradient-to-br from-hospital-900 to-hospital-800 text-white p-3.5 rounded-2xl shadow-sm space-y-2">
+            <!-- Box Conversione Bidirezionale AFFIANCATI (2 colonne anche su telefono!) -->
+            <div class="grid grid-cols-2 gap-1.5">
+                <!-- Velocità Pompa (ml/h) -->
+                <div class="bg-gradient-to-br from-hospital-900 to-hospital-800 text-white p-2 rounded-xl shadow-sm space-y-1.5">
                     <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-sky-300">Velocità Pompa</span>
-                        <span class="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-md font-bold">ml / ora</span>
+                        <span class="text-[9px] font-extrabold uppercase tracking-wide text-sky-300">Pompa</span>
+                        <span class="text-[9px] bg-white/15 px-1.5 py-0.5 rounded font-bold">ml/h</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="stepMlH(-1)" class="w-12 h-12 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 active:scale-95 transition text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci ml/h">
-                            <i class="fa-solid fa-minus text-lg"></i>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="stepMlH(-1)" class="w-8 h-9 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci ml/h">
+                            <i class="fa-solid fa-minus text-xs"></i>
                         </button>
-                        <div class="relative flex-1 min-w-0">
-                            <input type="number" step="any" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full h-12 bg-white text-slate-900 font-mono font-extrabold text-xl rounded-xl pl-3 pr-12 text-center focus:outline-none focus:ring-2 focus:ring-sky-400">
-                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-slate-400 pointer-events-none">ml/h</span>
-                        </div>
-                        <button type="button" onclick="stepMlH(1)" class="w-12 h-12 rounded-xl bg-sky-500 hover:bg-sky-400 active:bg-sky-600 active:scale-95 transition text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta ml/h">
-                            <i class="fa-solid fa-plus text-lg"></i>
+                        <input type="number" step="any" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full min-w-0 h-9 bg-white text-slate-900 font-mono font-extrabold text-base rounded-lg px-1 text-center focus:outline-none focus:ring-2 focus:ring-sky-400">
+                        <button type="button" onclick="stepMlH(1)" class="w-8 h-9 rounded-lg bg-sky-500 active:bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta ml/h">
+                            <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
-                    <div class="flex items-center justify-between gap-1.5 pt-0.5">
-                        <button type="button" onclick="stepMlH(-0.5)" class="flex-1 py-1.5 rounded-lg bg-white/10 active:bg-white/25 text-[11px] font-bold text-sky-100">-0.5 ml/h</button>
-                        <button type="button" onclick="stepMlH(0.5)" class="flex-1 py-1.5 rounded-lg bg-white/10 active:bg-white/25 text-[11px] font-bold text-sky-100">+0.5 ml/h</button>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button type="button" onclick="stepMlH(-0.5)" class="py-1 rounded bg-white/10 active:bg-white/25 text-[10px] font-bold text-sky-100">-0.5</button>
+                        <button type="button" onclick="stepMlH(0.5)" class="py-1 rounded bg-white/10 active:bg-white/25 text-[10px] font-bold text-sky-100">+0.5</button>
                     </div>
                 </div>
 
-                <!-- Input/Output Dose -->
-                <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-3.5 rounded-2xl shadow-sm space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-300">Dose Somministrata</span>
-                        <span id="doseUnitBadge" class="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-md font-bold">mcg/kg/min</span>
+                <!-- Dose Somministrata -->
+                <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-2 rounded-xl shadow-sm space-y-1.5">
+                    <div class="flex justify-between items-center gap-1">
+                        <span class="text-[9px] font-extrabold uppercase tracking-wide text-emerald-300">Dose</span>
+                        <span id="doseUnitBadge" class="text-[9px] bg-white/15 px-1.5 py-0.5 rounded font-bold truncate">mcg/kg/min</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="stepDose(-1)" class="w-12 h-12 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 active:scale-95 transition text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci dose">
-                            <i class="fa-solid fa-minus text-lg"></i>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="stepDose(-1)" class="w-8 h-9 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci dose">
+                            <i class="fa-solid fa-minus text-xs"></i>
                         </button>
-                        <div class="relative flex-1 min-w-0">
-                            <input type="number" step="any" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full h-12 bg-white text-slate-900 font-mono font-extrabold text-xl rounded-xl px-2 text-center focus:outline-none focus:ring-2 focus:ring-emerald-400">
-                        </div>
-                        <button type="button" onclick="stepDose(1)" class="w-12 h-12 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 active:scale-95 transition text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta dose">
-                            <i class="fa-solid fa-plus text-lg"></i>
+                        <input type="number" step="any" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full min-w-0 h-9 bg-white text-slate-900 font-mono font-extrabold text-base rounded-lg px-1 text-center focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                        <button type="button" onclick="stepDose(1)" class="w-8 h-9 rounded-lg bg-emerald-500 active:bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta dose">
+                            <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
-                    <div class="flex items-center justify-between text-[10px] text-emerald-200 px-0.5">
-                        <span>Regola con i tasti <strong>− / +</strong> o digita</span>
-                        <span id="doseInputUnitLabel" class="font-bold text-white">mcg/kg/min</span>
+                    <div class="flex items-center justify-between text-[9px] text-emerald-200 py-0.5 px-0.5">
+                        <span>Tasti −/+</span>
+                        <span id="doseInputUnitLabel" class="font-bold text-white truncate">mcg/kg/min</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Tabella Rapida di Riferimento per la Diluizione Selezionata -->
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-table-list text-hospital-600 mr-1.5"></i>Tabella Rapida (Peso attuale)</h3>
-                    <span id="refTableSubtitle" class="text-[10px] text-slate-500 font-medium">Tocca una riga per applicare</span>
+            <!-- Tabella Rapida Compatta -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-1.5">
+                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-table-list text-hospital-600 mr-1"></i>Tabella Rapida</h3>
+                    <span id="refTableSubtitle" class="text-[9px] text-slate-500 font-medium">Tocca per applicare</span>
                 </div>
-                <div id="quickRefGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                <div id="quickRefGrid" class="grid grid-cols-6 gap-1">
                     <!-- Popolato da JS -->
                 </div>
             </div>
         </section>
 
-        <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE -->
-        <section id="view-antibiotici" class="hidden space-y-2.5">
-            <!-- Header Card Protocollo -->
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shrink-0">
-                            <i class="fa-solid fa-capsules"></i>
+        <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE — COMPATTATO -->
+        <section id="view-antibiotici" class="hidden space-y-1.5">
+            <!-- Card Selezione Antibiotico + Cl.Cr -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <!-- Selettore Antibiotico Compatto -->
+                <div>
+                    <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
+                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-600">Antibiotico</span>
+                                <span id="selectedAbxCategory" class="text-[10px] text-indigo-700 font-medium truncate">Beta-lattamico / Inibitore beta-lattamasi</span>
+                            </div>
+                            <div id="selectedAbxTitle" class="font-extrabold text-[13px] sm:text-sm text-indigo-950 truncate leading-tight">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
                         </div>
-                        <div>
-                            <h2 class="font-extrabold text-slate-900 text-sm leading-tight">Posologia Antibiotici & Cl. Creatinina</h2>
-                            <p class="text-[10px] text-slate-500">Protocollo U.O.C. Anestesia e Rianimazione — A.O.E. Cannizzaro</p>
+                        <div class="w-7 h-7 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
-                    </div>
-                    <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full shrink-0">31 Molecole</span>
+                    </button>
                 </div>
 
-                <!-- Step 1 & Step 2 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Selettore Antibiotico -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">1. Seleziona Antibiotico / Antimicrobico</label>
-                        <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
-                        <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border-2 border-indigo-600/30 text-slate-900 rounded-xl px-3 py-3 flex items-center justify-between gap-2 text-left shadow-2xs">
-                            <div class="min-w-0 flex-1">
-                                <div id="selectedAbxTitle" class="font-extrabold text-sm sm:text-base text-indigo-950 truncate">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
-                                <div id="selectedAbxCategory" class="text-[11px] text-indigo-700 font-medium truncate mt-0.5">Beta-lattamico / Inibitore beta-lattamasi</div>
+                <!-- Selettore Clearance Creatinina Compatto -->
+                <div class="space-y-1.5 pt-1 border-t border-slate-100">
+                    <div class="flex items-center justify-between gap-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <label class="text-[10px] font-bold text-slate-700 uppercase">Cl.Cr:</label>
+                            <div class="relative w-24">
+                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-8 bg-white border border-slate-300 rounded-lg pl-2 pr-9 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">ml/m</span>
                             </div>
-                            <div class="w-9 h-9 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-chevron-down text-sm"></i>
-                            </div>
-                        </button>
+                        </div>
+                        <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
                     </div>
 
-                    <!-- Selettore Clearance Creatinina -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="block text-[11px] font-bold text-slate-700 uppercase">2. Clearance Creatinina (ml/min)</label>
-                            <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Normofunzione (&gt; 80)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="relative flex-1">
-                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-11 bg-white border border-slate-300 rounded-xl pl-3 pr-14 text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 pointer-events-none">ml/min</span>
-                            </div>
-                            <button type="button" onclick="setQuickCrCl(90)" class="h-11 px-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs active:scale-95 shrink-0">
-                                Normale
-                            </button>
-                        </div>
-                        <!-- Tasti Rapidi Soglie Schema PDF -->
-                        <div class="grid grid-cols-7 gap-1 mt-1.5">
-                            <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">&gt;80</button>
-                            <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">60</button>
-                            <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">50</button>
-                            <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">40</button>
-                            <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">30</button>
-                            <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">15</button>
-                            <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">≤10</button>
-                        </div>
+                    <!-- Tasti Rapidi Soglie Schema PDF -->
+                    <div class="grid grid-cols-7 gap-1">
+                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">&gt;80</button>
+                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">60</button>
+                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">50</button>
+                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">40</button>
+                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">30</button>
+                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">15</button>
+                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">≤10</button>
                     </div>
                 </div>
 
                 <!-- Calcolatore Speciale Creatinina Sierica per AMIKACINA -->
-                <div id="amikacinaCalcBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="text-xs font-extrabold text-amber-900">
-                            <i class="fa-solid fa-calculator text-amber-600 mr-1.5"></i>Regola Amikacina: Creatinina sierica × 9 = Intervallo (ore)
+                <div id="amikacinaCalcBox" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-2 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-[10px] font-extrabold text-amber-900">Cr × 9:</span>
+                        <div class="relative w-20">
+                            <input type="number" step="0.1" min="0.1" id="amikacinaCreatInput" value="2.0" oninput="updateAmikacinaInterval()" class="w-full h-7 bg-white border border-amber-300 rounded px-1.5 pr-7 text-xs font-extrabold text-slate-900">
+                            <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] font-bold text-slate-400">mg/dl</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="relative w-36">
-                            <input type="number" step="0.1" min="0.1" id="amikacinaCreatInput" value="2.0" oninput="updateAmikacinaInterval()" class="w-full h-10 bg-white border border-amber-300 rounded-lg pl-2.5 pr-12 text-sm font-extrabold text-slate-900">
-                            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">mg/dl</span>
-                        </div>
-                        <div id="amikacinaResultBadge" class="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-extrabold text-amber-950">
-                            Intervallo consigliato: ogni 18 ore
-                        </div>
+                    <div id="amikacinaResultBadge" class="text-[11px] font-extrabold text-amber-950 truncate">
+                        Ogni 18 ore
                     </div>
                 </div>
             </div>
 
-            <!-- Card Risultato Posologia Raccomandata -->
-            <div class="bg-gradient-to-br from-indigo-950 via-hospital-900 to-slate-900 text-white p-4 rounded-2xl shadow-md space-y-3">
-                <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-300">Posologia Raccomandata</span>
-                        <h3 id="abxResultDrugName" class="font-extrabold text-base leading-tight mt-0.5">--</h3>
-                    </div>
-                    <span id="abxResultBandLabel" class="bg-sky-500/25 border border-sky-400/40 text-sky-100 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shrink-0">
+            <!-- Card Risultato Posologia Raccomandata Compatta -->
+            <div class="bg-gradient-to-br from-indigo-950 via-hospital-900 to-slate-900 text-white p-2.5 rounded-xl shadow-sm space-y-2">
+                <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
+                    <h3 id="abxResultDrugName" class="font-extrabold text-xs sm:text-sm leading-tight truncate">--</h3>
+                    <span id="abxResultBandLabel" class="bg-sky-500/25 border border-sky-400/40 text-sky-100 text-[10px] font-extrabold px-2 py-0.5 rounded shrink-0">
                         Cl.Cr &gt; 80 ml/min
                     </span>
                 </div>
 
-                <!-- Dose di Carico (se prevista) -->
-                <div id="abxLoadingDoseBox" class="bg-amber-500/15 border border-amber-400/40 rounded-xl p-3 flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-bolt text-xs"></i>
+                <!-- Griglia Affiancata Dose di Carico + Mantenimento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <!-- Dose di Carico -->
+                    <div id="abxLoadingDoseBox" class="bg-amber-500/15 border border-amber-400/40 rounded-lg p-2 flex items-start gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                        <div class="min-w-0">
+                            <div class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300">Dose di Carico</div>
+                            <div id="abxLoadingDoseText" class="text-[11px] font-bold text-white mt-0.5 leading-snug">--</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Dose di Carico (d.c.)</div>
-                        <div id="abxLoadingDoseText" class="text-xs sm:text-sm font-bold text-white mt-0.5 leading-snug">--</div>
-                    </div>
-                </div>
 
-                <!-- Mantenimento / Aggiustamento Renale -->
-                <div id="abxMaintenanceBox" class="bg-white/10 border border-white/15 rounded-xl p-3 flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-droplet text-xs"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Infusione / Mantenimento per Cl.Cr attuale</div>
-                        <div id="abxMaintenanceText" class="text-sm sm:text-base font-extrabold text-white mt-0.5 leading-snug">--</div>
+                    <!-- Mantenimento / Aggiustamento Renale -->
+                    <div id="abxMaintenanceBox" class="bg-white/10 border border-white/15 rounded-lg p-2 flex items-start gap-2">
+                        <i class="fa-solid fa-droplet text-emerald-300 text-xs mt-0.5 shrink-0"></i>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300">Mantenimento (Cl.Cr attuale)</div>
+                            <div id="abxMaintenanceText" class="text-xs sm:text-sm font-extrabold text-white mt-0.5 leading-snug">--</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Nota clinica aggiuntiva -->
-                <div id="abxClinicalNoteBox" class="hidden text-[11px] text-sky-200 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
-                    <i class="fa-solid fa-circle-info text-sky-300 mr-1.5"></i>
+                <div id="abxClinicalNoteBox" class="hidden text-[10px] text-sky-200 bg-white/5 rounded-md px-2 py-1 border border-white/10 leading-snug">
+                    <i class="fa-solid fa-circle-info text-sky-300 mr-1"></i>
                     <span id="abxClinicalNoteText"></span>
                 </div>
             </div>
 
-            <!-- Tabella Completa Fasce Renali per l'Antibiotico Selezionato -->
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-1.5"></i>Schema Completo per Fascia di Cl. Creatinina</h3>
-                    <span class="text-[10px] text-slate-500">Tocca una fascia per selezionarla</span>
+            <!-- Tabella Completa Fasce Renali Compatta -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-1.5">
+                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i>Tutte le Fasce Cl. Creatinina</h3>
+                    <span class="text-[9px] text-slate-500">Tocca per selezionare</span>
                 </div>
-                <div id="abxBandsList" class="space-y-1.5">
+                <div id="abxBandsList" class="space-y-1">
                     <!-- Popolato da JS -->
                 </div>
             </div>
@@ -1198,6 +1157,16 @@
             });
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
 
+            // Nasconde la barra di ricerca della rubrica sulle schede cliniche per guadagnare spazio verticale
+            const searchWrapper = document.getElementById('globalSearchWrapper');
+            if (searchWrapper) {
+                if (tabName === 'infusioni' || tabName === 'antibiotici') {
+                    searchWrapper.classList.add('hidden', 'md:block');
+                } else {
+                    searchWrapper.classList.remove('hidden', 'md:block');
+                }
+            }
+
             ['rubrica', 'infusioni', 'antibiotici', 'utilita'].forEach(t => {
                 const deskBtn = document.getElementById(`tab-desk-${t}`);
                 if (deskBtn) {
@@ -1236,8 +1205,8 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '0,01 – 0,5 mcg/kg/min (fino a 1–2 mcg/kg/min nello shock refrattario)',
                 dilutions: [
-                    { label: 'Standard: 4 fl / 50 ml SF', amount: 8, unit: 'mg', volume: 50, note: '4 fiale (8 mg) portate a 50 ml SF = 160 mcg/ml' },
-                    { label: 'Alt: 2 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '2 fiale (4 mg) portate a 50 ml SF = 80 mcg/ml' }
+                    { label: '4 fl / 50 ml SF', amount: 8, unit: 'mg', volume: 50, note: '8 mg in 50 ml SF = 160 mcg/ml' },
+                    { label: '2 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '4 mg in 50 ml SF = 80 mcg/ml' }
                 ]
             },
             {
@@ -1247,7 +1216,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '0,01 – 0,5 mcg/kg/min (effetto β a basse dosi; α-adrenergico > 0,1 mcg/kg/min)',
                 dilutions: [
-                    { label: 'Standard: 4 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '4 fiale (4 mg) portate a 50 ml SF = 80 mcg/ml' }
+                    { label: '4 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '4 mg in 50 ml SF = 80 mcg/ml' }
                 ]
             },
             {
@@ -1257,7 +1226,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '2 – 20 mcg/kg/min (titolare su portata cardiaca e perfusione)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml SF', amount: 500, unit: 'mg', volume: 50, note: '2 fiale (500 mg) portate a 50 ml SF = 10 mg/ml' }
+                    { label: '2 fl / 50 ml SF', amount: 500, unit: 'mg', volume: 50, note: '500 mg in 50 ml SF = 10 mg/ml' }
                 ]
             },
             {
@@ -1267,7 +1236,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '2 – 5 mcg/kg/min (β1/inotropo); 5 – 20 mcg/kg/min (α/vasopressore)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml SF', amount: 400, unit: 'mg', volume: 50, note: '2 fiale (400 mg) portate a 50 ml SF = 8 mg/ml' }
+                    { label: '2 fl / 50 ml SF', amount: 400, unit: 'mg', volume: 50, note: '400 mg in 50 ml SF = 8 mg/ml' }
                 ]
             },
             {
@@ -1277,7 +1246,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '0,01 – 0,1 mcg/kg/min (oppure 0,5 – 5 mcg/min in bradicardia/BAV)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml SF', amount: 0.4, unit: 'mg', volume: 50, note: '2 fiale (0,4 mg = 400 mcg) in 50 ml SF = 8 mcg/ml' }
+                    { label: '2 fl / 50 ml SF', amount: 0.4, unit: 'mg', volume: 50, note: '0,4 mg (400 mcg) in 50 ml SF = 8 mcg/ml' }
                 ]
             },
             {
@@ -1287,7 +1256,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: '0,05 – 0,2 mcg/kg/min per 24 ore (senza bolo in caso di ipotensione)',
                 dilutions: [
-                    { label: 'Standard: 1 fl / 500 ml G5%', amount: 12.5, unit: 'mg', volume: 500, note: '1 fiala (12,5 mg) in 500 ml Glucosata 5% = 25 mcg/ml' }
+                    { label: '1 fl / 500 ml G5%', amount: 12.5, unit: 'mg', volume: 500, note: '12,5 mg in 500 ml G5% = 25 mcg/ml' }
                 ]
             },
             {
@@ -1297,8 +1266,8 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: 'Analgesia TI: 0,02 – 0,15 mcg/kg/min | Anestesia: 0,1 – 0,5 mcg/kg/min',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 40 ml (100 mcg/ml)', amount: 4, unit: 'mg', volume: 40, note: '2 fl da 2 mg (4 mg) in 40 ml = 100 mcg/ml' },
-                    { label: 'Alt: 1 fl / 40 ml (50 mcg/ml)', amount: 2, unit: 'mg', volume: 40, note: '1 fl da 2 mg in 40 ml = 50 mcg/ml' }
+                    { label: '2 fl / 40 ml (100 mcg/ml)', amount: 4, unit: 'mg', volume: 40, note: '4 mg in 40 ml = 100 mcg/ml' },
+                    { label: '1 fl / 40 ml (50 mcg/ml)', amount: 2, unit: 'mg', volume: 40, note: '2 mg in 40 ml = 50 mcg/ml' }
                 ]
             },
             {
@@ -1308,8 +1277,8 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: 'Analgesia TI: 0,02 – 0,15 mcg/kg/min | Anestesia: 0,1 – 0,5 mcg/kg/min',
                 dilutions: [
-                    { label: 'Standard: 1 fl / 50 ml (100 mcg/ml)', amount: 5, unit: 'mg', volume: 50, note: '1 fl da 5 mg in 50 ml = 100 mcg/ml' },
-                    { label: 'Alt: 1 fl / 100 ml (50 mcg/ml)', amount: 5, unit: 'mg', volume: 100, note: '1 fl da 5 mg in 100 ml = 50 mcg/ml' }
+                    { label: '1 fl / 50 ml (100 mcg/ml)', amount: 5, unit: 'mg', volume: 50, note: '5 mg in 50 ml = 100 mcg/ml' },
+                    { label: '1 fl / 100 ml (50 mcg/ml)', amount: 5, unit: 'mg', volume: 100, note: '5 mg in 100 ml = 50 mcg/ml' }
                 ]
             },
             {
@@ -1319,8 +1288,8 @@
                 defaultUnit: 'mg/kg/h',
                 doseRange: 'Sedazione TI: 0,3 – 4 mg/kg/h | TIVA anestesia: 4 – 10 mg/kg/h',
                 dilutions: [
-                    { label: 'Propofol 2% (20 mg/ml puro)', amount: 1000, unit: 'mg', volume: 50, note: 'Flacone 50 ml al 2% = 20 mg/ml puro' },
-                    { label: 'Propofol 1% (10 mg/ml puro)', amount: 500, unit: 'mg', volume: 50, note: 'Flacone 50 ml all’1% = 10 mg/ml puro' }
+                    { label: 'Propofol 2% (20 mg/ml)', amount: 1000, unit: 'mg', volume: 50, note: 'Flacone 50 ml al 2% = 20 mg/ml puro' },
+                    { label: 'Propofol 1% (10 mg/ml)', amount: 500, unit: 'mg', volume: 50, note: 'Flacone 50 ml all’1% = 10 mg/ml puro' }
                 ]
             },
             {
@@ -1330,8 +1299,8 @@
                 defaultUnit: 'mcg/kg/h',
                 doseRange: '0,2 – 1,4 mcg/kg/h (inizio usuale 0,7 mcg/kg/h; evitare bolo rapido)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml (8 mcg/ml)', amount: 400, unit: 'mcg', volume: 50, note: '2 fiale (400 mcg) portate a 50 ml = 8 mcg/ml' },
-                    { label: 'Alt: 1 fl / 50 ml (4 mcg/ml)', amount: 200, unit: 'mcg', volume: 50, note: '1 fiala (200 mcg) portata a 50 ml = 4 mcg/ml' }
+                    { label: '2 fl / 50 ml (8 mcg/ml)', amount: 400, unit: 'mcg', volume: 50, note: '400 mcg in 50 ml = 8 mcg/ml' },
+                    { label: '1 fl / 50 ml (4 mcg/ml)', amount: 200, unit: 'mcg', volume: 50, note: '200 mcg in 50 ml = 4 mcg/ml' }
                 ]
             },
             {
@@ -1341,8 +1310,8 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Sedazione TI: 2 – 10 mg/h (oppure 0,03 – 0,2 mg/kg/h)',
                 dilutions: [
-                    { label: 'Standard: 3 fl/45 ml o 4 fl/60 ml (1:1)', amount: 45, unit: 'mg', volume: 45, note: 'Rapporto 1:1 (1 mg/ml) — 3 fl in 45 ml o 4 fl in 60 ml' },
-                    { label: 'Alt: 5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: 'Infusione pura = 5 mg/ml' }
+                    { label: '3 fl/45 ml (1:1)', amount: 45, unit: 'mg', volume: 45, note: 'Rapporto 1:1 (1 mg/ml)' },
+                    { label: '5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: 'Infusione pura = 5 mg/ml' }
                 ]
             },
             {
@@ -1352,7 +1321,7 @@
                 defaultUnit: 'mcg/h',
                 doseRange: '15 – 90 mcg/h (circa 0,2 – 1,5 mcg/kg/h; max ~1200–1500 mcg/die)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml', amount: 300, unit: 'mcg', volume: 50, note: '2 fiale (300 mcg) portate a 50 ml = 6 mcg/ml' }
+                    { label: '2 fl / 50 ml', amount: 300, unit: 'mcg', volume: 50, note: '300 mcg in 50 ml = 6 mcg/ml' }
                 ]
             },
             {
@@ -1362,7 +1331,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Analgesia: 1 – 5 mg/h (dispnea/cure palliative: 0,5 – 2 mg/h iniziale)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '2 fiale (20 mg) portate a 50 ml = 0,4 mg/ml' }
+                    { label: '2 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '20 mg in 50 ml = 0,4 mg/ml' }
                 ]
             },
             {
@@ -1372,7 +1341,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: 'Mantenimento blocco neuromuscolare: 1 – 3 mcg/kg/min (media 1,5 mcg/kg/min)',
                 dilutions: [
-                    { label: 'Standard: 6 fl / 60 ml (puro)', amount: 60, unit: 'mg', volume: 60, note: '6 fiale (60 mg) in 60 ml puro = 1 mg/ml' }
+                    { label: '6 fl / 60 ml (puro)', amount: 60, unit: 'mg', volume: 60, note: '60 mg in 60 ml puro = 1 mg/ml' }
                 ]
             },
             {
@@ -1382,7 +1351,7 @@
                 defaultUnit: 'mcg/min',
                 doseRange: '10 – 200 mcg/min (inizio 5–10 mcg/min; aumentare ogni 5–10 min su PA/sintomi)',
                 dilutions: [
-                    { label: 'Standard: 4 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '4 fiale (20 mg) portate a 50 ml = 0,4 mg/ml (400 mcg/ml)' }
+                    { label: '4 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '20 mg in 50 ml = 400 mcg/ml' }
                 ]
             },
             {
@@ -1392,7 +1361,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Mantenimento: 9 – 30 mg/h (dopo eventuali boli da 10–25 mg EV)',
                 dilutions: [
-                    { label: 'Standard: 5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: '5 fiale (250 mg) in 50 ml puro = 5 mg/ml' }
+                    { label: '5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: '250 mg in 50 ml puro = 5 mg/ml' }
                 ]
             },
             {
@@ -1402,7 +1371,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Prime 2 ore: 1 mg/h (5 ml/h); poi 2 mg/h (10 ml/h) se PA stabile (ESA)',
                 dilutions: [
-                    { label: 'Standard: Flacone pronto 10 mg/50 ml', amount: 10, unit: 'mg', volume: 50, note: 'Flacone pronto all’uso 10 mg in 50 ml = 0,2 mg/ml' }
+                    { label: 'Flacone pronto 10 mg/50 ml', amount: 10, unit: 'mg', volume: 50, note: 'Flacone pronto = 0,2 mg/ml' }
                 ]
             },
             {
@@ -1412,7 +1381,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: '1 – 5 mg/h (titolare su frequenza cardiaca e pressione arteriosa)',
                 dilutions: [
-                    { label: 'Standard: 25 mg / 50 ml', amount: 25, unit: 'mg', volume: 50, note: '5 fiale (25 mg) portate a 50 ml = 0,5 mg/ml' }
+                    { label: '25 mg / 50 ml', amount: 25, unit: 'mg', volume: 50, note: '25 mg in 50 ml = 0,5 mg/ml' }
                 ]
             },
             {
@@ -1422,7 +1391,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: '5 – 20 mg/h (infusione continua dopo bolo iniziale; max ~4 mg/min)',
                 dilutions: [
-                    { label: 'Standard: 80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '4 fiale (80 mg) portate a 50 ml = 1,6 mg/ml' }
+                    { label: '80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '80 mg in 50 ml = 1,6 mg/ml' }
                 ]
             },
             {
@@ -1432,8 +1401,8 @@
                 defaultUnit: 'mg/h',
                 doseRange: '10 – 40 mg/h (insufficienza renale/scompenso refrattario; max 4 mg/min)',
                 dilutions: [
-                    { label: 'Standard: 250 mg / 50 ml', amount: 250, unit: 'mg', volume: 50, note: '1 fiala (250 mg) portata a 50 ml = 5 mg/ml' },
-                    { label: 'Alt: 500 mg / 50 ml (puro)', amount: 500, unit: 'mg', volume: 50, note: '2 fiale (500 mg) in 50 ml puro = 10 mg/ml' }
+                    { label: '250 mg / 50 ml', amount: 250, unit: 'mg', volume: 50, note: '250 mg in 50 ml = 5 mg/ml' },
+                    { label: '500 mg / 50 ml (puro)', amount: 500, unit: 'mg', volume: 50, note: '500 mg in 50 ml puro = 10 mg/ml' }
                 ]
             },
             {
@@ -1443,8 +1412,8 @@
                 defaultUnit: 'UI/h',
                 doseRange: '0,5 – 6 UI/h secondo protocollo glicemico (target TI: 140 – 180 mg/dl)',
                 dilutions: [
-                    { label: 'Standard: 50 UI / 50 ml SF (1:1)', amount: 50, unit: 'UI', volume: 50, note: '50 UI portate a 50 ml SF = 1 UI/ml' },
-                    { label: 'Alt: 60 UI / 60 ml (1:1)', amount: 60, unit: 'UI', volume: 60, note: '60 UI portate a 60 ml SF = 1 UI/ml' }
+                    { label: '50 UI / 50 ml SF (1:1)', amount: 50, unit: 'UI', volume: 50, note: '50 UI in 50 ml SF = 1 UI/ml' },
+                    { label: '60 UI / 60 ml (1:1)', amount: 60, unit: 'UI', volume: 60, note: '60 UI in 60 ml SF = 1 UI/ml' }
                 ]
             },
             {
@@ -1454,7 +1423,7 @@
                 defaultUnit: 'UI/min',
                 doseRange: '0,01 – 0,03 UI/min (fino a 0,04 UI/min nello shock settico refrattario)',
                 dilutions: [
-                    { label: 'Standard: 1 fl / 50 ml SF', amount: 40, unit: 'UI', volume: 50, note: '1 fiala (40 UI) portata a 50 ml SF = 0,8 UI/ml' }
+                    { label: '1 fl / 50 ml SF', amount: 40, unit: 'UI', volume: 50, note: '40 UI in 50 ml SF = 0,8 UI/ml' }
                 ]
             },
             {
@@ -1464,7 +1433,7 @@
                 defaultUnit: 'mEq/h',
                 doseRange: '5 – 10 mEq/h (max 10 mEq/h su vena periferica; fino a 20 mEq/h su CVC con ECG)',
                 dilutions: [
-                    { label: 'Standard: 2 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '2 fiale (60 mEq) portate a 50 ml = 1,2 mEq/ml' }
+                    { label: '2 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '60 mEq in 50 ml = 1,2 mEq/ml' }
                 ]
             },
             {
@@ -1474,7 +1443,7 @@
                 defaultUnit: 'mEq/h',
                 doseRange: '5 – 10 mEq/h (max 10 mEq/h su vena periferica; fino a 20 mEq/h su CVC con ECG)',
                 dilutions: [
-                    { label: 'Standard: 3 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '3 fiale (60 mEq) portate a 50 ml = 1,2 mEq/ml' }
+                    { label: '3 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '60 mEq in 50 ml = 1,2 mEq/ml' }
                 ]
             },
             {
@@ -1484,7 +1453,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: '5 mg/h (es. 75 mg in 15 ore; dose massima giornaliera 150 mg/24h)',
                 dilutions: [
-                    { label: 'Standard: 50 mg / 50 ml', amount: 50, unit: 'mg', volume: 50, note: '50 mg (2 ml) portati a 50 ml = 1 mg/ml' }
+                    { label: '50 mg / 50 ml', amount: 50, unit: 'mg', volume: 50, note: '50 mg in 50 ml = 1 mg/ml' }
                 ]
             },
             {
@@ -1494,7 +1463,7 @@
                 defaultUnit: 'mg/kg/h',
                 doseRange: 'Protocollo paracetamolo: 150 mg/kg in 1h, poi 50 mg/kg in 4h, poi 100 mg/kg in 16h (~6,25 mg/kg/h)',
                 dilutions: [
-                    { label: 'Standard: 5 g / 500 ml G5%', amount: 5, unit: 'g', volume: 500, note: '1 flacone (5 g = 5000 mg) in 500 ml Glucosata 5% = 10 mg/ml' }
+                    { label: '5 g / 500 ml G5%', amount: 5, unit: 'g', volume: 500, note: '5 g in 500 ml G5% = 10 mg/ml' }
                 ]
             },
             {
@@ -1504,7 +1473,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Shock settico: 8,3 mg/h (= 200 mg/24h in infusione continua)',
                 dilutions: [
-                    { label: 'Standard: 200 mg / 50 ml', amount: 200, unit: 'mg', volume: 50, note: '200 mg portati a 50 ml = 4 mg/ml' }
+                    { label: '200 mg / 50 ml', amount: 200, unit: 'mg', volume: 50, note: '200 mg in 50 ml = 4 mg/ml' }
                 ]
             },
             {
@@ -1514,7 +1483,7 @@
                 defaultUnit: 'mcg/min',
                 doseRange: '5 – 20 mcg/min (broncostenosi severa refrattaria; monitorare K+ e FC)',
                 dilutions: [
-                    { label: 'Standard: 500 mcg / 50 ml', amount: 500, unit: 'mcg', volume: 50, note: '5 fiale (500 mcg) portate a 50 ml = 10 mcg/ml' }
+                    { label: '500 mcg / 50 ml', amount: 500, unit: 'mcg', volume: 50, note: '500 mcg in 50 ml = 10 mcg/ml' }
                 ]
             },
             {
@@ -1524,7 +1493,7 @@
                 defaultUnit: 'mg/h',
                 doseRange: 'Emorragia digestiva alta: 8 mg/h per 72 ore (dopo bolo iniziale di 80 mg EV)',
                 dilutions: [
-                    { label: 'Standard: 80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '2 flaconi (80 mg) portati a 50 ml = 1,6 mg/ml' }
+                    { label: '80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '80 mg in 50 ml = 1,6 mg/ml' }
                 ]
             },
             {
@@ -1534,7 +1503,7 @@
                 defaultUnit: 'mcg/kg/min',
                 doseRange: 'Inserire diluizione e unità secondo prescrizione medica',
                 dilutions: [
-                    { label: 'Personalizzata', amount: 50, unit: 'mg', volume: 50, note: 'Inserisci manualmente quantità, unità e volume' }
+                    { label: 'Personalizzata', amount: 50, unit: 'mg', volume: 50, note: 'Inserisci quantità, unità e volume' }
                 ]
             }
         ];
@@ -1601,13 +1570,12 @@
             container.innerHTML = filtered.map(d => {
                 const isSelected = d.id === currentId;
                 return `
-                    <button type="button" onclick="selectDrugFromModal('${d.id}')" class="w-full text-left p-3 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2.5 ${isSelected ? 'bg-hospital-50 border-hospital-600 ring-1 ring-hospital-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
+                    <button type="button" onclick="selectDrugFromModal('${d.id}')" class="w-full text-left p-2.5 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2 ${isSelected ? 'bg-hospital-50 border-hospital-600 ring-1 ring-hospital-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
                         <div class="min-w-0 flex-1">
-                            <div class="font-extrabold text-sm text-slate-900 truncate">${d.name}</div>
-                            <div class="text-[11px] text-slate-500 truncate mt-0.5">${d.dilutions[0]?.label || ''}</div>
-                            ${d.doseRange ? `<div class="text-[10px] font-semibold text-amber-800 truncate mt-0.5"><i class="fa-solid fa-notes-medical mr-1 text-amber-600"></i>${d.doseRange}</div>` : ''}
+                            <div class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${d.name}</div>
+                            <div class="text-[10px] text-slate-500 truncate">${d.dilutions[0]?.label || ''}</div>
                         </div>
-                        <span class="shrink-0 text-[11px] font-mono font-bold px-2 py-1 rounded-lg ${isSelected ? 'bg-hospital-700 text-white' : 'bg-slate-100 text-slate-700'}">
+                        <span class="shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md ${isSelected ? 'bg-hospital-700 text-white' : 'bg-slate-100 text-slate-700'}">
                             ${d.defaultUnit}
                         </span>
                     </button>
@@ -1639,7 +1607,7 @@
             const dilContainer = document.getElementById('dilutionButtons');
             dilContainer.innerHTML = drug.dilutions.map((dil, idx) => `
                 <button type="button" onclick="applyDilution(${idx})" data-dil-idx="${idx}"
-                    class="dil-btn px-2.5 py-1 rounded-lg text-[11px] font-bold border transition active:scale-95 ${idx === 0 ? 'bg-hospital-700 text-white border-hospital-700' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
+                    class="dil-btn px-2 py-0.5 rounded-md text-[10px] font-bold border transition active:scale-95 ${idx === 0 ? 'bg-hospital-700 text-white border-hospital-700' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
                     ${dil.label}
                 </button>
             `).join('');
@@ -1742,7 +1710,6 @@
             const volume = parseFloat(document.getElementById('concVolume').value) || 0;
             if (amount <= 0 || volume <= 0) return { concBase: 0, family: 'mass', display: '--' };
 
-            // Normalizza in mcg per massa, oppure UI / mEq diretti
             if (unit === 'g') {
                 const mgPerMl = (amount * 1000) / volume;
                 return { concMcgMl: mgPerMl * 1000, family: 'mass', display: `${formatSmart(mgPerMl)} mg/ml` };
@@ -1883,16 +1850,15 @@
             if (!grid) return;
 
             const needsWeight = doseUnit.includes('/kg/');
-            sub.textContent = needsWeight ? `Calcolato per ${weight} kg` : 'Indipendente dal peso';
+            sub.textContent = needsWeight ? `Peso ${weight} kg` : 'No peso';
 
             const sampleRates = [1, 2, 5, 10, 15, 20];
             grid.innerHTML = sampleRates.map(r => {
                 const d = mlHToDose(r, concInfo, weight, doseUnit);
                 return `
-                    <button type="button" onclick="applySampleRate(${r})" class="bg-slate-50 hover:bg-hospital-50 border border-slate-200 rounded-lg p-1.5 text-center active:scale-95 transition">
-                        <div class="text-[11px] font-extrabold text-hospital-800">${r} ml/h</div>
-                        <div class="text-[11px] font-mono font-bold text-emerald-700 mt-0.5">${formatSmart(d)}</div>
-                        <div class="text-[9px] text-slate-400 truncate">${doseUnit}</div>
+                    <button type="button" onclick="applySampleRate(${r})" class="bg-slate-50 hover:bg-hospital-50 border border-slate-200 rounded-md py-1 px-0.5 text-center active:scale-95 transition">
+                        <div class="text-[10px] font-extrabold text-hospital-800 leading-tight">${r}ml</div>
+                        <div class="text-[10px] font-mono font-bold text-emerald-700 leading-tight mt-0.5">${formatSmart(d)}</div>
                     </button>
                 `;
             }).join('');
@@ -1922,7 +1888,7 @@
                 note: 'In insufficienza renale moltiplicare per 9 la concentrazione sierica di Creatinina (mg/dl): il risultato rappresenta l’intervallo in ore tra una dose e l’altra.',
                 bands: [
                     { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '15 mg/kg in 100 ml S.F. in 1 ora (1 volta/die)' },
-                    { min: 0, max: 80, label: 'Compromissione renale (Cl.Cr ≤ 80)', dose: '15 mg/kg in 100 ml S.F. in 1 ora — Intervallo = Creatinina sierica (mg/dl) × 9 ore (es. Cr 2 mg/dl → ogni 18 ore)' }
+                    { min: 0, max: 80, label: 'Cl.Cr ≤ 80 ml/min', dose: '15 mg/kg in 100 ml S.F. in 1h — Intervallo = Creatinina sierica × 9 ore' }
                 ]
             },
             {
@@ -1930,7 +1896,7 @@
                 name: 'AMPICILLINA',
                 category: 'Penicillina',
                 loadingDose: 'd.c. 3 g / 50 ml S.F. in 30 min',
-                note: 'Mantenimento in infusione continua con siringa/pompa: 3 g in 50 ml S.F.',
+                note: 'Mantenimento in infusione continua: 3 g in 50 ml S.F.',
                 bands: [
                     { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '3 g / 50 ml S.F. — infusione a 8,5 ml/h' },
                     { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '3 g / 50 ml S.F. — infusione a 6,5 ml/h' },
@@ -2110,7 +2076,7 @@
                 id: 'ceftolozano_tazobactam',
                 name: 'CEFTOLOZANO / TAZOBACTAM (ZERBAXA)',
                 category: 'Cefalosporina / Inibitore beta-lattamasi',
-                loadingDose: 'Cl.Cr > 15: d.c. 3 g / 50 ml S.F. in 1 ora | Cl.Cr ≤ 15: d.c. 0,75 g / 50 ml S.F. in 1 ora',
+                loadingDose: 'Cl.Cr > 15: d.c. 3 g / 50 ml in 1h | Cl.Cr ≤ 15: d.c. 0,75 g / 50 ml in 1h',
                 note: 'Mantenimento in infusione continua: 4,5 g in 50 ml S.F.',
                 bands: [
                     { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 2 ml/h' },
@@ -2220,7 +2186,7 @@
                 id: 'levofloxacina',
                 name: 'LEVOFLOXACINA',
                 category: 'Fluorochinolone',
-                loadingDose: 'Primo giorno: 500 mg / 100 ml S.F. × 1 (o 750 mg/150 ml in 30 min × 1)',
+                loadingDose: '1° giorno: 500 mg / 100 ml S.F. × 1 (o 750 mg/150 ml in 30 min × 1)',
                 note: '',
                 bands: [
                     { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '750 mg / 150 ml S.F. in 30 min × 1/die (oppure 500 mg × 1–2/die)' },
@@ -2304,7 +2270,7 @@
                 id: 'tigeciclina',
                 name: 'TIGECICLINA',
                 category: 'Glicilciclina',
-                loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora × 2 volte a 12h di distanza',
+                loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora × 2 volte a 12h',
                 note: 'Nessun aggiustamento richiesto in insufficienza renale.',
                 bands: [
                     { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 50 ml S.F. in 1 ora × 2/die' }
@@ -2314,7 +2280,7 @@
                 id: 'teicoplanina',
                 name: 'TEICOPLANINA',
                 category: 'Glicopeptide',
-                loadingDose: 'd.c. 10 mg/kg in 50 ml S.F. in 30 min × 2 volte a 12h di distanza',
+                loadingDose: 'd.c. 10 mg/kg in 50 ml S.F. in 30 min × 2 volte a 12h',
                 note: '',
                 bands: [
                     { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '10 mg/kg in 50 ml S.F. in 30 min × 1/die' },
@@ -2397,7 +2363,8 @@
         function renderAbxPickerList() {
             const container = document.getElementById('abxPickerList');
             if (!container) return;
-            const currentId = document.getElementById('abxSelect').value;
+            const abxSelectEl = document.getElementById('abxSelect');
+            const currentId = abxSelectEl ? abxSelectEl.value : 'piperacillina_tazobactam';
             const q = (document.getElementById('abxSearchInput')?.value || '').toLowerCase().trim();
 
             const filtered = antibioticsDatabase.filter(a => {
@@ -2413,12 +2380,12 @@
             container.innerHTML = filtered.map(a => {
                 const isSelected = a.id === currentId;
                 return `
-                    <button type="button" onclick="selectAbxFromModal('${a.id}')" class="w-full text-left p-3 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2.5 ${isSelected ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
+                    <button type="button" onclick="selectAbxFromModal('${a.id}')" class="w-full text-left p-2.5 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2 ${isSelected ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
                         <div class="min-w-0 flex-1">
-                            <div class="font-extrabold text-sm text-slate-900 truncate">${a.name}</div>
-                            <div class="text-[11px] text-slate-500 truncate mt-0.5">${a.category}</div>
+                            <div class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${a.name}</div>
+                            <div class="text-[10px] text-slate-500 truncate">${a.category}</div>
                         </div>
-                        <span class="shrink-0 text-[10px] font-bold px-2 py-1 rounded-lg ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600'}">
+                        <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600'}">
                             ${a.bands.length === 1 ? 'No agg. renale' : `${a.bands.length} fasce`}
                         </span>
                     </button>
@@ -2427,7 +2394,8 @@
         }
 
         function selectAbxFromModal(abxId) {
-            document.getElementById('abxSelect').value = abxId;
+            const abxSelectEl = document.getElementById('abxSelect');
+            if (abxSelectEl) abxSelectEl.value = abxId;
             closeAbxPickerModal();
             onAbxChange();
         }
@@ -2443,14 +2411,15 @@
             if (!res) return;
             if (!isNaN(cr) && cr > 0) {
                 const hours = Math.round(cr * 9 * 10) / 10;
-                res.textContent = `Intervallo consigliato: ogni ${hours} ore`;
+                res.textContent = `Ogni ${hours} ore`;
             } else {
-                res.textContent = 'Inserisci creatinina sierica valida';
+                res.textContent = 'Cr non valida';
             }
         }
 
         function onAbxChange() {
-            const abxId = document.getElementById('abxSelect').value;
+            const abxSelectEl = document.getElementById('abxSelect');
+            const abxId = abxSelectEl ? abxSelectEl.value : 'piperacillina_tazobactam';
             const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
 
             document.getElementById('selectedAbxTitle').textContent = abx.name;
@@ -2468,7 +2437,8 @@
         }
 
         function onCrClChange() {
-            const abxId = document.getElementById('abxSelect').value;
+            const abxSelectEl = document.getElementById('abxSelect');
+            const abxId = abxSelectEl ? abxSelectEl.value : 'piperacillina_tazobactam';
             const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
             const rawCrCl = parseFloat(document.getElementById('crclInput').value);
             const crcl = isNaN(rawCrCl) ? 90 : Math.max(0, rawCrCl);
@@ -2476,10 +2446,10 @@
             // Aggiorna badge stato funzione renale
             const statusBadge = document.getElementById('renalStatusBadge');
             if (crcl > 80) {
-                statusBadge.textContent = 'Normofunzione (> 80)';
+                statusBadge.textContent = 'Normale (> 80)';
                 statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
             } else if (crcl > 50) {
-                statusBadge.textContent = 'Lieve riduzione (51–80)';
+                statusBadge.textContent = 'Lieve (51–80)';
                 statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800';
             } else if (crcl > 30) {
                 statusBadge.textContent = 'Moderata (31–50)';
@@ -2488,7 +2458,7 @@
                 statusBadge.textContent = 'Severa (16–30)';
                 statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800';
             } else {
-                statusBadge.textContent = 'Grave / Terminale (≤ 15)';
+                statusBadge.textContent = 'Grave (≤ 15)';
                 statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-800';
             }
 
@@ -2503,9 +2473,9 @@
                                  (chipVal === 15 && crcl > 10 && crcl <= 15) ||
                                  (chipVal === 10 && crcl <= 10);
                 if (isActive) {
-                    btn.className = 'crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95 bg-indigo-700 text-white border-indigo-700';
+                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95 bg-indigo-700 text-white border-indigo-700';
                 } else {
-                    btn.className = 'crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95 bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95 bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
                 }
             });
 
@@ -2520,9 +2490,9 @@
             const maintText = document.getElementById('abxMaintenanceText');
             maintText.textContent = matchedBand.dose;
             if (matchedBand.contraindicated) {
-                maintBox.className = 'bg-red-600/35 border border-red-400 rounded-xl p-3 flex items-start gap-2.5';
+                maintBox.className = 'bg-red-600/35 border border-red-400 rounded-lg p-2 flex items-start gap-2';
             } else {
-                maintBox.className = 'bg-white/10 border border-white/15 rounded-xl p-3 flex items-start gap-2.5';
+                maintBox.className = 'bg-white/10 border border-white/15 rounded-lg p-2 flex items-start gap-2';
             }
 
             const noteBox = document.getElementById('abxClinicalNoteBox');
@@ -2534,17 +2504,17 @@
                 noteBox.classList.add('hidden');
             }
 
-            // Renderizza tutte le fasce nella tabella riepilogativa
+            // Renderizza tutte le fasce nella tabella riepilogativa compatta
             const bandsList = document.getElementById('abxBandsList');
             bandsList.innerHTML = abx.bands.map(b => {
                 const isCurrent = b === matchedBand;
                 const sampleTarget = b.min === 0 ? Math.min(10, b.max) : b.min;
                 return `
-                    <button type="button" onclick="setQuickCrCl(${sampleTarget})" class="w-full text-left p-2.5 rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 ${isCurrent ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
-                        <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md w-fit shrink-0 ${isCurrent ? 'bg-indigo-700 text-white' : 'bg-white text-slate-700 border border-slate-200'}">
+                    <button type="button" onclick="setQuickCrCl(${sampleTarget})" class="w-full text-left px-2 py-1.5 rounded-lg border transition flex items-center justify-between gap-2 ${isCurrent ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
+                        <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${isCurrent ? 'bg-indigo-700 text-white' : 'bg-white text-slate-700 border border-slate-200'}">
                             ${b.label}
                         </span>
-                        <span class="text-xs font-bold ${b.contraindicated ? 'text-red-700' : 'text-slate-900'} sm:text-right">
+                        <span class="text-[11px] font-bold ${b.contraindicated ? 'text-red-700' : 'text-slate-900'} text-right leading-tight">
                             ${b.dose}
                         </span>
                     </button>
@@ -2881,7 +2851,6 @@
         let deferredInstallPrompt = null;
 
         function setupPwaAssets() {
-            // Genera icona PNG ad alta risoluzione (512x512) con il logo ufficiale Ospedale Cannizzaro
             const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
                 <rect width="240" height="240" rx="48" fill="#ffffff"/>
                 <g transform="translate(15, 52)">
@@ -2940,7 +2909,6 @@
             };
             img.src = svgDataUrl;
 
-            // Registra Service Worker inline (funziona su GitHub Pages HTTPS senza file esterni)
             if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
                 const swCode = `
                     const CACHE_NAME = 'cannizzaro-staff-nav-v1';
