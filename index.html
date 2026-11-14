@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Cannizzaro Staff Navigator - Anestesia e Rianimazione</title>
+    
+    <!-- Configurazione PWA & Manifest Dinamico (Single-File) -->
+    <link rel="manifest" id="pwa-manifest">
+    <meta name="theme-color" content="#082f49">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Staff Nav">
+    <link rel="icon" type="image/svg+xml" id="pwa-favicon">
+    <link rel="apple-touch-icon" id="pwa-apple-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome per icone ospedaliere e UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        hospital: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
+        .pulse-ring {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0.4rem);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased pb-20 md:pb-6 select-none sm:select-auto">
+
+    <!-- Header Compatto con Logo Ufficiale A.O.E. Cannizzaro -->
+    <header class="bg-hospital-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-lg md:max-w-4xl mx-auto px-2.5 py-2 flex items-center justify-between gap-2">
+            <!-- Blocco Logo + Titolo -->
+            <div class="flex items-center space-x-2 min-w-0">
+                <div class="bg-white px-1.5 py-1 rounded-lg shadow-sm border border-white/30 shrink-0 flex items-center justify-center">
+                    <!-- Riproduzione vettoriale nitida del Logo Ospedale Cannizzaro Catania -->
+                    <svg viewBox="0 0 210 135" class="h-8 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
+                        <rect x="0" y="56" width="210" height="63" fill="#ffed00"/>
+                        <path d="M 10,20 L 68,25 L 112,22 L 154,12 L 182,4 L 166,35 L 161,68 L 156,95 L 148,108 L 122,95 L 92,80 L 64,65 L 35,45 L 14,32 Z" fill="#d9291c" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M 48,24 L 46,52 M 76,24 L 74,70 M 108,22 L 106,86 M 136,16 L 134,98 M 112,48 L 164,46 M 110,72 L 158,70" stroke="#ffffff" stroke-width="1.3" fill="none"/>
+                        <g transform="translate(158, 52) rotate(24)">
+                            <rect x="-13" y="-13" width="26" height="26" fill="#ffed00"/>
+                        </g>
+                        <g transform="translate(158, 52) rotate(-14)">
+                            <rect x="-11" y="-11" width="22" height="22" fill="#ffffff" stroke="#d9291c" stroke-width="0.6"/>
+                            <text x="0" y="6" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="#0044aa" text-anchor="middle">H</text>
+                        </g>
+                        <text x="5" y="83" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">OSPEDALE</text>
+                        <text x="5" y="109" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">CANNIZZARO</text>
+                        <text x="206" y="114" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="11.5" fill="#111111" text-anchor="end">CATANIA</text>
+                        <text x="105" y="131" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="8.6" fill="#111111" text-anchor="middle" letter-spacing="0.2">AZIENDA OSPEDALIERA PER L'EMERGENZA</text>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="font-extrabold text-sm sm:text-base leading-none tracking-tight truncate">Staff Navigator</h1>
+                    <p class="text-[10px] text-sky-200 font-medium truncate mt-0.5">Anestesia e Rianimazione</p>
+                </div>
+            </div>
+            
+            <!-- Azioni Rapide Header -->
+            <div class="flex items-center space-x-1.5 shrink-0">
+                <button id="installAppBtn" onclick="triggerPwaInstall()" class="hidden items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Installa</span>
+                </button>
+                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-kit-medical"></i>
+                    <span>Urgenze</span>
+                </button>
+                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                    <span class="hidden xs:inline">Vocale</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra di Ricerca Compatta -->
+        <div class="bg-hospital-950/50 px-2.5 py-1.5 border-t border-white/10">
+            <div class="max-w-lg md:max-w-4xl mx-auto relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input 
+                    type="search" 
+                    id="globalSearch" 
+                    oninput="handleSearch()"
+                    placeholder="Reparto, piano, edificio, ingresso o interno..." 
+                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-8 pr-8 py-1.5 rounded-lg text-base sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5">
+                    <i class="fa-solid fa-circle-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigazione Tab Desktop -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[88px] z-30">
+        <div class="max-w-4xl mx-auto px-4 flex space-x-6">
+            <button onclick="switchTab('rubrica')" id="tab-desk-rubrica" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-hospital-600 text-hospital-700 flex items-center space-x-1.5">
+                <i class="fa-solid fa-address-book"></i>
+                <span>Rubrica Interna</span>
+                <span id="rubricaBadgeDesk" class="bg-hospital-50 text-hospital-700 font-bold text-[11px] px-1.5 py-0.2 rounded-full">0</span>
+            </button>
+            <button onclick="switchTab('infusioni')" id="tab-desk-infusioni" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+                <i class="fa-solid fa-syringe"></i>
+                <span>ml/h ↔ Dose</span>
+            </button>
+            <button onclick="switchTab('antibiotici')" id="tab-desk-antibiotici" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+                <i class="fa-solid fa-capsules"></i>
+                <span>Antibiotici & Cl.Cr</span>
+            </button>
+            <button onclick="switchTab('utilita')" id="tab-desk-utilita" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+                <i class="fa-solid fa-compass"></i>
+                <span>Come Arrivare & Percorsi</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Navigazione Tab Mobile Inferiore -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center py-1.5 pb-safe shadow-lg">
+        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-1 px-2 text-hospital-700 font-bold text-[10px] gap-0.5">
+            <i class="fa-solid fa-address-book text-base"></i>
+            <span>Rubrica</span>
+        </button>
+        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-syringe text-base"></i>
+            <span>ml/h ↔ Dose</span>
+        </button>
+        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-capsules text-base"></i>
+            <span>Antibiotici</span>
+        </button>
+        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-1 px-2 text-slate-400 font-medium text-[10px] gap-0.5">
+            <i class="fa-solid fa-compass text-base"></i>
+            <span>Percorsi</span>
+        </button>
+    </nav>
+
+    <!-- Contenuto Principale Ad Alta Densità -->
+    <main class="max-w-lg md:max-w-4xl mx-auto px-2.5 pt-2.5">
+
+        <!-- SEZIONE 1: RUBRICA INTERNA (SCHERMATA PRINCIPALE) -->
+        <section id="view-rubrica" class="space-y-2">
+            
+            <!-- Controlli Rapidi & Filtri Sede -->
+            <div class="flex items-center justify-between gap-1.5 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span>Preferiti</span>
+                    </button>
+                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
+                        Tutti
+                    </button>
+                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
+                        Ed. F2
+                    </button>
+                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
+                        Ed. F3
+                    </button>
+                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
+                        Ed. E
+                    </button>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="askResetRubrica()" class="px-2 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 active:scale-95 transition" title="Ripristina rubrica predefinita">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2.5 py-1.5 rounded-lg text-xs shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuovo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contatore Risultati -->
+            <div class="flex justify-between items-center text-[11px] text-slate-500 px-0.5">
+                <span id="contactsCountLabel" class="font-semibold">Contatti</span>
+                <span class="text-sky-700 font-medium">Tocca il numero per copiare o chiama</span>
+            </div>
+
+            <!-- Lista Contatti Compatta -->
+            <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                <!-- Popolato da JS -->
+            </div>
+
+            <div id="emptyContacts" class="hidden text-center py-8 px-4 bg-white rounded-xl border border-slate-200">
+                <h3 class="font-bold text-slate-700 text-sm">Nessun contatto trovato</h3>
+                <p class="text-xs text-slate-500 mt-1">Modifica la ricerca o azzera i filtri.</p>
+                <button onclick="resetContactFilters()" class="mt-3 bg-hospital-50 text-hospital-700 font-bold px-3.5 py-1.5 rounded-lg text-xs active:scale-95 transition">
+                    Mostra tutti
+                </button>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: CALCOLATORE INFUSIONI (ml/h <-> DOSE) -->
+        <section id="view-infusioni" class="hidden space-y-2.5">
+            <!-- Header Card Calcolatore -->
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2.5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-hospital-100 text-hospital-700 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-syringe"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-slate-900 text-sm leading-tight">Calcolatore Infusioni (ml/h ↔ Dose)</h2>
+                            <p class="text-[10px] text-slate-500">Protocolli diluizione standard & alternativa</p>
+                        </div>
+                    </div>
+                    <button onclick="resetInfusionCalc()" class="text-xs font-semibold text-slate-500 hover:text-hospital-700 px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 active:scale-95">
+                        <i class="fa-solid fa-rotate-left mr-1"></i>Azzera
+                    </button>
+                </div>
+
+                <!-- Selezione Farmaco -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">1. Seleziona Farmaco</label>
+                        <input type="hidden" id="drugSelect" value="noradrenalina">
+                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border-2 border-hospital-600/30 text-slate-900 rounded-xl px-3 py-3 flex items-center justify-between gap-2 text-left shadow-2xs">
+                            <div class="min-w-0 flex-1">
+                                <div id="selectedDrugTitle" class="font-extrabold text-sm sm:text-base text-hospital-900 truncate">Noradrenalina (2 mg/1 ml)</div>
+                                <div id="drugPrepNote" class="text-[11px] text-hospital-700 font-medium truncate mt-0.5"></div>
+                            </div>
+                            <div class="w-9 h-9 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-chevron-down text-sm"></i>
+                            </div>
+                        </button>
+                        <!-- Box Range Posologico Standard -->
+                        <div id="drugRangeBox" class="mt-1.5 bg-amber-50 border border-amber-200/80 rounded-xl px-2.5 py-2 flex items-start gap-2">
+                            <i class="fa-solid fa-notes-medical text-amber-600 text-xs mt-0.5 shrink-0"></i>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-[10px] font-extrabold uppercase tracking-wide text-amber-800">Range Terapeutico Indicativo</div>
+                                <div id="drugRangeText" class="text-xs font-bold text-amber-950 leading-snug mt-0.5">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selezione Diluizione -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">2. Diluizione / Concentrazione</label>
+                        <div id="dilutionButtons" class="flex flex-wrap gap-1.5 mb-1.5">
+                            <!-- Popolato da JS -->
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 items-center bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Quantità tot.</label>
+                                <input type="number" step="any" id="concAmount" oninput="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-base sm:text-xs font-bold text-slate-900">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Unità farmaco</label>
+                                <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-base sm:text-xs font-bold text-slate-900">
+                                    <option value="mg">mg</option>
+                                    <option value="mcg">mcg</option>
+                                    <option value="g">g</option>
+                                    <option value="UI">UI</option>
+                                    <option value="mEq">mEq</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold text-slate-500 uppercase">Volume (ml)</label>
+                                <input type="number" step="any" id="concVolume" oninput="recalcFromCurrentDirection()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-base sm:text-xs font-bold text-slate-900">
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-1 px-0.5">
+                            <span class="text-[10px] text-slate-500">Concentrazione finale:</span>
+                            <span id="finalConcBadge" class="text-[11px] font-mono font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peso Paziente e Unità di Misura Velocità/Dose -->
+                <div class="grid grid-cols-2 gap-2.5 pt-1 border-t border-slate-100">
+                    <div id="weightContainer">
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
+                            <i class="fa-solid fa-weight-scale text-hospital-600 mr-1"></i>Peso Paziente (kg)
+                        </label>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="adjustWeight(-5)" class="w-11 h-11 rounded-xl bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold text-base flex items-center justify-center shrink-0 active:scale-95 transition" aria-label="Riduci peso 5 kg">
+                                <i class="fa-solid fa-minus text-xs"></i>
+                            </button>
+                            <input type="number" step="any" inputmode="decimal" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="w-full h-11 bg-white border border-slate-300 rounded-xl px-2 text-center text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <button type="button" onclick="adjustWeight(5)" class="w-11 h-11 rounded-xl bg-slate-100 active:bg-slate-200 border border-slate-300 text-slate-800 font-extrabold text-base flex items-center justify-center shrink-0 active:scale-95 transition" aria-label="Aumenta peso 5 kg">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 mt-1.5">
+                            <button type="button" onclick="setQuickWeight(60)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">60 kg</button>
+                            <button type="button" onclick="setQuickWeight(70)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">70 kg</button>
+                            <button type="button" onclick="setQuickWeight(80)" class="py-1.5 text-[11px] font-bold bg-slate-100 active:bg-slate-200 rounded-lg text-slate-700">80 kg</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
+                            <i class="fa-solid fa-gauge-high text-hospital-600 mr-1"></i>Unità Dose / Velocità
+                        </label>
+                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-11 bg-hospital-50 border border-hospital-200 text-hospital-900 font-extrabold rounded-xl px-3 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <!-- Popolato dinamicamente in base alla famiglia di unità -->
+                        </select>
+                        <p class="text-[10px] text-slate-500 mt-1.5 px-0.5">Seleziona l'unità clinica desiderata</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box Conversione Bidirezionale (ml/h <-> Dose) con tasti grandi Mobile -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- Input/Output ml/h -->
+                <div class="bg-gradient-to-br from-hospital-900 to-hospital-800 text-white p-3.5 rounded-2xl shadow-sm space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-sky-300">Velocità Pompa</span>
+                        <span class="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-md font-bold">ml / ora</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="stepMlH(-1)" class="w-12 h-12 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 active:scale-95 transition text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci ml/h">
+                            <i class="fa-solid fa-minus text-lg"></i>
+                        </button>
+                        <div class="relative flex-1 min-w-0">
+                            <input type="number" step="any" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full h-12 bg-white text-slate-900 font-mono font-extrabold text-xl rounded-xl pl-3 pr-12 text-center focus:outline-none focus:ring-2 focus:ring-sky-400">
+                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-slate-400 pointer-events-none">ml/h</span>
+                        </div>
+                        <button type="button" onclick="stepMlH(1)" class="w-12 h-12 rounded-xl bg-sky-500 hover:bg-sky-400 active:bg-sky-600 active:scale-95 transition text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta ml/h">
+                            <i class="fa-solid fa-plus text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between gap-1.5 pt-0.5">
+                        <button type="button" onclick="stepMlH(-0.5)" class="flex-1 py-1.5 rounded-lg bg-white/10 active:bg-white/25 text-[11px] font-bold text-sky-100">-0.5 ml/h</button>
+                        <button type="button" onclick="stepMlH(0.5)" class="flex-1 py-1.5 rounded-lg bg-white/10 active:bg-white/25 text-[11px] font-bold text-sky-100">+0.5 ml/h</button>
+                    </div>
+                </div>
+
+                <!-- Input/Output Dose -->
+                <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-3.5 rounded-2xl shadow-sm space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-300">Dose Somministrata</span>
+                        <span id="doseUnitBadge" class="text-[11px] bg-white/15 px-2.5 py-0.5 rounded-md font-bold">mcg/kg/min</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="stepDose(-1)" class="w-12 h-12 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 active:scale-95 transition text-white flex items-center justify-center shrink-0 border border-white/20" aria-label="Diminuisci dose">
+                            <i class="fa-solid fa-minus text-lg"></i>
+                        </button>
+                        <div class="relative flex-1 min-w-0">
+                            <input type="number" step="any" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full h-12 bg-white text-slate-900 font-mono font-extrabold text-xl rounded-xl px-2 text-center focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                        </div>
+                        <button type="button" onclick="stepDose(1)" class="w-12 h-12 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 active:scale-95 transition text-white flex items-center justify-center shrink-0 shadow-sm" aria-label="Aumenta dose">
+                            <i class="fa-solid fa-plus text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-emerald-200 px-0.5">
+                        <span>Regola con i tasti <strong>− / +</strong> o digita</span>
+                        <span id="doseInputUnitLabel" class="font-bold text-white">mcg/kg/min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabella Rapida di Riferimento per la Diluizione Selezionata -->
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-table-list text-hospital-600 mr-1.5"></i>Tabella Rapida (Peso attuale)</h3>
+                    <span id="refTableSubtitle" class="text-[10px] text-slate-500 font-medium">Tocca una riga per applicare</span>
+                </div>
+                <div id="quickRefGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                    <!-- Popolato da JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE -->
+        <section id="view-antibiotici" class="hidden space-y-2.5">
+            <!-- Header Card Protocollo -->
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-capsules"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-slate-900 text-sm leading-tight">Posologia Antibiotici & Cl. Creatinina</h2>
+                            <p class="text-[10px] text-slate-500">Protocollo U.O.C. Anestesia e Rianimazione — A.O.E. Cannizzaro</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full shrink-0">31 Molecole</span>
+                </div>
+
+                <!-- Step 1 & Step 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Selettore Antibiotico -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">1. Seleziona Antibiotico / Antimicrobico</label>
+                        <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
+                        <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border-2 border-indigo-600/30 text-slate-900 rounded-xl px-3 py-3 flex items-center justify-between gap-2 text-left shadow-2xs">
+                            <div class="min-w-0 flex-1">
+                                <div id="selectedAbxTitle" class="font-extrabold text-sm sm:text-base text-indigo-950 truncate">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
+                                <div id="selectedAbxCategory" class="text-[11px] text-indigo-700 font-medium truncate mt-0.5">Beta-lattamico / Inibitore beta-lattamasi</div>
+                            </div>
+                            <div class="w-9 h-9 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-chevron-down text-sm"></i>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Selettore Clearance Creatinina -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-slate-700 uppercase">2. Clearance Creatinina (ml/min)</label>
+                            <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Normofunzione (&gt; 80)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1">
+                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-11 bg-white border border-slate-300 rounded-xl pl-3 pr-14 text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 pointer-events-none">ml/min</span>
+                            </div>
+                            <button type="button" onclick="setQuickCrCl(90)" class="h-11 px-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs active:scale-95 shrink-0">
+                                Normale
+                            </button>
+                        </div>
+                        <!-- Tasti Rapidi Soglie Schema PDF -->
+                        <div class="grid grid-cols-7 gap-1 mt-1.5">
+                            <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">&gt;80</button>
+                            <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">60</button>
+                            <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">50</button>
+                            <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">40</button>
+                            <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">30</button>
+                            <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">15</button>
+                            <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95">≤10</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calcolatore Speciale Creatinina Sierica per AMIKACINA -->
+                <div id="amikacinaCalcBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="text-xs font-extrabold text-amber-900">
+                            <i class="fa-solid fa-calculator text-amber-600 mr-1.5"></i>Regola Amikacina: Creatinina sierica × 9 = Intervallo (ore)
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative w-36">
+                            <input type="number" step="0.1" min="0.1" id="amikacinaCreatInput" value="2.0" oninput="updateAmikacinaInterval()" class="w-full h-10 bg-white border border-amber-300 rounded-lg pl-2.5 pr-12 text-sm font-extrabold text-slate-900">
+                            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">mg/dl</span>
+                        </div>
+                        <div id="amikacinaResultBadge" class="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-extrabold text-amber-950">
+                            Intervallo consigliato: ogni 18 ore
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Risultato Posologia Raccomandata -->
+            <div class="bg-gradient-to-br from-indigo-950 via-hospital-900 to-slate-900 text-white p-4 rounded-2xl shadow-md space-y-3">
+                <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-300">Posologia Raccomandata</span>
+                        <h3 id="abxResultDrugName" class="font-extrabold text-base leading-tight mt-0.5">--</h3>
+                    </div>
+                    <span id="abxResultBandLabel" class="bg-sky-500/25 border border-sky-400/40 text-sky-100 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shrink-0">
+                        Cl.Cr &gt; 80 ml/min
+                    </span>
+                </div>
+
+                <!-- Dose di Carico (se prevista) -->
+                <div id="abxLoadingDoseBox" class="bg-amber-500/15 border border-amber-400/40 rounded-xl p-3 flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Dose di Carico (d.c.)</div>
+                        <div id="abxLoadingDoseText" class="text-xs sm:text-sm font-bold text-white mt-0.5 leading-snug">--</div>
+                    </div>
+                </div>
+
+                <!-- Mantenimento / Aggiustamento Renale -->
+                <div id="abxMaintenanceBox" class="bg-white/10 border border-white/15 rounded-xl p-3 flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-droplet text-xs"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Infusione / Mantenimento per Cl.Cr attuale</div>
+                        <div id="abxMaintenanceText" class="text-sm sm:text-base font-extrabold text-white mt-0.5 leading-snug">--</div>
+                    </div>
+                </div>
+
+                <!-- Nota clinica aggiuntiva -->
+                <div id="abxClinicalNoteBox" class="hidden text-[11px] text-sky-200 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                    <i class="fa-solid fa-circle-info text-sky-300 mr-1.5"></i>
+                    <span id="abxClinicalNoteText"></span>
+                </div>
+            </div>
+
+            <!-- Tabella Completa Fasce Renali per l'Antibiotico Selezionato -->
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-1.5"></i>Schema Completo per Fascia di Cl. Creatinina</h3>
+                    <span class="text-[10px] text-slate-500">Tocca una fascia per selezionarla</span>
+                </div>
+                <div id="abxBandsList" class="space-y-1.5">
+                    <!-- Popolato da JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 3: COME ARRIVARE, ACCESSI E PERCORSI INTERNI -->
+        <section id="view-utilita" class="hidden space-y-2.5">
+            
+            <!-- Banner Sede & Contatti Pubblici Ufficiali -->
+            <div class="bg-gradient-to-r from-hospital-900 to-hospital-800 text-white p-3.5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div>
+                    <div class="flex items-center gap-1.5 text-sky-300 text-[11px] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Sede Principale Presidio Ospedaliero</span>
+                    </div>
+                    <h2 class="font-extrabold text-sm sm:text-base mt-0.5">Via Messina, 829 — 95126 Catania (CT)</h2>
+                    <p class="text-[11px] text-sky-100 mt-0.5">Ingresso centrale Viale Enzo Longo / Via Messina • CUP 800 837 621 • Centralino 095 726 1111</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5 shrink-0">
+                    <a href="tel:800837621" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone text-[10px]"></i>
+                        <span>CUP: 800 837 621</span>
+                    </a>
+                    <a href="tel:0957261111" class="bg-white/15 hover:bg-white/25 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-headset text-[10px]"></i>
+                        <span>095 726 1111</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                
+                <!-- Card Come Arrivare con i Mezzi Pubblici (AMTS / Metro / Treno) -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-bus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Come Arrivare (Mezzi Pubblici)</h3>
+                            <p class="text-[10px] text-slate-500">Linee AMTS, Metropolitana e Stazione FS</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-600">
+                        <li class="flex items-start gap-2">
+                            <span class="bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BRT5</span>
+                            <span><strong>Linea Veloce AMTS BRT5:</strong> collega direttamente la <strong>Stazione Centrale</strong> e il centro città (P.le Sanzio / V.le Ulisse) con capolinea interno <strong>Ospedale Cannizzaro</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-sky-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BUS</span>
+                            <span><strong>Altre linee AMTS:</strong> <strong>948</strong> (P.zza Repubblica - Cannizzaro), <strong>247</strong> (P.le Sanzio - V.le Olimpiadi), <strong>434</strong> (Stazione Centrale - Aci Castello/Aci Trezza), <strong>241</strong> e <strong>935</strong> (fermata Scogliera / Via Messina).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-indigo-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">TRENO</span>
+                            <span><strong>Passante Ferroviario FS:</strong> fermata <strong>Catania Picanello</strong> (circa 900m / 12 min a piedi) oppure Stazione Centrale + bus BRT5.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card Accessi, Auto & Parcheggi -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-square-parking"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Accessi, Auto e Parcheggi</h3>
+                            <p class="text-[10px] text-slate-500">Viabilità interna e sosta utenti/personale</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-600">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-road text-blue-600 mt-0.5 shrink-0"></i>
+                            <span><strong>In Auto (Tangenziale / A18):</strong> uscita <strong>Catania Nord / San Gregorio - Canalicchio</strong>, proseguire verso Ognina / Via Messina 829 (rotatoria Viale Enzo Longo).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-car text-blue-600 mt-0.5 shrink-0"></i>
+                            <span><strong>Parcheggi & Sosta:</strong> disponibile <strong>Parcheggio Multipiano</strong> interno e stalli esterni nell'<strong>Area C</strong> (pagamento anche tramite app EasyPark).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-truck-medical text-red-600 mt-0.5 shrink-0"></i>
+                            <span><strong>Accesso Emergenza:</strong> rampa dedicata <strong>Pronto Soccorso / Camera Calda</strong> all'Edificio F1 (Piano Terra) ed Elidromo aziendale.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card Guida Mappa Edifici Ufficiali -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Mappa e Ubicazione Edifici Ospedalieri (Tabella Ufficiale)</h3>
+                            <p class="text-[10px] text-slate-500">Riepilogo alfabetico delle lettere degli edifici</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-700">
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F1:</strong> Pronto Soccorso, OBI, Emergenza</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F2:</strong> Monoblocco (Chirurgia, Urologia, Nefrologia)</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F3:</strong> Torre Diagnostica (Ustioni, Pediatria, Lab)</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. E:</strong> Materno-Infantile, Ostetricia, Ortopedia</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. L (L1-L7):</strong> Medicina, Oncologia, Pneumologia, Infettive</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. S:</strong> Unità Spinale (USU) & UTIR</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. Q:</strong> Anatomia Patologica, Diabetologia</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. R, G, M1, N2:</strong> Radioterapia, Riabilitazione, Direzione, 118</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: SELETTORE FARMACI MOBILE-FRIENDLY -->
+    <div id="drugPickerModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] pb-safe">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-prescription-bottle-medical text-sky-300"></i>
+                    <h3 class="font-bold text-sm sm:text-base">Seleziona Farmaco</h3>
+                </div>
+                <button type="button" onclick="closeDrugPickerModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-3 bg-slate-100 border-b border-slate-200">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="search" id="drugSearchInput" oninput="renderDrugPickerList()" placeholder="Cerca farmaco (es. Noradrenalina, Propofol)..." class="w-full h-11 bg-white border border-slate-300 rounded-xl pl-10 pr-4 text-base text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                </div>
+            </div>
+            <div id="drugPickerList" class="p-2.5 overflow-y-auto space-y-1.5 flex-1 bg-slate-50">
+                <!-- Popolato da JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SELETTORE ANTIBIOTICI MOBILE-FRIENDLY -->
+    <div id="abxPickerModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] pb-safe">
+            <div class="bg-indigo-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-capsules text-indigo-300"></i>
+                    <h3 class="font-bold text-sm sm:text-base">Seleziona Antibiotico</h3>
+                </div>
+                <button type="button" onclick="closeAbxPickerModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-3 bg-slate-100 border-b border-slate-200">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="search" id="abxSearchInput" oninput="renderAbxPickerList()" placeholder="Cerca antibiotico (es. Meropenem, Tazocin, Vancomicina)..." class="w-full h-11 bg-white border border-slate-300 rounded-xl pl-10 pr-4 text-base text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            <div id="abxPickerList" class="p-2.5 overflow-y-auto space-y-1.5 flex-1 bg-slate-50">
+                <!-- Popolato da JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EMERGENZE & GUARDIE ATTIVE -->
+    <div id="emergencyModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] pb-safe">
+            <div class="bg-red-700 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-truck-medical"></i>
+                    <h3 class="font-bold text-sm sm:text-base">Numeri Rapidi Emergenza</h3>
+                </div>
+                <button onclick="closeEmergencyModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="emergencyList" class="p-3 overflow-y-auto space-y-1.5 bg-slate-50">
+                <!-- Popolato da JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFERMA RIPRISTINO RUBRICA -->
+    <div id="confirmResetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-2xl shadow-xl p-4 space-y-3">
+            <div class="flex items-center gap-2 text-slate-800">
+                <i class="fa-solid fa-rotate-left text-hospital-700"></i>
+                <h3 class="font-bold text-sm">Ripristinare la rubrica?</h3>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Verranno ricaricati i contatti predefiniti dell'ospedale e rimossi eventuali interni personalizzati.
+            </p>
+            <div class="flex justify-end gap-2 pt-1">
+                <button onclick="closeConfirmResetModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
+                <button onclick="confirmResetRubrica()" class="px-3.5 py-1.5 text-xs font-bold bg-hospital-700 text-white rounded-lg">Ripristina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ASSISTENTE VOCALE & CHAT AI -->
+    <div id="assistantModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] pb-safe">
+            
+            <!-- Header Modal -->
+            <div class="bg-hospital-800 text-white px-3.5 py-2.5 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+                        <i class="fa-solid fa-robot text-sky-300 text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Assistente Vocale</h3>
+                        <p class="text-[10px] text-sky-200">Chiedi reparto, piano, autobus o numero interno</p>
+                    </div>
+                </div>
+                <button onclick="toggleAssistantModal()" class="text-white/80 hover:text-white p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Area Messaggi Chat -->
+            <div id="chatMessages" class="p-3 overflow-y-auto space-y-2.5 flex-1 bg-slate-50 min-h-[200px]">
+                <div class="flex items-start gap-2">
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        <i class="fa-solid fa-staff-snake"></i>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 space-y-2">
+                        <p>Chiedi a voce o tocca un suggerimento rapido:</p>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="processAssistantQuery('Dove si trova Oncologia Medica?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Oncologia?</button>
+                            <button onclick="processAssistantQuery('Come arrivare con autobus AMTS?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Bus AMTS?</button>
+                            <button onclick="processAssistantQuery('Dove si trova Neurochirurgia?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Neurochirurgia?</button>
+                            <button onclick="processAssistantQuery('Numero CUP')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Numero CUP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controlli Input Vocale e Testuale -->
+            <div class="p-3 bg-white border-t border-slate-200 space-y-2">
+                <div class="flex flex-col items-center justify-center">
+                    <button id="micBtn" onclick="toggleVoiceRecognition()" class="w-12 h-12 rounded-full bg-hospital-600 active:scale-95 text-white flex items-center justify-center text-lg shadow-md transition-all">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <span id="micStatus" class="text-[11px] font-semibold text-slate-500 mt-1">Tocca il microfono per parlare</span>
+                </div>
+
+                <form onsubmit="handleTextAssistantSubmit(event)" class="flex items-center gap-1.5">
+                    <input type="text" id="assistantTextInput" placeholder="Scrivi qui la domanda..." class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-500">
+                    <button type="submit" class="bg-hospital-700 active:bg-hospital-800 text-white py-2 px-3.5 rounded-lg text-xs font-bold shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AGGIUNGI CONTATTO IN RUBRICA -->
+    <div id="addContactModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden pb-safe">
+            <div class="bg-hospital-800 text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-bold text-sm">Aggiungi Nuovo Interno</h3>
+                <button onclick="closeAddContactModal()" class="text-white/80 p-1"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <form onsubmit="saveNewContact(event)" class="p-3.5 space-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Reparto / Servizio *</label>
+                    <input type="text" id="newContactName" required placeholder="Es. Guardiola Cardiologia" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Interno / Tel *</label>
+                        <input type="text" id="newContactPhone" required placeholder="Es. 3153" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Edificio / Piano</label>
+                        <input type="text" id="newContactLoc" placeholder="Es. F2 - 3° Piano" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Note aggiuntive</label>
+                    <input type="text" id="newContactNote" placeholder="Es. Attivo H24, Caposala..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                </div>
+                <div class="flex justify-end gap-2 pt-1">
+                    <button type="button" onclick="closeAddContactModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-lg shadow">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifica Copia -->
+    <div id="toast" class="fixed bottom-16 md:bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-semibold px-3.5 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity z-50 flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Copiato negli appunti</span>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATABASE REPARTI & PIANI
+        // ==========================================
+        const departmentsData = [
+            { id: 31, name: "Neurologia & Stroke Unit", building: "F2", floor: "9° Piano", category: "Area Neurologica", accessNote: "Ascensori Torre F2 fino al 9° piano (area ampliata Centro Gestione Emergenze).", matchTags: ["neurologia"], keywords: "neurologia ictus stroke unit epilessia sclerosi f2 nono piano" },
+            { id: 1, name: "Neurochirurgia (NCH)", building: "F2", floor: "8° Piano", category: "Chirurgia Specialistica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori centrali fino all'8° piano.", matchTags: ["neurochirurgia", "nch"], keywords: "neurochirurgia nch cervello colonna" },
+            { id: 2, name: "Nefrologia - Dialisi", building: "F2", floor: "7° Piano", category: "Area Medica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 7° piano.", matchTags: ["nefrologia", "dialisi"], keywords: "nefrologia dialisi reni" },
+            { id: 3, name: "Chirurgia Toracica & Chirurgia Vascolare", building: "F2", floor: "6° Piano", category: "Chirurgia", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 6° piano.", matchTags: ["chirurgia toracica", "chirurgia vascolare"], keywords: "toracica vascolare polmoni vene arterie" },
+            { id: 4, name: "Urologia", building: "F2", floor: "5° Piano", category: "Chirurgia", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 5° piano.", matchTags: ["urologia"], keywords: "urologia vie urinarie" },
+            { id: 5, name: "Chirurgia Generale & Mininvasiva Epatobiliare - Ecografia", building: "F2", floor: "4° Piano", category: "Chirurgia & Diagnostica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 4° piano.", matchTags: ["chirurgia generale", "chirurgia mininvasiva"], keywords: "chirurgia generale mininvasiva epatobiliare bariatrica ecografia" },
+            { id: 6, name: "Cardiologia (con annotazione MCAU)", building: "F2", floor: "3° Piano", category: "Area Cuore", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 3° piano.", matchTags: ["cardiologia"], keywords: "cardiologia cuore mcau" },
+            { id: 7, name: "Emodinamica - U.T.I.C.", building: "F2", floor: "2° Piano", category: "Terapia Intensiva Cardiologica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 2° piano.", matchTags: ["emodinamica", "utic"], keywords: "emodinamica utic coronarica infarto" },
+            { id: 8, name: "Medicina Trasfusionale (SIMT) - Endourologia - Endoscopia", building: "F2", floor: "1° Piano", category: "Servizi & Diagnostica", accessNote: "Ingresso principale Edificio F2 (Piano 0), scale o ascensori al 1° piano. Donatori dal lunedì al sabato 8:30-12:00.", matchTags: ["sit", "trasfusionale", "endoscopia"], keywords: "trasfusionale sit simt sangue donatori endourologia endoscopia gastroenterologia" },
+            { id: 9, name: "Portineria - CUP - Ticket - URP - TIPO (Rianimazione)", building: "F2", floor: "Piano 0", category: "Accettazione & Rianimazione", accessNote: "Accesso diretto dall'ingresso centrale del presidio (Viale Enzo Longo / Via Messina 829). Collegato internamente con F3.", matchTags: ["tipo", "rianimazione", "anestesisti", "centralino", "cup"], keywords: "uscita portineria cup ticket cassa urp tipo rianimazione ingresso centrale" },
+            { id: 10, name: "Pronto Soccorso (Triage) - Ambulatori PS - Posto Polizia", building: "F2", floor: "Piano -1", category: "Emergenza", accessNote: "Accesso dedicato rampa Pronto Soccorso / Camera Calda oppure tramite scale/ascensori interni da F2 Piano 0.", matchTags: ["pronto soccorso", "polizia"], keywords: "pronto soccorso triage ps ambulatori polizia" },
+            { id: 11, name: "Medicina Nucleare - PET - Sterilizzazione", building: "F2", floor: "Piano -2", category: "Diagnostica & Servizi", accessNote: "Ascensori Edificio F2 fino al piano -2. Collegato al piano -2 di F3.", matchTags: ["medicina nucleare", "pet"], keywords: "medicina nucleare pet sterilizzazione plo" },
+
+            { id: 12, name: "Centro Grandi Ustionati (CGU)", building: "F3", floor: "7° Piano", category: "Alta Specialità", accessNote: "Raggiungibile dal Piano 0 di F2 tramite corridoio di collegamento verso F3, poi ascensori F3 al 7° piano.", matchTags: ["cgu", "grandi ustionati"], keywords: "grandi ustionati cgu ustioni" },
+            { id: 13, name: "Chirurgia Plastica & Ricostruttiva", building: "F3", floor: "6° Piano", category: "Chirurgia", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 6° piano.", matchTags: ["chirurgia plastica"], keywords: "chirurgia plastica ricostruttiva" },
+            { id: 14, name: "Oculistica - Otorinolaringoiatria (ORL)", building: "F3", floor: "5° Piano", category: "Testa-Collo", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 5° piano.", matchTags: ["oculistica", "orl"], keywords: "oculistica occhi otorino otorinolaringoiatria orl" },
+            { id: 15, name: "MCAU (Medicina e Chirurgia d'Accettazione e Urgenza)", building: "F3", floor: "4° Piano", category: "Emergenza-Urgenza", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 4° piano.", matchTags: ["mcau"], keywords: "mcau accettazione urgenza medicina" },
+            { id: 16, name: "Pediatria", building: "F3", floor: "3° Piano", category: "Area Pediatrica", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 3° piano.", matchTags: ["pediatria"], keywords: "pediatria bambini" },
+            { id: 17, name: "Senologia (Breast Unit) - Intramoenia (ALPI)", building: "F3", floor: "2° Piano", category: "Specialistica & Libera Professione", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 2° piano.", matchTags: ["senologia", "intramoenia"], keywords: "senologia mammella intramoenia alpi" },
+            { id: 18, name: "Laboratorio Analisi - Medicina Protetta - Dip. Immagini / Neuroradiologia", building: "F3", floor: "1° Piano", category: "Diagnostica & Radiologia", accessNote: "Ingresso F3 Piano 0 (collegato con F2), scale o ascensori al 1° piano.", matchTags: ["laboratorio", "radiologia", "neuroradiologia", "risonanza", "medicina protetta"], keywords: "laboratorio analisi medicina protetta immagini neuroradiologia radiologia tac rmn" },
+            { id: 19, name: "Ambulatori Specialistici - Centro Prelievi - Collegamento F2", building: "F3", floor: "Piano 0", category: "Accesso & Prelievi", accessNote: "Accesso diretto dal piazzale interno o dal corridoio coperto di collegamento con Edificio F2 Piano 0.", matchTags: ["laboratorio"], keywords: "uscita ambulatori laboratorio prelievi collegamento f2" },
+            { id: 20, name: "Farmacia Ospedaliera - Pronto Soccorso O.B.I.", building: "F3", floor: "Piano -1", category: "Emergenza & Farmacia", accessNote: "Collegato al Pronto Soccorso (F2 Piano -1) e accessibile dagli ascensori F3 al piano -1.", matchTags: ["farmacia", "pronto soccorso"], keywords: "farmacia pronto soccorso obi osservazione breve" },
+            { id: 21, name: "Camera Iperbarica - Gamma Knife", building: "F3", floor: "Piano -2", category: "Terapie Specialistiche", accessNote: "Ascensori F3 fino al piano -2 oppure rampa esterna dedicata lato F3.", matchTags: ["camera iperbarica", "gamma knife"], keywords: "camera iperbarica gamma knife radiochirurgia" },
+
+            { id: 22, name: "Neonatologia e Terapia Intensiva Neonatale (UTIN)", building: "E", floor: "1° Piano", category: "Materno-Infantile", accessNote: "Padiglione Edificio E (area Dipartimento Materno-Infantile), salire al 1° piano.", matchTags: ["neonatologia", "utin"], keywords: "neonatologia utin neonati prematuri" },
+            { id: 23, name: "Ostetricia e Ginecologia - Blocco Parto", building: "E", floor: "1° Piano (e Piano 0)", category: "Materno-Infantile", accessNote: "Padiglione Edificio E (area Dipartimento Materno-Infantile), piano terra e 1° piano.", matchTags: ["ginecologia", "ostetricia"], keywords: "ostetricia ginecologia parto sala parto" },
+            { id: 30, name: "Ortopedia e Traumatologia", building: "E", floor: "4° Piano (Ambulatori al Piano 0)", category: "Chirurgia & Traumatologia", accessNote: "Edificio E (stesso padiglione di Ginecologia), reparto al 4° piano e ambulatori al Piano 0.", matchTags: ["ortopedia"], keywords: "ortopedia traumatologia fratture gessi edificio e ginecologia quarto piano" },
+            { id: 26, name: "Servizio PRES.CEL.T.O. (Crioconservazione / PMA)", building: "E", floor: "Piano -1", category: "Materno-Infantile & Fertilità", accessNote: "Padiglione Edificio E, livello -1 (pma@ospedale-cannizzaro.it).", matchTags: ["pma", "prescelto", "ginecologia"], keywords: "prescelto crioconservazione pma fertilita oncofertilita" },
+
+            { id: 27, name: "Oncologia Medica", building: "L", floor: "Edificio L4 - 1° Piano", category: "Area Oncologica", accessNote: "Padiglione Edificio L4, 1° piano (area padiglioni interni a est del monoblocco).", matchTags: ["oncologia"], keywords: "oncologia medica tumori chemioterapia scandurra edificio l4" },
+            { id: 37, name: "Medicina Interna", building: "L", floor: "Edificio L - Ingresso L7", category: "Area Medica", accessNote: "Padiglione Edificio L, accesso dall'ingresso L7.", matchTags: ["medicina interna"], keywords: "medicina interna colaci malatino ingresso l7 edificio l" },
+
+            { id: 32, name: "Pneumologia (Malattie Apparato Respiratorio) & UTIR", building: "CR", floor: "3° Piano (UTIR 2° Piano)", category: "Area Pneumologica", accessNote: "Padiglione Cassa di Risparmio, 3° piano (UTIR al 2° piano dello stesso edificio).", matchTags: ["pneumologia", "utir"], keywords: "pneumologia apparato respiratorio allergologia utir cassa di risparmio" },
+
+            { id: 24, name: "Unità Spinale Unipolare (USU)", building: "S", floor: "Edificio S (Piani 0, 1, 4)", category: "Riabilitazione Midollare", accessNote: "Edificio S (Unità Spinale Unipolare), padiglione dedicato con biblioteca al piano terra.", matchTags: ["usu", "unità spinale"], keywords: "unita spinale usu midollo riabilitazione edificio s" },
+            { id: 35, name: "Terapia del Dolore & Cure Palliative", building: "S", floor: "Piano -1", category: "Terapia Antalgica", accessNote: "Edificio S (stesso edificio dell'USU), livello -1 (Terapia Antalgica).", matchTags: ["terapia del dolore"], keywords: "terapia dolore antalgica edificio s piano meno uno" },
+            { id: 25, name: "Malattie Infettive & Stewardship Antimicrobica", building: "INF", floor: "Padiglione Infettivi", category: "Area Infettivologica", accessNote: "Padiglione isolato Malattie Infettive con percorsi dedicati.", matchTags: ["malattie infettive"], keywords: "malattie infettive mdr isolamento" },
+
+            { id: 28, name: "Radioterapia Oncologica", building: "R", floor: "Piano 0", category: "Area Oncologica", accessNote: "Padiglione Edificio R, Piano Terra (accesso facilitato senza barriere).", matchTags: ["radioterapia"], keywords: "radioterapia edificio r marletta" },
+            { id: 29, name: "Geriatria", building: "I", floor: "Piano 0", category: "Area Medica", accessNote: "Padiglione Edificio I, Piano Terra.", matchTags: ["geriatria"], keywords: "geriatria anziani edificio i" },
+
+            { id: 33, name: "Psichiatria (SPDC)", building: "AREE", floor: "Area Medica", accessNote: "Servizio Psichiatrico di Diagnosi e Cura, seguire segnaletica SPDC.", matchTags: ["psichiatria"], keywords: "psichiatria spdc salute mentale" },
+            { id: 34, name: "Endocrinologia e Malattie del Ricambio", building: "AREE", floor: "Area Medica", accessNote: "Seguire segnaletica interna per UOC Endocrinologia.", matchTags: ["endocrinologia"], keywords: "endocrinologia metabolismo diabete tiroide" },
+            { id: 36, name: "Recupero e Riabilitazione Funzionale", building: "AREE", floor: "Area Riabilitativa", category: "Riabilitazione", accessNote: "Palestre e ambulatori di fisioterapia, area riabilitativa.", matchTags: ["riabilitazione"], keywords: "riabilitazione fisioterapia recupero funzionale" }
+        ];
+
+        // ==========================================
+        // RUBRICA TELEFONICA PREDEFINITA
+        // ==========================================
+        const defaultContactsData = [
+            { id: 100, name: "Centralino Ospedaliero / Portineria", phone: "2107 / 095-7261111", location: "Edificio F2 - Piano 0", note: "Centralino generale esterno 095 7262107" },
+            { id: 195, name: "CUP (Centro Unificato Prenotazioni)", phone: "800-837621 / 2182", location: "Edificio F2 - Piano 0", note: "Numero Verde 800 837 621 | Tel 095 7262182" },
+            { id: 101, name: "Ambulanza - Autisti (Interni)", phone: "4895 / 4896", location: "Emergenza", note: "Fax: 3034", emergency: true },
+            { id: 102, name: "Ambulanza - Cellulari Autisti", phone: "3336129782 / 3666176486", location: "Emergenza", note: "Cellulari servizio" },
+            { id: 103, name: "Anatomia Patologica", phone: "2388 / 2385", location: "Servizi Diagnostici", note: "" },
+            { id: 104, name: "Anestesisti - Guardia 1", phone: "4830", location: "Edificio F2 - Piano 0", note: "Guardia Anestesiologica", emergency: true },
+            { id: 105, name: "Anestesisti - Guardia 2", phone: "4831", location: "Edificio F2 - Piano 0", note: "Guardia Anestesiologica", emergency: true },
+            { id: 106, name: "Anestesisti - Guardia Ostetrica", phone: "4832", location: "Edificio E", note: "Blocco Parto", emergency: true },
+            { id: 107, name: "Ambulatorio Anestesia", phone: "4886", location: "Edificio F2 - Piano 0", note: "" },
+            { id: 108, name: "Camera Iperbarica - Reparto", phone: "4611 / 4204", location: "Edificio F3 - Piano -2", note: "Reperibilità / 911 Max" },
+            { id: 109, name: "Cardiologia - UTIC", phone: "3111 / 3118", location: "Edificio F2 - 2° Piano", note: "Terapia Intensiva Coronarica", emergency: true },
+            { id: 110, name: "Cardiologia - Medico Consulenza", phone: "3052 / 3046 / 3049", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 111, name: "Cardiologia - Infermiera Ambulatori", phone: "4747", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 112, name: "Cardiologia - Reparto / Infermeria", phone: "3153 / 3143", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 113, name: "Cardiologia - Caposala", phone: "3154", location: "Edificio F2 - 3° Piano", note: "Portatile Caposala: 4715" },
+            { id: 114, name: "CED (Centro Elaborazione Dati / Informatica)", phone: "2727 / 2163 / 4041", location: "Servizi Tecnici", note: "Assistenza IT" },
+            { id: 115, name: "CGU (Centro Grandi Ustionati) - Medico", phone: "4539 / 4973", location: "Edificio F3 - 7° Piano", note: "" },
+            { id: 116, name: "CGU (Centro Grandi Ustionati) - Reparto", phone: "4515 / 4514", location: "Edificio F3 - 7° Piano", note: "Fax: 4541 | Caposala: 4970" },
+            { id: 117, name: "Chirurgia Generale - Medico", phone: "4958", location: "Edificio F2 - 4° Piano", note: "" },
+            { id: 118, name: "Chirurgia Generale - Reparto", phone: "3233", location: "Edificio F2 - 4° Piano", note: "Dir. FF: Dott. G. La Greca" },
+            { id: 196, name: "Chirurgia Mininvasiva Epatobiliare", phone: "3586", location: "Edificio F2 - 4° Piano", note: "Resp. Dott. G. La Greca" },
+            { id: 119, name: "Chirurgia Plastica - Medico", phone: "4809 / 4953", location: "Edificio F3 - 6° Piano", note: "" },
+            { id: 120, name: "Chirurgia Plastica - Reparto", phone: "4862", location: "Edificio F3 - 6° Piano", note: "Plastica Oncologica: 4477" },
+            { id: 121, name: "Chirurgia Toracica - Medico", phone: "4807 / 6822", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 122, name: "Chirurgia Toracica - Infermeria", phone: "3317 / 6884", location: "Edificio F2 - 6° Piano", note: "Fax: 3308" },
+            { id: 123, name: "Chirurgia Toracica - Numeri Brevi Medici", phone: "6822 / 6814", location: "Edificio F2 - 6° Piano", note: "Petino 6822, Messina 6814, Tornambene 6817, Strano 6826, Lombardo 6819, Galatà 6813" },
+            { id: 124, name: "Chirurgia Vascolare - Medico / Ambulatorio", phone: "3318 / 3023", location: "Edificio F2 - 6° Piano", note: "Ambulatorio: 3023" },
+            { id: 125, name: "Chirurgia Vascolare - Sala Operatoria (S.O.)", phone: "3109", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 126, name: "Chirurgia Vascolare - Reparto", phone: "3341 / 3342", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 127, name: "Emodinamica - Reparto", phone: "3119 / 4868", location: "Edificio F2 - 2° Piano", note: "" },
+            { id: 128, name: "Endocrinologia e Malattie del Ricambio", phone: "4857 / 2429 / 2403", location: "Area Medica", note: "Segreteria UOC: 2403" },
+            { id: 129, name: "Endoscopia - Gastroenterologia d'Urgenza", phone: "4858 / 3104", location: "Edificio F2 - 1° Piano", note: "Fax (richiesta PEG): 3105" },
+            { id: 130, name: "Farmacia Ospedaliera", phone: "4216 / 4207", location: "Edificio F3 - Piano -1", note: "Magazzino: 4528" },
+            { id: 197, name: "Gamma Knife - Radiochirurgia", phone: "4939", location: "Edificio F3 - Piano -2", note: "Resp. Dott. F. Inserra" },
+            { id: 198, name: "Geriatria - Reparto", phone: "3055", location: "Edificio I - Piano 0", note: "Tel. esterno: 095 7263055" },
+            { id: 131, name: "Ginecologia e Ostetricia - Reparto", phone: "2262 / 2263 / 2266", location: "Edificio E - 1° Piano", note: "Dir. Prof. P. Scollo" },
+            { id: 132, name: "Ginecologia e Ostetricia - Medico", phone: "2277 / 4724", location: "Edificio E - 1° Piano", note: "Medico Ostetricia (Sala Parto): 4827" },
+            { id: 133, name: "Intramoenia (ALPI) - Reparto", phone: "4245", location: "Edificio F3 - 2° Piano", note: "" },
+            { id: 134, name: "Laboratorio Analisi - Urgenze", phone: "4224", location: "Edificio F3 - 1° Piano", note: "", emergency: true },
+            { id: 135, name: "Laboratorio - Microbiologia", phone: "4243", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 136, name: "Laboratorio - Tamponi", phone: "4269", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 137, name: "Malattie Infettive - Medico", phone: "4916", location: "Padiglione Infettivi", note: "" },
+            { id: 138, name: "Malattie Infettive - MDR / Stewardship", phone: "4847 / 2551 / 2550", location: "Padiglione Infettivi", note: "UOS MDR: 2550" },
+            { id: 139, name: "Malattie Infettive - Reparto", phone: "2004 / 2005", location: "Padiglione Infettivi", note: "" },
+            { id: 140, name: "Manutenzione / Elettricisti", phone: "2308", location: "Servizi Tecnici", note: "Num. Verde Elettricisti: 800422270" },
+            { id: 141, name: "MCAU - Reparto", phone: "4872 / 4388 / 4716", location: "Edificio F3 - 4° Piano", note: "Medicina e Chirurgia Accettazione Urgenza" },
+            { id: 142, name: "Medicina Interna - Reparto", phone: "2593 / 2599", location: "Edificio L - Ingresso L7", note: "Dir. FF: Prof. M. Colaci" },
+            { id: 143, name: "Medicina Interna - Medico", phone: "4727 / 4746", location: "Edificio L - Ingresso L7", note: "" },
+            { id: 144, name: "Medicina Protetta", phone: "957122468 / 4901", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 145, name: "Medicina Nucleare", phone: "3005 / 3002", location: "Edificio F2 - Piano -2", note: "" },
+            { id: 146, name: "Neurochirurgia (NCH) - Medico", phone: "4707", location: "Edificio F2 - 8° Piano", note: "" },
+            { id: 147, name: "Neurochirurgia (NCH) - Reparto", phone: "3406 / 3430", location: "Edificio F2 - 8° Piano", note: "" },
+            { id: 148, name: "Nefrologia - Dialisi", phone: "3376 / 3372", location: "Edificio F2 - 7° Piano", note: "" },
+            { id: 149, name: "Nefrologia - Medico / Reparto", phone: "4808 / 3369", location: "Edificio F2 - 7° Piano", note: "Medico: 4808 | Reparto: 3369" },
+            { id: 150, name: "Neonatologia - Reparto", phone: "2217 / 2216", location: "Edificio E - 1° Piano", note: "" },
+            { id: 151, name: "UTIN (Terapia Intensiva Neonatale)", phone: "2224 / 2217", location: "Edificio E - 1° Piano", note: "" },
+            { id: 152, name: "Neurologia - Reparto", phone: "3436 / 4378", location: "Edificio F2 - 9° Piano", note: "Caposala: 3470 | Dir. Dott. D. Maimone" },
+            { id: 153, name: "Neurologia - Medico", phone: "4923 / 3436 / 3469 / 4405", location: "Edificio F2 - 9° Piano", note: "" },
+            { id: 154, name: "Oculistica / ORL - Reparto", phone: "4456", location: "Edificio F3 - 5° Piano", note: "" },
+            { id: 155, name: "Oculistica - Medico / Ambulatorio", phone: "4432 / 2426 / 2425", location: "Edificio F3 - 5° Piano", note: "Oculista: 4432 | Amb: 2426-2425" },
+            { id: 156, name: "ORL - Ambulatorio", phone: "4219", location: "Edificio F3 - 5° Piano", note: "" },
+            { id: 157, name: "Odontoiatria - Reparto", phone: "2032 / 4927 / 2030", location: "Area Specialistica", note: "" },
+            { id: 199, name: "Oncologia Medica - Segreteria / UOC", phone: "2165 / 4135", location: "Edificio L4 - 1° Piano", note: "Dir. Dott.ssa G. Scandurra | oncologia@ospedale-cannizzaro.it" },
+            { id: 158, name: "Ortopedia - Reparto", phone: "2252 / 2235", location: "Area Chirurgica", note: "Olga: 4975 | Fax: 2879" },
+            { id: 159, name: "Ortopedia - Medico (Cellulare)", phone: "3336129738", location: "Area Chirurgica", note: "Reperibilità/Guardia" },
+            { id: 160, name: "Pediatria - Reparto / Medico", phone: "4339 / 4335 / 4325", location: "Edificio F3 - 3° Piano", note: "Reparto: 4339 | Medico: 4335 | Dir: 4325" },
+            { id: 200, name: "Pneumologia - UOC Malattie Apparato Respiratorio", phone: "2602", location: "Pad. Cassa di Risparmio - 3° Piano", note: "Dir. Dott. S. M. Distefano" },
+            { id: 161, name: "Pneumologia COVID - Reparto", phone: "2609 / 2610 / 2611 / 2612 / 2613", location: "Pad. Cassa di Risparmio", note: "" },
+            { id: 162, name: "Posto Polizia Ospedale", phone: "4933", location: "Pronto Soccorso / F2", note: "Polizia di Stato", emergency: true },
+            { id: 163, name: "Pronto Soccorso - Reparto", phone: "3548 / 3638 / 3824", location: "Edificio F2/F3 - Piano -1", note: "", emergency: true },
+            { id: 164, name: "Pronto Soccorso - Triage", phone: "3820", location: "Edificio F2 - Piano -1", note: "", emergency: true },
+            { id: 165, name: "Pronto Soccorso Pediatrico", phone: "3823 / 3009 / 3203", location: "Area Emergenza", note: "" },
+            { id: 166, name: "Psichiatria (SPDC)", phone: "2515 / 2500", location: "Area Medica", note: "" },
+            { id: 167, name: "Radiologia - PET", phone: "3596 / 3003", location: "Edificio F2 - Piano -2", note: "Medicina Nucleare / PET" },
+            { id: 168, name: "Radiologia - Angiografia", phone: "4560 / 4483", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 169, name: "Radiologia - Generale / Diagnostica Immagini", phone: "3038 / 4556 / 3526 / 4569", location: "Edificio F3 - 1° Piano", note: "Segreteria UOC: 4569" },
+            { id: 170, name: "Radiologia - TAC Urgenze / Tecnico TAC", phone: "4936 / 4888 / 4848", location: "Edificio F3 - 1° Piano", note: "Tecnico TAC: 4936" },
+            { id: 201, name: "Radioterapia Oncologica", phone: "4015 / 4018", location: "Edificio R - Piano 0", note: "Fax: 4617 | radioterapia@ospedale-cannizzaro.it" },
+            { id: 202, name: "Recupero e Riabilitazione Funzionale", phone: "2442", location: "Area Riabilitativa", note: "Resp. Dott.ssa R. Lopes" },
+            { id: 171, name: "Neuroradiologia", phone: "4741 / 4865 / 4835 / 4551", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 172, name: "Risonanza Magnetica (RMN)", phone: "4288", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 173, name: "TIPO (Terapia Intensiva Polivalente)", phone: "4996", location: "Edificio F2 - Piano 0", note: "Ausiliari TIPO: 4094", emergency: true },
+            { id: 174, name: "Rianimazione COVID", phone: "3660", location: "Area Intensiva", note: "" },
+            { id: 175, name: "Rianimazione - Sala", phone: "3534 / 3068", location: "Edificio F2 - Piano 0", note: "Fax Rianimazione: 3071", emergency: true },
+            { id: 176, name: "Rianimazione - Stanza Denaro / Stanza 2", phone: "3066 / 3065", location: "Edificio F2 - Piano 0", note: "Stanza Denaro: 3066 | Stanza 2: 3065" },
+            { id: 177, name: "Rianimazione - Ausiliari (Ria / TIPO)", phone: "4846 / 4094", location: "Edificio F2 - Piano 0", note: "Ria Ausiliari: 4846 | Ausiliari TIPO: 4094" },
+            { id: 178, name: "Senologia - Reparto / Segreteria", phone: "4261 / 4519 / 2805", location: "Edificio F3 - 2° Piano", note: "Fax: 2205 | Dir. Dott.ssa F. Catalano" },
+            { id: 179, name: "SIT - Centro Trasfusionale / Donatori", phone: "3077 / 3087 / 3081 / 3084", location: "Edificio F2 - 1° Piano", note: "Prenotazione aferesi: 3084 | simt@ospedale-cannizzaro.it" },
+            { id: 180, name: "Sala Operatoria - Gruppo B (Chirurgie)", phone: "3110", location: "Blocco Operatorio", note: "" },
+            { id: 181, name: "Sala Operatoria - Gruppo A (Ort./Ginecol.)", phone: "4905 / 2211", location: "Blocco Operatorio", note: "" },
+            { id: 182, name: "Sala Operatoria - Gruppo PS (Urgenze)", phone: "3016", location: "Blocco Operatorio Emergenza", note: "" },
+            { id: 183, name: "Urologia - Reparto / Segreteria", phone: "3285 / 4712", location: "Edificio F2 - 5° Piano", note: "Dir. FF: Dott. L. D'Arrigo" },
+            { id: 184, name: "UTIR - Reparto", phone: "3908 / 3921", location: "Pad. Cassa di Risparmio - 2° Piano", note: "" },
+            { id: 185, name: "USU (Unità Spinale) - Reparto / Medici", phone: "3925 / 3930", location: "Padiglione USU", note: "Caposala: 4737 | Fax: 3900" },
+            { id: 186, name: "Direzione - Fax Autorizzazione File Z", phone: "2466", location: "Direzione Sanitaria", note: "Fax" },
+            { id: 187, name: "Chirurgia Maxillo Facciale (Osp. S. Marco)", phone: "095-4794259 / 335-1841937", location: "Consulenza Esterna S. Marco", note: "" },
+            { id: 188, name: "Assistenza Software Lab (Thealth Winlab)", phone: "0221711922 / 3291353085", location: "Supporto Esterno", note: "Email: hd@tesigroup.tec" },
+            { id: 189, name: "Medico Competente", phone: "2311", location: "Sorveglianza Sanitaria", note: "" },
+            { id: 190, name: "Lab. Policlinico BDG", phone: "095-3781233", location: "Consulenza Esterna Policlinico", note: "Email: labpolict@gmail.com" },
+            { id: 191, name: "Ventilatori Domiciliari - Aldo La Ferla", phone: "339-6581469 / 340-8710676", location: "Assistenza Domiciliare", note: "" },
+            { id: 192, name: "Ventilatori Domiciliari - Davide Oddoni (Sapio)", phone: "331-6222894 / 095-7411129", location: "Assistenza Sapio", note: "" },
+            { id: 193, name: "Coordinatore - Sortino", phone: "4930", location: "Coordinamento", note: "" },
+            { id: 194, name: "Coordinatore - Catia", phone: "4839", location: "Coordinamento", note: "" }
+        ];
+
+        // ==========================================
+        // PERSISTENZA DATI (LOCALSTORAGE) & STATO
+        // ==========================================
+        const STORAGE_KEYS = {
+            CONTACTS: 'cannizzaro_custom_contacts_v4',
+            FAV_CONTACTS: 'cannizzaro_fav_contacts_v1'
+        };
+
+        let contactsData = loadContacts();
+        let favContactIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS.FAV_CONTACTS) || '[]'));
+
+        let currentLocationFilter = 'ALL';
+        let onlyFavContacts = false;
+        let currentTab = 'rubrica';
+
+        function loadContacts() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEYS.CONTACTS);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
+            return [...defaultContactsData];
+        }
+
+        function persistContacts() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contactsData));
+            } catch (e) {}
+        }
+
+        function persistFavorites() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.FAV_CONTACTS, JSON.stringify([...favContactIds]));
+            } catch (e) {}
+        }
+
+        function toggleContactFav(id, event) {
+            if (event) event.stopPropagation();
+            if (favContactIds.has(id)) {
+                favContactIds.delete(id);
+                showToast('Contatto rimosso dai preferiti');
+            } else {
+                favContactIds.add(id);
+                showToast('Contatto aggiunto ai preferiti');
+            }
+            persistFavorites();
+            renderContacts();
+        }
+
+        // ==========================================
+        // RICERCA GLOBALE
+        // ==========================================
+        function handleSearch() {
+            const input = document.getElementById('globalSearch');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (input.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            if (currentTab !== 'rubrica') {
+                switchTab('rubrica');
+            }
+            renderContacts();
+        }
+
+        // ==========================================
+        // RENDERING RUBRICA COMPATTA
+        // ==========================================
+        function renderContacts() {
+            const list = document.getElementById('contactsList');
+            const empty = document.getElementById('emptyContacts');
+            const badge = document.getElementById('rubricaBadgeDesk');
+            const countLabel = document.getElementById('contactsCountLabel');
+            const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+
+            badge.textContent = contactsData.length;
+
+            let filtered = contactsData.filter(c => {
+                const matchesFav = !onlyFavContacts || favContactIds.has(c.id);
+                const matchesLoc = currentLocationFilter === 'ALL' || (c.location && c.location.toLowerCase().includes(currentLocationFilter.toLowerCase()));
+                const str = `${c.name} ${c.phone} ${c.location} ${c.note}`.toLowerCase();
+                const matchesQuery = !query || str.includes(query);
+                return matchesFav && matchesLoc && matchesQuery;
+            });
+
+            filtered.sort((a, b) => {
+                const aFav = favContactIds.has(a.id) ? 1 : 0;
+                const bFav = favContactIds.has(b.id) ? 1 : 0;
+                return bFav - aFav;
+            });
+
+            countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'contatto' : 'contatti'}`;
+
+            if (filtered.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.innerHTML = filtered.map(c => {
+                const rawNum = c.phone.split('/')[0].trim();
+                const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                const isFav = favContactIds.has(c.id);
+                return `
+                <div class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1">
+                            <button onclick="toggleContactFav(${c.id}, event)" class="shrink-0 p-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                                <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
+                            </button>
+                            <h4 class="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight truncate">${c.name}</h4>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-0.5 pl-4 text-[10px] text-slate-500 truncate">
+                            <span class="font-semibold text-hospital-700 shrink-0">${c.location || 'Sede'}</span>
+                            ${c.note ? `<span class="truncate">• ${c.note}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="copyText('${c.phone}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-xs px-2 py-1.5 rounded-lg transition max-w-[115px] truncate" title="Copia ${c.phone}">
+                            ${c.phone}
+                        </button>
+                        <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
+                            <i class="fa-solid fa-phone text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // ==========================================
+        // MODALE EMERGENZE
+        // ==========================================
+        function openEmergencyModal() {
+            const emergencyContacts = contactsData.filter(c => c.emergency);
+            const container = document.getElementById('emergencyList');
+            container.innerHTML = emergencyContacts.map(c => {
+                const rawNum = c.phone.split('/')[0].trim();
+                const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                return `
+                    <div class="bg-white p-2.5 rounded-xl border border-red-100 flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="font-bold text-slate-900 text-xs truncate">${c.name}</div>
+                            <div class="text-[10px] text-slate-500">${c.location}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="copyText('${c.phone}')" class="bg-red-50 text-red-800 font-mono font-bold text-xs px-2 py-1.5 rounded-lg border border-red-100">
+                                ${c.phone}
+                            </button>
+                            <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-red-600 active:bg-red-700 text-white flex items-center justify-center shadow-xs" title="Chiama ${fullNum}">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('emergencyModal').classList.remove('hidden');
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById('emergencyModal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // FILTRI E NAVIGAZIONE
+        // ==========================================
+        function filterContactsByLocation(loc) {
+            currentLocationFilter = loc;
+            document.querySelectorAll('.loc-filter').forEach(btn => {
+                if (btn.dataset.loc === loc) {
+                    btn.classList.add('active', 'bg-hospital-700', 'text-white');
+                    btn.classList.remove('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
+                } else {
+                    btn.classList.remove('active', 'bg-hospital-700', 'text-white');
+                    btn.classList.add('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
+                }
+            });
+            renderContacts();
+        }
+
+        function toggleContactFavFilter() {
+            onlyFavContacts = !onlyFavContacts;
+            const btn = document.getElementById('btnFilterFavContacts');
+            if (onlyFavContacts) {
+                btn.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
+                btn.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            } else {
+                btn.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-900');
+                btn.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            }
+            renderContacts();
+        }
+
+        function resetContactFilters() {
+            clearSearch();
+            if (onlyFavContacts) toggleContactFavFilter();
+            filterContactsByLocation('ALL');
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            ['rubrica', 'infusioni', 'antibiotici', 'utilita'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            ['rubrica', 'infusioni', 'antibiotici', 'utilita'].forEach(t => {
+                const deskBtn = document.getElementById(`tab-desk-${t}`);
+                if (deskBtn) {
+                    if (t === tabName) {
+                        deskBtn.classList.add('border-hospital-600', 'text-hospital-700');
+                        deskBtn.classList.remove('border-transparent', 'text-slate-500');
+                    } else {
+                        deskBtn.classList.remove('border-hospital-600', 'text-hospital-700');
+                        deskBtn.classList.add('border-transparent', 'text-slate-500');
+                    }
+                }
+
+                const mobBtn = document.getElementById(`tab-mob-${t}`);
+                if (mobBtn) {
+                    if (t === tabName) {
+                        mobBtn.classList.add('text-hospital-700', 'font-bold');
+                        mobBtn.classList.remove('text-slate-400', 'font-medium');
+                    } else {
+                        mobBtn.classList.remove('text-hospital-700', 'font-bold');
+                        mobBtn.classList.add('text-slate-400', 'font-medium');
+                    }
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // DATABASE FARMACI E DILUIZIONI STANDARD
+        // ==========================================
+        const drugsDatabase = [
+            {
+                id: 'noradrenalina',
+                name: 'Noradrenalina (2 mg/1 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '0,01 – 0,5 mcg/kg/min (fino a 1–2 mcg/kg/min nello shock refrattario)',
+                dilutions: [
+                    { label: 'Standard: 4 fl / 50 ml SF', amount: 8, unit: 'mg', volume: 50, note: '4 fiale (8 mg) portate a 50 ml SF = 160 mcg/ml' },
+                    { label: 'Alt: 2 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '2 fiale (4 mg) portate a 50 ml SF = 80 mcg/ml' }
+                ]
+            },
+            {
+                id: 'adrenalina',
+                name: 'Adrenalina (1 mg/1 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '0,01 – 0,5 mcg/kg/min (effetto β a basse dosi; α-adrenergico > 0,1 mcg/kg/min)',
+                dilutions: [
+                    { label: 'Standard: 4 fl / 50 ml SF', amount: 4, unit: 'mg', volume: 50, note: '4 fiale (4 mg) portate a 50 ml SF = 80 mcg/ml' }
+                ]
+            },
+            {
+                id: 'dobutamina',
+                name: 'Dobutamina (250 mg/20 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '2 – 20 mcg/kg/min (titolare su portata cardiaca e perfusione)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml SF', amount: 500, unit: 'mg', volume: 50, note: '2 fiale (500 mg) portate a 50 ml SF = 10 mg/ml' }
+                ]
+            },
+            {
+                id: 'dopamina',
+                name: 'Dopamina (200 mg/5 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '2 – 5 mcg/kg/min (β1/inotropo); 5 – 20 mcg/kg/min (α/vasopressore)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml SF', amount: 400, unit: 'mg', volume: 50, note: '2 fiale (400 mg) portate a 50 ml SF = 8 mg/ml' }
+                ]
+            },
+            {
+                id: 'isoprenalina',
+                name: 'Isoprenalina (0,2 mg/1 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '0,01 – 0,1 mcg/kg/min (oppure 0,5 – 5 mcg/min in bradicardia/BAV)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml SF', amount: 0.4, unit: 'mg', volume: 50, note: '2 fiale (0,4 mg = 400 mcg) in 50 ml SF = 8 mcg/ml' }
+                ]
+            },
+            {
+                id: 'levosimendan',
+                name: 'Levosimendan (12,5 mg/5 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: '0,05 – 0,2 mcg/kg/min per 24 ore (senza bolo in caso di ipotensione)',
+                dilutions: [
+                    { label: 'Standard: 1 fl / 500 ml G5%', amount: 12.5, unit: 'mg', volume: 500, note: '1 fiala (12,5 mg) in 500 ml Glucosata 5% = 25 mcg/ml' }
+                ]
+            },
+            {
+                id: 'remifentanil2',
+                name: 'Remifentanil 2 mg',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: 'Analgesia TI: 0,02 – 0,15 mcg/kg/min | Anestesia: 0,1 – 0,5 mcg/kg/min',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 40 ml (100 mcg/ml)', amount: 4, unit: 'mg', volume: 40, note: '2 fl da 2 mg (4 mg) in 40 ml = 100 mcg/ml' },
+                    { label: 'Alt: 1 fl / 40 ml (50 mcg/ml)', amount: 2, unit: 'mg', volume: 40, note: '1 fl da 2 mg in 40 ml = 50 mcg/ml' }
+                ]
+            },
+            {
+                id: 'remifentanil5',
+                name: 'Remifentanil 5 mg',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: 'Analgesia TI: 0,02 – 0,15 mcg/kg/min | Anestesia: 0,1 – 0,5 mcg/kg/min',
+                dilutions: [
+                    { label: 'Standard: 1 fl / 50 ml (100 mcg/ml)', amount: 5, unit: 'mg', volume: 50, note: '1 fl da 5 mg in 50 ml = 100 mcg/ml' },
+                    { label: 'Alt: 1 fl / 100 ml (50 mcg/ml)', amount: 5, unit: 'mg', volume: 100, note: '1 fl da 5 mg in 100 ml = 50 mcg/ml' }
+                ]
+            },
+            {
+                id: 'propofol',
+                name: 'Propofol (1% - 2%)',
+                family: 'mass',
+                defaultUnit: 'mg/kg/h',
+                doseRange: 'Sedazione TI: 0,3 – 4 mg/kg/h | TIVA anestesia: 4 – 10 mg/kg/h',
+                dilutions: [
+                    { label: 'Propofol 2% (20 mg/ml puro)', amount: 1000, unit: 'mg', volume: 50, note: 'Flacone 50 ml al 2% = 20 mg/ml puro' },
+                    { label: 'Propofol 1% (10 mg/ml puro)', amount: 500, unit: 'mg', volume: 50, note: 'Flacone 50 ml all’1% = 10 mg/ml puro' }
+                ]
+            },
+            {
+                id: 'dexdor',
+                name: 'Dexdor - Dexmedetomidina (200 mcg/2 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/h',
+                doseRange: '0,2 – 1,4 mcg/kg/h (inizio usuale 0,7 mcg/kg/h; evitare bolo rapido)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml (8 mcg/ml)', amount: 400, unit: 'mcg', volume: 50, note: '2 fiale (400 mcg) portate a 50 ml = 8 mcg/ml' },
+                    { label: 'Alt: 1 fl / 50 ml (4 mcg/ml)', amount: 200, unit: 'mcg', volume: 50, note: '1 fiala (200 mcg) portata a 50 ml = 4 mcg/ml' }
+                ]
+            },
+            {
+                id: 'midazolam',
+                name: 'Midazolam (15 mg/3 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Sedazione TI: 2 – 10 mg/h (oppure 0,03 – 0,2 mg/kg/h)',
+                dilutions: [
+                    { label: 'Standard: 3 fl/45 ml o 4 fl/60 ml (1:1)', amount: 45, unit: 'mg', volume: 45, note: 'Rapporto 1:1 (1 mg/ml) — 3 fl in 45 ml o 4 fl in 60 ml' },
+                    { label: 'Alt: 5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: 'Infusione pura = 5 mg/ml' }
+                ]
+            },
+            {
+                id: 'clonidina',
+                name: 'Clonidina (150 mcg/1 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/h',
+                doseRange: '15 – 90 mcg/h (circa 0,2 – 1,5 mcg/kg/h; max ~1200–1500 mcg/die)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml', amount: 300, unit: 'mcg', volume: 50, note: '2 fiale (300 mcg) portate a 50 ml = 6 mcg/ml' }
+                ]
+            },
+            {
+                id: 'morfina',
+                name: 'Morfina (10 mg/1 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Analgesia: 1 – 5 mg/h (dispnea/cure palliative: 0,5 – 2 mg/h iniziale)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '2 fiale (20 mg) portate a 50 ml = 0,4 mg/ml' }
+                ]
+            },
+            {
+                id: 'nimbex',
+                name: 'Nimbex - Cisatracurio (10 mg/5 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: 'Mantenimento blocco neuromuscolare: 1 – 3 mcg/kg/min (media 1,5 mcg/kg/min)',
+                dilutions: [
+                    { label: 'Standard: 6 fl / 60 ml (puro)', amount: 60, unit: 'mg', volume: 60, note: '6 fiale (60 mg) in 60 ml puro = 1 mg/ml' }
+                ]
+            },
+            {
+                id: 'nitroglicerina',
+                name: 'Nitroglicerina (5 mg/1,5 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/min',
+                doseRange: '10 – 200 mcg/min (inizio 5–10 mcg/min; aumentare ogni 5–10 min su PA/sintomi)',
+                dilutions: [
+                    { label: 'Standard: 4 fl / 50 ml', amount: 20, unit: 'mg', volume: 50, note: '4 fiale (20 mg) portate a 50 ml = 0,4 mg/ml (400 mcg/ml)' }
+                ]
+            },
+            {
+                id: 'urapidil',
+                name: 'Urapidil (50 mg/10 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Mantenimento: 9 – 30 mg/h (dopo eventuali boli da 10–25 mg EV)',
+                dilutions: [
+                    { label: 'Standard: 5 mg/ml (puro)', amount: 250, unit: 'mg', volume: 50, note: '5 fiale (250 mg) in 50 ml puro = 5 mg/ml' }
+                ]
+            },
+            {
+                id: 'nimotop',
+                name: 'Nimotop - Nimodipina (10 mg/50 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Prime 2 ore: 1 mg/h (5 ml/h); poi 2 mg/h (10 ml/h) se PA stabile (ESA)',
+                dilutions: [
+                    { label: 'Standard: Flacone pronto 10 mg/50 ml', amount: 10, unit: 'mg', volume: 50, note: 'Flacone pronto all’uso 10 mg in 50 ml = 0,2 mg/ml' }
+                ]
+            },
+            {
+                id: 'seloken',
+                name: 'Seloken - Metoprololo (5 mg/5 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: '1 – 5 mg/h (titolare su frequenza cardiaca e pressione arteriosa)',
+                dilutions: [
+                    { label: 'Standard: 25 mg / 50 ml', amount: 25, unit: 'mg', volume: 50, note: '5 fiale (25 mg) portate a 50 ml = 0,5 mg/ml' }
+                ]
+            },
+            {
+                id: 'lasix20',
+                name: 'Lasix 20 mg/2 ml',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: '5 – 20 mg/h (infusione continua dopo bolo iniziale; max ~4 mg/min)',
+                dilutions: [
+                    { label: 'Standard: 80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '4 fiale (80 mg) portate a 50 ml = 1,6 mg/ml' }
+                ]
+            },
+            {
+                id: 'lasix250',
+                name: 'Lasix 250 mg/25 ml',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: '10 – 40 mg/h (insufficienza renale/scompenso refrattario; max 4 mg/min)',
+                dilutions: [
+                    { label: 'Standard: 250 mg / 50 ml', amount: 250, unit: 'mg', volume: 50, note: '1 fiala (250 mg) portata a 50 ml = 5 mg/ml' },
+                    { label: 'Alt: 500 mg / 50 ml (puro)', amount: 500, unit: 'mg', volume: 50, note: '2 fiale (500 mg) in 50 ml puro = 10 mg/ml' }
+                ]
+            },
+            {
+                id: 'insulina',
+                name: 'Insulina Lispro (100 UI/1 ml)',
+                family: 'UI',
+                defaultUnit: 'UI/h',
+                doseRange: '0,5 – 6 UI/h secondo protocollo glicemico (target TI: 140 – 180 mg/dl)',
+                dilutions: [
+                    { label: 'Standard: 50 UI / 50 ml SF (1:1)', amount: 50, unit: 'UI', volume: 50, note: '50 UI portate a 50 ml SF = 1 UI/ml' },
+                    { label: 'Alt: 60 UI / 60 ml (1:1)', amount: 60, unit: 'UI', volume: 60, note: '60 UI portate a 60 ml SF = 1 UI/ml' }
+                ]
+            },
+            {
+                id: 'vasopressina',
+                name: 'Vasopressina (40 UI/2 ml)',
+                family: 'UI',
+                defaultUnit: 'UI/min',
+                doseRange: '0,01 – 0,03 UI/min (fino a 0,04 UI/min nello shock settico refrattario)',
+                dilutions: [
+                    { label: 'Standard: 1 fl / 50 ml SF', amount: 40, unit: 'UI', volume: 50, note: '1 fiala (40 UI) portata a 50 ml SF = 0,8 UI/ml' }
+                ]
+            },
+            {
+                id: 'kflebo',
+                name: 'Kflebo (30 mEq/10 ml)',
+                family: 'mEq',
+                defaultUnit: 'mEq/h',
+                doseRange: '5 – 10 mEq/h (max 10 mEq/h su vena periferica; fino a 20 mEq/h su CVC con ECG)',
+                dilutions: [
+                    { label: 'Standard: 2 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '2 fiale (60 mEq) portate a 50 ml = 1,2 mEq/ml' }
+                ]
+            },
+            {
+                id: 'potassio',
+                name: 'Potassio Cloruro (20 mEq/10 ml)',
+                family: 'mEq',
+                defaultUnit: 'mEq/h',
+                doseRange: '5 – 10 mEq/h (max 10 mEq/h su vena periferica; fino a 20 mEq/h su CVC con ECG)',
+                dilutions: [
+                    { label: 'Standard: 3 fl / 50 ml', amount: 60, unit: 'mEq', volume: 50, note: '3 fiale (60 mEq) portate a 50 ml = 1,2 mEq/ml' }
+                ]
+            },
+            {
+                id: 'dicloreum',
+                name: 'Dicloreum (75 mg/3 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: '5 mg/h (es. 75 mg in 15 ore; dose massima giornaliera 150 mg/24h)',
+                dilutions: [
+                    { label: 'Standard: 50 mg / 50 ml', amount: 50, unit: 'mg', volume: 50, note: '50 mg (2 ml) portati a 50 ml = 1 mg/ml' }
+                ]
+            },
+            {
+                id: 'hidonac',
+                name: 'Hidonac (5 g/25 ml)',
+                family: 'mass',
+                defaultUnit: 'mg/kg/h',
+                doseRange: 'Protocollo paracetamolo: 150 mg/kg in 1h, poi 50 mg/kg in 4h, poi 100 mg/kg in 16h (~6,25 mg/kg/h)',
+                dilutions: [
+                    { label: 'Standard: 5 g / 500 ml G5%', amount: 5, unit: 'g', volume: 500, note: '1 flacone (5 g = 5000 mg) in 500 ml Glucosata 5% = 10 mg/ml' }
+                ]
+            },
+            {
+                id: 'idrocortisone',
+                name: 'Idrocortisone',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Shock settico: 8,3 mg/h (= 200 mg/24h in infusione continua)',
+                dilutions: [
+                    { label: 'Standard: 200 mg / 50 ml', amount: 200, unit: 'mg', volume: 50, note: '200 mg portati a 50 ml = 4 mg/ml' }
+                ]
+            },
+            {
+                id: 'ventolin',
+                name: 'Ventolin (100 mcg/5 ml)',
+                family: 'mass',
+                defaultUnit: 'mcg/min',
+                doseRange: '5 – 20 mcg/min (broncostenosi severa refrattaria; monitorare K+ e FC)',
+                dilutions: [
+                    { label: 'Standard: 500 mcg / 50 ml', amount: 500, unit: 'mcg', volume: 50, note: '5 fiale (500 mcg) portate a 50 ml = 10 mcg/ml' }
+                ]
+            },
+            {
+                id: 'pantoprazolo',
+                name: 'Pantoprazolo (40 mg)',
+                family: 'mass',
+                defaultUnit: 'mg/h',
+                doseRange: 'Emorragia digestiva alta: 8 mg/h per 72 ore (dopo bolo iniziale di 80 mg EV)',
+                dilutions: [
+                    { label: 'Standard: 80 mg / 50 ml', amount: 80, unit: 'mg', volume: 50, note: '2 flaconi (80 mg) portati a 50 ml = 1,6 mg/ml' }
+                ]
+            },
+            {
+                id: 'custom',
+                name: '➕ Altro Farmaco / Personalizzato',
+                family: 'mass',
+                defaultUnit: 'mcg/kg/min',
+                doseRange: 'Inserire diluizione e unità secondo prescrizione medica',
+                dilutions: [
+                    { label: 'Personalizzata', amount: 50, unit: 'mg', volume: 50, note: 'Inserisci manualmente quantità, unità e volume' }
+                ]
+            }
+        ];
+
+        const unitOptionsByFamily = {
+            mass: [
+                { value: 'mcg/kg/min', label: 'mcg / kg / min', needsWeight: true },
+                { value: 'mcg/kg/h', label: 'mcg / kg / h', needsWeight: true },
+                { value: 'mg/kg/h', label: 'mg / kg / h', needsWeight: true },
+                { value: 'mg/kg/min', label: 'mg / kg / min', needsWeight: true },
+                { value: 'mcg/min', label: 'mcg / min (no peso)', needsWeight: false },
+                { value: 'mcg/h', label: 'mcg / h (no peso)', needsWeight: false },
+                { value: 'mg/h', label: 'mg / h (no peso)', needsWeight: false },
+                { value: 'mg/min', label: 'mg / min (no peso)', needsWeight: false }
+            ],
+            UI: [
+                { value: 'UI/h', label: 'UI / h', needsWeight: false },
+                { value: 'UI/min', label: 'UI / min', needsWeight: false },
+                { value: 'UI/kg/h', label: 'UI / kg / h', needsWeight: true },
+                { value: 'UI/kg/min', label: 'UI / kg / min', needsWeight: true }
+            ],
+            mEq: [
+                { value: 'mEq/h', label: 'mEq / h', needsWeight: false },
+                { value: 'mEq/kg/h', label: 'mEq / kg / h', needsWeight: true }
+            ]
+        };
+
+        let lastInfusionDirection = 'mlh'; // 'mlh' o 'dose'
+
+        function initInfusionCalculator() {
+            renderDrugPickerList();
+            onDrugChange();
+        }
+
+        function openDrugPickerModal() {
+            const modal = document.getElementById('drugPickerModal');
+            const searchInput = document.getElementById('drugSearchInput');
+            if (searchInput) searchInput.value = '';
+            renderDrugPickerList();
+            modal.classList.remove('hidden');
+        }
+
+        function closeDrugPickerModal() {
+            document.getElementById('drugPickerModal').classList.add('hidden');
+        }
+
+        function renderDrugPickerList() {
+            const container = document.getElementById('drugPickerList');
+            if (!container) return;
+            const currentId = document.getElementById('drugSelect').value;
+            const q = (document.getElementById('drugSearchInput')?.value || '').toLowerCase().trim();
+
+            const filtered = drugsDatabase.filter(d => {
+                if (!q) return true;
+                const dilText = d.dilutions.map(x => x.label).join(' ').toLowerCase();
+                return d.name.toLowerCase().includes(q) || dilText.includes(q);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">Nessun farmaco trovato</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => {
+                const isSelected = d.id === currentId;
+                return `
+                    <button type="button" onclick="selectDrugFromModal('${d.id}')" class="w-full text-left p-3 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2.5 ${isSelected ? 'bg-hospital-50 border-hospital-600 ring-1 ring-hospital-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
+                        <div class="min-w-0 flex-1">
+                            <div class="font-extrabold text-sm text-slate-900 truncate">${d.name}</div>
+                            <div class="text-[11px] text-slate-500 truncate mt-0.5">${d.dilutions[0]?.label || ''}</div>
+                            ${d.doseRange ? `<div class="text-[10px] font-semibold text-amber-800 truncate mt-0.5"><i class="fa-solid fa-notes-medical mr-1 text-amber-600"></i>${d.doseRange}</div>` : ''}
+                        </div>
+                        <span class="shrink-0 text-[11px] font-mono font-bold px-2 py-1 rounded-lg ${isSelected ? 'bg-hospital-700 text-white' : 'bg-slate-100 text-slate-700'}">
+                            ${d.defaultUnit}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectDrugFromModal(drugId) {
+            document.getElementById('drugSelect').value = drugId;
+            closeDrugPickerModal();
+            onDrugChange();
+        }
+
+        function onDrugChange() {
+            const drugId = document.getElementById('drugSelect').value;
+            const drug = drugsDatabase.find(d => d.id === drugId) || drugsDatabase[0];
+
+            // Aggiorna il nome del farmaco visualizzato nel pulsante principale
+            const titleEl = document.getElementById('selectedDrugTitle');
+            if (titleEl) titleEl.textContent = drug.name;
+
+            // Aggiorna il range terapeutico indicativo
+            const rangeTextEl = document.getElementById('drugRangeText');
+            if (rangeTextEl) {
+                rangeTextEl.textContent = drug.doseRange || 'Secondo protocollo clinico';
+            }
+
+            // Popola i bottoni delle diluizioni disponibili
+            const dilContainer = document.getElementById('dilutionButtons');
+            dilContainer.innerHTML = drug.dilutions.map((dil, idx) => `
+                <button type="button" onclick="applyDilution(${idx})" data-dil-idx="${idx}"
+                    class="dil-btn px-2.5 py-1 rounded-lg text-[11px] font-bold border transition active:scale-95 ${idx === 0 ? 'bg-hospital-700 text-white border-hospital-700' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
+                    ${dil.label}
+                </button>
+            `).join('');
+
+            // Popola le unità di misura compatibili
+            const unitSelect = document.getElementById('doseRateUnit');
+            const options = unitOptionsByFamily[drug.family] || unitOptionsByFamily.mass;
+            unitSelect.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+            unitSelect.value = drug.defaultUnit;
+
+            applyDilution(0);
+            onDoseUnitChange();
+        }
+
+        function adjustWeight(delta) {
+            const input = document.getElementById('patientWeight');
+            const current = parseFloat(input.value) || 70;
+            const next = Math.max(1, Math.round((current + delta) * 10) / 10);
+            input.value = next;
+            recalcFromCurrentDirection();
+        }
+
+        function stepMlH(delta) {
+            const input = document.getElementById('rateMlH');
+            const current = parseFloat(input.value) || 0;
+            const next = Math.max(0, Math.round((current + delta) * 100) / 100);
+            input.value = next === 0 ? '' : next;
+            calcFromMlH();
+        }
+
+        function getSmartDoseStep(doseUnit, currentVal) {
+            if (doseUnit === 'mcg/kg/min') return 0.05;
+            if (doseUnit === 'mcg/kg/h') return 0.1;
+            if (doseUnit === 'mg/kg/h') return 0.5;
+            if (doseUnit === 'mg/kg/min') return 0.05;
+            if (doseUnit === 'UI/min') return 0.01;
+            if (doseUnit === 'UI/h' || doseUnit === 'mEq/h') return 1;
+            if (doseUnit === 'mcg/min') return 5;
+            if (currentVal > 0 && currentVal < 1) return 0.1;
+            return 1;
+        }
+
+        function stepDose(direction) {
+            const input = document.getElementById('doseValue');
+            const doseUnit = document.getElementById('doseRateUnit').value;
+            const current = parseFloat(input.value) || 0;
+            const step = getSmartDoseStep(doseUnit, current);
+            const next = Math.max(0, Math.round((current + direction * step) * 1000) / 1000);
+            input.value = next === 0 ? '' : next;
+            calcFromDose();
+        }
+
+        function applyDilution(idx) {
+            const drugId = document.getElementById('drugSelect').value;
+            const drug = drugsDatabase.find(d => d.id === drugId) || drugsDatabase[0];
+            const dil = drug.dilutions[idx] || drug.dilutions[0];
+
+            document.querySelectorAll('.dil-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.classList.add('bg-hospital-700', 'text-white', 'border-hospital-700');
+                    btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                } else {
+                    btn.classList.remove('bg-hospital-700', 'text-white', 'border-hospital-700');
+                    btn.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+                }
+            });
+
+            document.getElementById('concAmount').value = dil.amount;
+            document.getElementById('concUnit').value = dil.unit;
+            document.getElementById('concVolume').value = dil.volume;
+            document.getElementById('drugPrepNote').textContent = dil.note || '';
+
+            recalcFromCurrentDirection();
+        }
+
+        function onDoseUnitChange() {
+            const unit = document.getElementById('doseRateUnit').value;
+            document.getElementById('doseUnitBadge').textContent = unit;
+            document.getElementById('doseInputUnitLabel').textContent = unit;
+
+            const needsWeight = unit.includes('/kg/');
+            const weightBox = document.getElementById('weightContainer');
+            if (needsWeight) {
+                weightBox.classList.remove('opacity-50');
+            } else {
+                weightBox.classList.add('opacity-50');
+            }
+
+            recalcFromCurrentDirection();
+        }
+
+        function setQuickWeight(w) {
+            document.getElementById('patientWeight').value = w;
+            recalcFromCurrentDirection();
+        }
+
+        function getConcentrationPerMl() {
+            const amount = parseFloat(document.getElementById('concAmount').value) || 0;
+            const unit = document.getElementById('concUnit').value;
+            const volume = parseFloat(document.getElementById('concVolume').value) || 0;
+            if (amount <= 0 || volume <= 0) return { concBase: 0, family: 'mass', display: '--' };
+
+            // Normalizza in mcg per massa, oppure UI / mEq diretti
+            if (unit === 'g') {
+                const mgPerMl = (amount * 1000) / volume;
+                return { concMcgMl: mgPerMl * 1000, family: 'mass', display: `${formatSmart(mgPerMl)} mg/ml` };
+            }
+            if (unit === 'mg') {
+                const mgPerMl = amount / volume;
+                const display = mgPerMl >= 1 ? `${formatSmart(mgPerMl)} mg/ml` : `${formatSmart(mgPerMl * 1000)} mcg/ml`;
+                return { concMcgMl: mgPerMl * 1000, family: 'mass', display };
+            }
+            if (unit === 'mcg') {
+                const mcgPerMl = amount / volume;
+                return { concMcgMl: mcgPerMl, family: 'mass', display: `${formatSmart(mcgPerMl)} mcg/ml` };
+            }
+            if (unit === 'UI') {
+                const uiPerMl = amount / volume;
+                return { concDirectMl: uiPerMl, family: 'UI', display: `${formatSmart(uiPerMl)} UI/ml` };
+            }
+            if (unit === 'mEq') {
+                const meqPerMl = amount / volume;
+                return { concDirectMl: meqPerMl, family: 'mEq', display: `${formatSmart(meqPerMl)} mEq/ml` };
+            }
+            return { concMcgMl: 0, family: 'mass', display: '--' };
+        }
+
+        function mlHToDose(mlH, concInfo, weight, doseUnit) {
+            if (!mlH || mlH <= 0) return 0;
+            const w = weight > 0 ? weight : 70;
+
+            if (concInfo.family === 'mass') {
+                const mcgPerHour = mlH * concInfo.concMcgMl;
+                switch (doseUnit) {
+                    case 'mcg/kg/min': return mcgPerHour / 60 / w;
+                    case 'mcg/kg/h':   return mcgPerHour / w;
+                    case 'mg/kg/h':    return (mcgPerHour / 1000) / w;
+                    case 'mg/kg/min':  return (mcgPerHour / 1000) / 60 / w;
+                    case 'mcg/min':    return mcgPerHour / 60;
+                    case 'mcg/h':      return mcgPerHour;
+                    case 'mg/h':       return mcgPerHour / 1000;
+                    case 'mg/min':     return (mcgPerHour / 1000) / 60;
+                }
+            } else {
+                const unitPerHour = mlH * concInfo.concDirectMl;
+                switch (doseUnit) {
+                    case 'UI/h':
+                    case 'mEq/h':      return unitPerHour;
+                    case 'UI/min':     return unitPerHour / 60;
+                    case 'UI/kg/h':
+                    case 'mEq/kg/h':   return unitPerHour / w;
+                    case 'UI/kg/min':  return unitPerHour / 60 / w;
+                }
+            }
+            return 0;
+        }
+
+        function doseToMlH(dose, concInfo, weight, doseUnit) {
+            if (!dose || dose <= 0) return 0;
+            const w = weight > 0 ? weight : 70;
+
+            if (concInfo.family === 'mass' && concInfo.concMcgMl > 0) {
+                let mcgPerHour = 0;
+                switch (doseUnit) {
+                    case 'mcg/kg/min': mcgPerHour = dose * w * 60; break;
+                    case 'mcg/kg/h':   mcgPerHour = dose * w; break;
+                    case 'mg/kg/h':    mcgPerHour = dose * 1000 * w; break;
+                    case 'mg/kg/min':  mcgPerHour = dose * 1000 * w * 60; break;
+                    case 'mcg/min':    mcgPerHour = dose * 60; break;
+                    case 'mcg/h':      mcgPerHour = dose; break;
+                    case 'mg/h':       mcgPerHour = dose * 1000; break;
+                    case 'mg/min':     mcgPerHour = dose * 1000 * 60; break;
+                }
+                return mcgPerHour / concInfo.concMcgMl;
+            } else if (concInfo.concDirectMl > 0) {
+                let unitPerHour = 0;
+                switch (doseUnit) {
+                    case 'UI/h':
+                    case 'mEq/h':      unitPerHour = dose; break;
+                    case 'UI/min':     unitPerHour = dose * 60; break;
+                    case 'UI/kg/h':
+                    case 'mEq/kg/h':   unitPerHour = dose * w; break;
+                    case 'UI/kg/min':  unitPerHour = dose * w * 60; break;
+                }
+                return unitPerHour / concInfo.concDirectMl;
+            }
+            return 0;
+        }
+
+        function formatSmart(num) {
+            if (!isFinite(num) || num === 0) return '0';
+            if (Math.abs(num) >= 100) return num.toFixed(1).replace(/\.0$/, '');
+            if (Math.abs(num) >= 1) return num.toFixed(2).replace(/\.?0+$/, '');
+            return num.toFixed(3).replace(/\.?0+$/, '');
+        }
+
+        function calcFromMlH() {
+            lastInfusionDirection = 'mlh';
+            const concInfo = getConcentrationPerMl();
+            document.getElementById('finalConcBadge').textContent = concInfo.display;
+
+            const mlH = parseFloat(document.getElementById('rateMlH').value);
+            const weight = parseFloat(document.getElementById('patientWeight').value) || 70;
+            const doseUnit = document.getElementById('doseRateUnit').value;
+
+            if (!isNaN(mlH) && mlH > 0) {
+                const dose = mlHToDose(mlH, concInfo, weight, doseUnit);
+                document.getElementById('doseValue').value = formatSmart(dose);
+            } else {
+                document.getElementById('doseValue').value = '';
+            }
+            renderQuickRefTable(concInfo, weight, doseUnit);
+        }
+
+        function calcFromDose() {
+            lastInfusionDirection = 'dose';
+            const concInfo = getConcentrationPerMl();
+            document.getElementById('finalConcBadge').textContent = concInfo.display;
+
+            const dose = parseFloat(document.getElementById('doseValue').value);
+            const weight = parseFloat(document.getElementById('patientWeight').value) || 70;
+            const doseUnit = document.getElementById('doseRateUnit').value;
+
+            if (!isNaN(dose) && dose > 0) {
+                const mlH = doseToMlH(dose, concInfo, weight, doseUnit);
+                document.getElementById('rateMlH').value = formatSmart(mlH);
+            } else {
+                document.getElementById('rateMlH').value = '';
+            }
+            renderQuickRefTable(concInfo, weight, doseUnit);
+        }
+
+        function recalcFromCurrentDirection() {
+            if (lastInfusionDirection === 'dose') calcFromDose();
+            else calcFromMlH();
+        }
+
+        function renderQuickRefTable(concInfo, weight, doseUnit) {
+            const grid = document.getElementById('quickRefGrid');
+            const sub = document.getElementById('refTableSubtitle');
+            if (!grid) return;
+
+            const needsWeight = doseUnit.includes('/kg/');
+            sub.textContent = needsWeight ? `Calcolato per ${weight} kg` : 'Indipendente dal peso';
+
+            const sampleRates = [1, 2, 5, 10, 15, 20];
+            grid.innerHTML = sampleRates.map(r => {
+                const d = mlHToDose(r, concInfo, weight, doseUnit);
+                return `
+                    <button type="button" onclick="applySampleRate(${r})" class="bg-slate-50 hover:bg-hospital-50 border border-slate-200 rounded-lg p-1.5 text-center active:scale-95 transition">
+                        <div class="text-[11px] font-extrabold text-hospital-800">${r} ml/h</div>
+                        <div class="text-[11px] font-mono font-bold text-emerald-700 mt-0.5">${formatSmart(d)}</div>
+                        <div class="text-[9px] text-slate-400 truncate">${doseUnit}</div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function applySampleRate(mlH) {
+            document.getElementById('rateMlH').value = mlH;
+            calcFromMlH();
+        }
+
+        function resetInfusionCalc() {
+            document.getElementById('rateMlH').value = '';
+            document.getElementById('doseValue').value = '';
+            recalcFromCurrentDirection();
+        }
+
+        // ==========================================
+        // DATABASE ANTIBIOTICI & PROTOCOLLO RENALE CANNIZZARO
+        // ==========================================
+        const antibioticsDatabase = [
+            {
+                id: 'amikacina',
+                name: 'AMIKACINA',
+                category: 'Aminoglicoside',
+                loadingDose: '15 mg/kg in 100 ml S.F. in 1 ora (1 volta/die)',
+                specialAmikacina: true,
+                note: 'In insufficienza renale moltiplicare per 9 la concentrazione sierica di Creatinina (mg/dl): il risultato rappresenta l’intervallo in ore tra una dose e l’altra.',
+                bands: [
+                    { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '15 mg/kg in 100 ml S.F. in 1 ora (1 volta/die)' },
+                    { min: 0, max: 80, label: 'Compromissione renale (Cl.Cr ≤ 80)', dose: '15 mg/kg in 100 ml S.F. in 1 ora — Intervallo = Creatinina sierica (mg/dl) × 9 ore (es. Cr 2 mg/dl → ogni 18 ore)' }
+                ]
+            },
+            {
+                id: 'ampicillina',
+                name: 'AMPICILLINA',
+                category: 'Penicillina',
+                loadingDose: 'd.c. 3 g / 50 ml S.F. in 30 min',
+                note: 'Mantenimento in infusione continua con siringa/pompa: 3 g in 50 ml S.F.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '3 g / 50 ml S.F. — infusione a 8,5 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '3 g / 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '3 g / 50 ml S.F. — infusione a 4 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '3 g / 50 ml S.F. — infusione a 2 ml/h' }
+                ]
+            },
+            {
+                id: 'ampicillina_sulbactam',
+                name: 'AMPICILLINA / SULBACTAM (UNASYN)',
+                category: 'Penicillina / Inibitore beta-lattamasi',
+                loadingDose: 'd.c. 3 g / 50 ml S.F. in 30 min',
+                note: 'Mantenimento in infusione continua: 3 g in 50 ml S.F.',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '3 g / 50 ml S.F. — infusione a 8,5 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '3 g / 50 ml S.F. — infusione a 4 ml/h' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '3 g / 50 ml S.F. — infusione a 2 ml/h' }
+                ]
+            },
+            {
+                id: 'amoxicillina_clavulanato',
+                name: 'AMOXICILLINA / CLAVULANATO (AUGMENTIN)',
+                category: 'Penicillina / Inibitore beta-lattamasi',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '2,4 g / 50 ml S.F. in 30 min × 3/die' },
+                    { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '600 mg / 50 ml S.F. in 30 min × 2/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '600 mg / 50 ml S.F. in 30 min × 1/die' }
+                ]
+            },
+            {
+                id: 'aztreonam',
+                name: 'AZTREONAM',
+                category: 'Monobattame',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Preparazione: 2 g in 50 ml S.F. in infusione continua.',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 3 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' }
+                ]
+            },
+            {
+                id: 'bactrim',
+                name: 'BACTRIM (COTRIMOSSAZOLO)',
+                category: 'Sulfamidico / Trimetoprim',
+                loadingDose: 'Fiala da 400/80 mg',
+                note: 'Controindicato per Cl.Cr ≤ 15 ml/min secondo schema.',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '4 fiale (400/80 mg) / 250 ml S.F. in 1 ora' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: 'Ridurre del 50% (2 fiale / 250 ml S.F. in 1 ora)' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: 'CONTROINDICATO', contraindicated: true }
+                ]
+            },
+            {
+                id: 'cefepime',
+                name: 'CEFEPIME',
+                category: 'Cefalosporina IV gen.',
+                loadingDose: 'd.c. 2 g / 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 6 g in 50 ml S.F.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '6 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' }
+                ]
+            },
+            {
+                id: 'ceftazidime',
+                name: 'CEFTAZIDIME',
+                category: 'Cefalosporina III gen.',
+                loadingDose: 'd.c. 25 mg/kg in 100 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 6 g in 50 ml S.F. (o 2 g in 50 ml S.F. per Cl.Cr ≤ 50).',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '6 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' }
+                ]
+            },
+            {
+                id: 'ceftriaxone',
+                name: 'CEFTRIAXONE',
+                category: 'Cefalosporina III gen.',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '2 g / 50 ml S.F. in 1 ora × 1/die' }
+                ]
+            },
+            {
+                id: 'ciprofloxacina',
+                name: 'CIPROFLOXACINA',
+                category: 'Fluorochinolone',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 3/die' },
+                    { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 2/die' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 1/die' }
+                ]
+            },
+            {
+                id: 'cefazolina',
+                name: 'CEFAZOLINA',
+                category: 'Cefalosporina I gen.',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 3/die' },
+                    { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 2/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 1/die' }
+                ]
+            },
+            {
+                id: 'cefotaxime',
+                name: 'CEFOTAXIME',
+                category: 'Cefalosporina III gen.',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2 g / 50 ml S.F. in 1 ora × 3/die' },
+                    { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 2–3/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 1/die' }
+                ]
+            },
+            {
+                id: 'clindamicina',
+                name: 'CLINDAMICINA',
+                category: 'Lincosamide',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 100 ml S.F. in 1 ora × 3/die' }
+                ]
+            },
+            {
+                id: 'colistina',
+                name: 'COLISTINA',
+                category: 'Polimixina',
+                loadingDose: 'd.c. 9 Milioni UI in 100 ml S.F. in 1 ora',
+                note: 'Dose di carico da 9 M UI sempre raccomandata indipendentemente dalla funzione renale.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 M UI in 50 ml S.F. in 1 ora × 2/die' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 M UI in 50 ml S.F. in 1 ora × 3/die' },
+                    { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '1,5 M UI in 50 ml S.F. in 1 ora × 3/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 M UI in 50 ml S.F. in 1 ora × 3/die' }
+                ]
+            },
+            {
+                id: 'cefiderocol',
+                name: 'CEFIDEROCOL (FETCROJA)',
+                category: 'Cefalosporina siderofora',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).',
+                bands: [
+                    { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' },
+                    { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '1,5 g / 100 ml S.F. — infusione 35 ml/h × 3/die' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 3/die' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '0,75 g / 100 ml S.F. — infusione 35 ml/h × 2/die' }
+                ]
+            },
+            {
+                id: 'ceftarolina',
+                name: 'CEFTAROLINA (ZINFORO)',
+                category: 'Cefalosporina V gen. (anti-MRSA)',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '600 mg / 100 ml S.F. in 1 ora × 3/die' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '400 mg / 100 ml S.F. in 1 ora × 3/die' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '300 mg / 100 ml S.F. in 1 ora × 3/die' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '200 mg / 100 ml S.F. in 1 ora × 3/die' }
+                ]
+            },
+            {
+                id: 'ceftolozano_tazobactam',
+                name: 'CEFTOLOZANO / TAZOBACTAM (ZERBAXA)',
+                category: 'Cefalosporina / Inibitore beta-lattamasi',
+                loadingDose: 'Cl.Cr > 15: d.c. 3 g / 50 ml S.F. in 1 ora | Cl.Cr ≤ 15: d.c. 0,75 g / 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 4,5 g in 50 ml S.F.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 1 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 0,5 ml/h' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: 'd.c. 0,75 g / 50 ml in 1h, poi 4,5 g / 50 ml S.F. — infusione a 0,2 ml/h' }
+                ]
+            },
+            {
+                id: 'ceftazidime_avibactam',
+                name: 'CEFTAZIDIME / AVIBACTAM (ZAVICEFTA)',
+                category: 'Cefalosporina / Inibitore beta-lattamasi',
+                loadingDose: 'd.c. 2,5 g / 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 2,5 g in 50 ml S.F.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 3 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 1,5 ml/h' },
+                    { min: 11, max: 15, label: 'Cl.Cr 11 – 15 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 1 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 0,5 ml/h' }
+                ]
+            },
+            {
+                id: 'claritromicina',
+                name: 'CLARITROMICINA',
+                category: 'Macrolide',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 2/die' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora × 2/die' }
+                ]
+            },
+            {
+                id: 'daptomicina',
+                name: 'DAPTOMICINA (CUBICIN)',
+                category: 'Lipopeptide ciclico',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Il dosaggio (4 / 6 / 8 mg/kg) varia in base alla sede d’infezione (cute, batteriemia, endocardite).',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '4 – 8 mg/kg in 100 ml S.F. in 30 min × 1/die' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '4 – 8 mg/kg in 100 ml S.F. in 30 min ogni 48 ore' }
+                ]
+            },
+            {
+                id: 'fosfomicina',
+                name: 'FOSFOMICINA',
+                category: 'Derivato acido fosfonico',
+                loadingDose: 'd.c. 6 g / 100 ml G5% in 1 ora',
+                note: 'Mantenimento in infusione continua: 16 g in 250 ml Glucosata 5%.',
+                bands: [
+                    { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '16 g / 250 ml G5% — infusione a 10 ml/h' },
+                    { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '16 g / 250 ml G5% — infusione a 7 ml/h' },
+                    { min: 21, max: 30, label: 'Cl.Cr 21 – 30 ml/min', dose: '16 g / 250 ml G5% — infusione a 6 ml/h' },
+                    { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '16 g / 250 ml G5% — infusione a 4 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '16 g / 250 ml G5% — infusione a 2 ml/h' }
+                ]
+            },
+            {
+                id: 'gentamicina',
+                name: 'GENTAMICINA',
+                category: 'Aminoglicoside',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '5 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '3,5 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '1,5 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1,5 mg/kg in 100 ml S.F. in 1 ora ogni 36 ore' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '1,5 mg/kg in 100 ml S.F. in 1 ora ogni 48 ore' }
+                ]
+            },
+            {
+                id: 'ertapenem',
+                name: 'ERTAPENEM',
+                category: 'Carbapeneme',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Controindicato per Cl.Cr ≤ 30 ml/min secondo schema.',
+                bands: [
+                    { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '1 g in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: 'CONTROINDICATO', contraindicated: true }
+                ]
+            },
+            {
+                id: 'imipenem',
+                name: 'IMIPENEM / CILASTATINA',
+                category: 'Carbapeneme',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Preparazione: 500 mg in 50 ml S.F. in infusione continua.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 50 ml S.F. — infusione a 8,5 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '500 mg / 50 ml S.F. — infusione a 6 ml/h' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '500 mg / 50 ml S.F. — infusione a 4 ml/h' }
+                ]
+            },
+            {
+                id: 'linezolid',
+                name: 'LINEZOLID',
+                category: 'Ossazolidinone',
+                loadingDose: 'd.c. 300 mg / 150 ml in 30 min',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: 'd.c. 300 mg / 150 ml in 30 min, poi infusione continua a 25 ml/h' }
+                ]
+            },
+            {
+                id: 'levofloxacina',
+                name: 'LEVOFLOXACINA',
+                category: 'Fluorochinolone',
+                loadingDose: 'Primo giorno: 500 mg / 100 ml S.F. × 1 (o 750 mg/150 ml in 30 min × 1)',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '750 mg / 150 ml S.F. in 30 min × 1/die (oppure 500 mg × 1–2/die)' },
+                    { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: 'Primo giorno 500 mg / 100 ml S.F. × 1, poi 250 mg / 100 ml S.F. × 1/die' },
+                    { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: 'Primo giorno 500 mg / 100 ml S.F. × 1, poi 125 mg / 100 ml S.F. × 1/die' }
+                ]
+            },
+            {
+                id: 'metronidazolo',
+                name: 'METRONIDAZOLO',
+                category: 'Nitroimidazolo',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '500 mg / 100 ml S.F. in 30 min × 3/die' }
+                ]
+            },
+            {
+                id: 'meropenem',
+                name: 'MEROPENEM',
+                category: 'Carbapeneme',
+                loadingDose: 'd.c. 2 g / 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 1 g in 50 ml S.F.',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 8,5 ml/h' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 4 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '1 g / 50 ml S.F. — infusione a 1 ml/h' }
+                ]
+            },
+            {
+                id: 'meropenem_vaborbactam',
+                name: 'MEROPENEM / VABORBACTAM (VABOREM)',
+                category: 'Carbapeneme / Inibitore beta-lattamasi',
+                loadingDose: 'd.c. 2/2 g in 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 1/1 g in 50 ml S.F. (o 2/2 g a 6,5 ml/h per Cl.Cr > 40).',
+                bands: [
+                    { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '2/2 g in 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 4 ml/h' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 2 ml/h' }
+                ]
+            },
+            {
+                id: 'piperacillina_tazobactam',
+                name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)',
+                category: 'Ureidopenicillina / Inibitore beta-lattamasi',
+                loadingDose: 'd.c. 6,75 g / 50 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 4,5 g in 50 ml S.F.',
+                bands: [
+                    { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 8,5 ml/h' },
+                    { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 6,5 ml/h' },
+                    { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 4 ml/h' }
+                ]
+            },
+            {
+                id: 'rifampicina',
+                name: 'RIFAMPICINA',
+                category: 'Rifamicina',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 250 ml S.F. in 3 ore × 1/die' }
+                ]
+            },
+            {
+                id: 'tobramicina',
+                name: 'TOBRAMICINA',
+                category: 'Aminoglicoside',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '5 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '2 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '1,3 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '0,2 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '0,1 mg/kg in 100 ml S.F. in 1 ora × 1/die' }
+                ]
+            },
+            {
+                id: 'tigeciclina',
+                name: 'TIGECICLINA',
+                category: 'Glicilciclina',
+                loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora × 2 volte a 12h di distanza',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale.',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 50 ml S.F. in 1 ora × 2/die' }
+                ]
+            },
+            {
+                id: 'teicoplanina',
+                name: 'TEICOPLANINA',
+                category: 'Glicopeptide',
+                loadingDose: 'd.c. 10 mg/kg in 50 ml S.F. in 30 min × 2 volte a 12h di distanza',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '10 mg/kg in 50 ml S.F. in 30 min × 1/die' },
+                    { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '5 mg/kg in 50 ml S.F. in 30 min × 1/die' },
+                    { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '3 mg/kg in 50 ml S.F. in 30 min × 1/die' }
+                ]
+            },
+            {
+                id: 'vancomicina',
+                name: 'VANCOMICINA',
+                category: 'Glicopeptide',
+                loadingDose: 'd.c. 15 mg/kg in 100 ml S.F. in 1 ora',
+                note: 'Mantenimento in infusione continua: 2 g in 50 ml S.F. Monitorare vancocinemia.',
+                bands: [
+                    { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' },
+                    { min: 61, max: 80, label: 'Cl.Cr 61 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' },
+                    { min: 51, max: 60, label: 'Cl.Cr 51 – 60 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,8 ml/h' },
+                    { min: 41, max: 50, label: 'Cl.Cr 41 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,7 ml/h' },
+                    { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' },
+                    { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,3 ml/h' },
+                    { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,1 ml/h' }
+                ]
+            },
+            {
+                id: 'aciclovir',
+                name: 'ACICLOVIR',
+                category: 'Antivirale',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: '',
+                bands: [
+                    { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '10 mg/kg in 100 ml S.F. in 1 ora × 3/die' },
+                    { min: 26, max: 50, label: 'Cl.Cr 26 – 50 ml/min', dose: '10 mg/kg in 100 ml S.F. in 1 ora × 2/die' },
+                    { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '10 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '200 mg × 2/die (o 2,5–5 mg/kg × 1/die)' }
+                ]
+            },
+            {
+                id: 'ganciclovir',
+                name: 'GANCICLOVIR',
+                category: 'Antivirale',
+                loadingDose: 'Nessuna dose di carico specifica',
+                note: 'Schema relativo a terapia di induzione.',
+                bands: [
+                    { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '5 mg/kg in 100 ml S.F. in 1 ora × 2/die' },
+                    { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '2,5 mg/kg in 100 ml S.F. in 1 ora × 2/die' },
+                    { min: 26, max: 40, label: 'Cl.Cr 26 – 40 ml/min', dose: '2,5 mg/kg in 100 ml S.F. in 1 ora × 1/die' },
+                    { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '1,25 mg/kg in 100 ml S.F. in 1 ora × 2/die' },
+                    { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1,25 mg/kg in 100 ml S.F. in 1 ora × 3 volte a settimana' }
+                ]
+            },
+            {
+                id: 'caspofungina',
+                name: 'CASPOFUNGINA',
+                category: 'Antimicotico (Echinocandina)',
+                loadingDose: 'd.c. 70 mg in 100 ml S.F. in 1 ora',
+                note: 'Nessun aggiustamento richiesto in insufficienza renale (ridurre a 35 mg/die solo in insufficienza epatica moderata).',
+                bands: [
+                    { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '70 mg in 100 ml S.F. in 1 ora × 1/die (o 50 mg/die se peso < 80 kg dopo d.c.)' }
+                ]
+            }
+        ];
+
+        function initAntibioticsSection() {
+            renderAbxPickerList();
+            onAbxChange();
+        }
+
+        function openAbxPickerModal() {
+            const modal = document.getElementById('abxPickerModal');
+            const input = document.getElementById('abxSearchInput');
+            if (input) input.value = '';
+            renderAbxPickerList();
+            modal.classList.remove('hidden');
+        }
+
+        function closeAbxPickerModal() {
+            document.getElementById('abxPickerModal').classList.add('hidden');
+        }
+
+        function renderAbxPickerList() {
+            const container = document.getElementById('abxPickerList');
+            if (!container) return;
+            const currentId = document.getElementById('abxSelect').value;
+            const q = (document.getElementById('abxSearchInput')?.value || '').toLowerCase().trim();
+
+            const filtered = antibioticsDatabase.filter(a => {
+                if (!q) return true;
+                return a.name.toLowerCase().includes(q) || a.category.toLowerCase().includes(q);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">Nessun antibiotico trovato</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(a => {
+                const isSelected = a.id === currentId;
+                return `
+                    <button type="button" onclick="selectAbxFromModal('${a.id}')" class="w-full text-left p-3 rounded-xl border transition active:scale-[0.99] flex items-center justify-between gap-2.5 ${isSelected ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-white border-slate-200 hover:bg-slate-50'}">
+                        <div class="min-w-0 flex-1">
+                            <div class="font-extrabold text-sm text-slate-900 truncate">${a.name}</div>
+                            <div class="text-[11px] text-slate-500 truncate mt-0.5">${a.category}</div>
+                        </div>
+                        <span class="shrink-0 text-[10px] font-bold px-2 py-1 rounded-lg ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600'}">
+                            ${a.bands.length === 1 ? 'No agg. renale' : `${a.bands.length} fasce`}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectAbxFromModal(abxId) {
+            document.getElementById('abxSelect').value = abxId;
+            closeAbxPickerModal();
+            onAbxChange();
+        }
+
+        function setQuickCrCl(val) {
+            document.getElementById('crclInput').value = val;
+            onCrClChange();
+        }
+
+        function updateAmikacinaInterval() {
+            const cr = parseFloat(document.getElementById('amikacinaCreatInput')?.value);
+            const res = document.getElementById('amikacinaResultBadge');
+            if (!res) return;
+            if (!isNaN(cr) && cr > 0) {
+                const hours = Math.round(cr * 9 * 10) / 10;
+                res.textContent = `Intervallo consigliato: ogni ${hours} ore`;
+            } else {
+                res.textContent = 'Inserisci creatinina sierica valida';
+            }
+        }
+
+        function onAbxChange() {
+            const abxId = document.getElementById('abxSelect').value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+
+            document.getElementById('selectedAbxTitle').textContent = abx.name;
+            document.getElementById('selectedAbxCategory').textContent = abx.category;
+
+            const amikBox = document.getElementById('amikacinaCalcBox');
+            if (abx.specialAmikacina) {
+                amikBox.classList.remove('hidden');
+                updateAmikacinaInterval();
+            } else {
+                amikBox.classList.add('hidden');
+            }
+
+            onCrClChange();
+        }
+
+        function onCrClChange() {
+            const abxId = document.getElementById('abxSelect').value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+            const rawCrCl = parseFloat(document.getElementById('crclInput').value);
+            const crcl = isNaN(rawCrCl) ? 90 : Math.max(0, rawCrCl);
+
+            // Aggiorna badge stato funzione renale
+            const statusBadge = document.getElementById('renalStatusBadge');
+            if (crcl > 80) {
+                statusBadge.textContent = 'Normofunzione (> 80)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+            } else if (crcl > 50) {
+                statusBadge.textContent = 'Lieve riduzione (51–80)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800';
+            } else if (crcl > 30) {
+                statusBadge.textContent = 'Moderata (31–50)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+            } else if (crcl > 15) {
+                statusBadge.textContent = 'Severa (16–30)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800';
+            } else {
+                statusBadge.textContent = 'Grave / Terminale (≤ 15)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-800';
+            }
+
+            // Evidenzia tasto rapido attivo
+            document.querySelectorAll('.crcl-chip').forEach(btn => {
+                const chipVal = parseFloat(btn.dataset.crcl);
+                const isActive = (chipVal === 90 && crcl > 80) ||
+                                 (chipVal === 60 && crcl > 50 && crcl <= 80) ||
+                                 (chipVal === 50 && crcl > 40 && crcl <= 50) ||
+                                 (chipVal === 40 && crcl > 30 && crcl <= 40) ||
+                                 (chipVal === 30 && crcl > 15 && crcl <= 30) ||
+                                 (chipVal === 15 && crcl > 10 && crcl <= 15) ||
+                                 (chipVal === 10 && crcl <= 10);
+                if (isActive) {
+                    btn.className = 'crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95 bg-indigo-700 text-white border-indigo-700';
+                } else {
+                    btn.className = 'crcl-chip py-1.5 text-[10px] font-extrabold rounded-lg border transition active:scale-95 bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+                }
+            });
+
+            // Trova la fascia corrispondente
+            const matchedBand = abx.bands.find(b => crcl >= b.min && crcl <= b.max) || abx.bands[0];
+
+            document.getElementById('abxResultDrugName').textContent = abx.name;
+            document.getElementById('abxResultBandLabel').textContent = matchedBand.label;
+            document.getElementById('abxLoadingDoseText').textContent = abx.loadingDose;
+
+            const maintBox = document.getElementById('abxMaintenanceBox');
+            const maintText = document.getElementById('abxMaintenanceText');
+            maintText.textContent = matchedBand.dose;
+            if (matchedBand.contraindicated) {
+                maintBox.className = 'bg-red-600/35 border border-red-400 rounded-xl p-3 flex items-start gap-2.5';
+            } else {
+                maintBox.className = 'bg-white/10 border border-white/15 rounded-xl p-3 flex items-start gap-2.5';
+            }
+
+            const noteBox = document.getElementById('abxClinicalNoteBox');
+            const noteText = document.getElementById('abxClinicalNoteText');
+            if (abx.note) {
+                noteText.textContent = abx.note;
+                noteBox.classList.remove('hidden');
+            } else {
+                noteBox.classList.add('hidden');
+            }
+
+            // Renderizza tutte le fasce nella tabella riepilogativa
+            const bandsList = document.getElementById('abxBandsList');
+            bandsList.innerHTML = abx.bands.map(b => {
+                const isCurrent = b === matchedBand;
+                const sampleTarget = b.min === 0 ? Math.min(10, b.max) : b.min;
+                return `
+                    <button type="button" onclick="setQuickCrCl(${sampleTarget})" class="w-full text-left p-2.5 rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 ${isCurrent ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
+                        <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md w-fit shrink-0 ${isCurrent ? 'bg-indigo-700 text-white' : 'bg-white text-slate-700 border border-slate-200'}">
+                            ${b.label}
+                        </span>
+                        <span class="text-xs font-bold ${b.contraindicated ? 'text-red-700' : 'text-slate-900'} sm:text-right">
+                            ${b.dose}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('globalSearch');
+            input.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderContacts();
+        }
+
+        function openAddContactModal() {
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
+
+        function closeAddContactModal() {
+            document.getElementById('addContactModal').classList.add('hidden');
+        }
+
+        function saveNewContact(e) {
+            e.preventDefault();
+            const name = document.getElementById('newContactName').value.trim();
+            const phone = document.getElementById('newContactPhone').value.trim();
+            const location = document.getElementById('newContactLoc').value.trim();
+            const note = document.getElementById('newContactNote').value.trim();
+
+            const newId = Date.now();
+            contactsData.unshift({
+                id: newId,
+                name,
+                phone,
+                location: location || 'Ospedale Cannizzaro',
+                note
+            });
+            favContactIds.add(newId);
+
+            persistContacts();
+            persistFavorites();
+            e.target.reset();
+            closeAddContactModal();
+            renderContacts();
+            showToast('Interno salvato');
+        }
+
+        function askResetRubrica() {
+            document.getElementById('confirmResetModal').classList.remove('hidden');
+        }
+
+        function closeConfirmResetModal() {
+            document.getElementById('confirmResetModal').classList.add('hidden');
+        }
+
+        function confirmResetRubrica() {
+            contactsData = [...defaultContactsData];
+            persistContacts();
+            renderContacts();
+            closeConfirmResetModal();
+            showToast('Rubrica predefinita ripristinata');
+        }
+
+        // ==========================================
+        // ASSISTENTE VOCALE & TTS
+        // ==========================================
+        let recognition = null;
+        let isRecording = false;
+        let currentAudioPlayer = null;
+
+        function toggleAssistantModal() {
+            const modal = document.getElementById('assistantModal');
+            modal.classList.toggle('hidden');
+            if (modal.classList.contains('hidden')) {
+                if (isRecording && recognition) recognition.stop();
+                if (currentAudioPlayer) {
+                    currentAudioPlayer.pause();
+                    currentAudioPlayer = null;
+                }
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function toggleVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                appendChatMessage('bot', 'Riconoscimento vocale non supportato su questo browser.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtn = document.getElementById('micBtn');
+            const micStatus = document.getElementById('micStatus');
+
+            recognition.onstart = () => {
+                isRecording = true;
+                micBtn.classList.remove('bg-hospital-600');
+                micBtn.classList.add('bg-red-600', 'pulse-ring');
+                micStatus.textContent = 'In ascolto... Parla ora';
+                micStatus.classList.add('text-red-600', 'font-bold');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                processAssistantQuery(transcript);
+            };
+
+            recognition.onerror = () => {
+                micStatus.textContent = 'Errore microfono. Riprova o scrivi.';
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                micBtn.classList.add('bg-hospital-600');
+                micBtn.classList.remove('bg-red-600', 'pulse-ring');
+                micStatus.textContent = 'Tocca il microfono per parlare';
+                micStatus.classList.remove('text-red-600', 'font-bold');
+            };
+
+            recognition.start();
+        }
+
+        function handleTextAssistantSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('assistantTextInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            processAssistantQuery(text);
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            
+            if (sender === 'user') {
+                div.className = 'flex justify-end';
+                div.innerHTML = `<div class="bg-hospital-700 text-white p-2.5 rounded-xl rounded-tr-none shadow-xs text-xs max-w-[85%]" >${text}</div>`;
+            } else {
+                div.className = 'flex items-start gap-2';
+                div.innerHTML = `
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        <i class="fa-solid fa-staff-snake"></i>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 max-w-[88%] leading-relaxed">
+                        ${text}
+                    </div>
+                `;
+            }
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const dataSize = pcm16.length * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            const writeString = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) view.setInt16(offset, pcm16[i], true);
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function fallbackBrowserSpeech(cleanText) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'it-IT';
+                const voices = window.speechSynthesis.getVoices();
+                const bestItVoice = voices.find(v => v.lang.includes('it') && (v.name.includes('Google') || v.name.includes('Natural'))) || voices.find(v => v.lang.includes('it'));
+                if (bestItVoice) utterance.voice = bestItVoice;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        async function speakText(text) {
+            if (currentAudioPlayer) { currentAudioPlayer.pause(); currentAudioPlayer = null; }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/[📍📞🚌•]/g, '').replace(/\s+/g, ' ').trim();
+            if (!cleanText) return;
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ parts: [{ text: `Leggi con tono cordiale: ${cleanText}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const res = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const result = await res.json();
+                const audioData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                if (audioData) {
+                    const wavBlob = pcmToWav(new Int16Array(base64ToArrayBuffer(audioData)), 24000);
+                    currentAudioPlayer = new Audio(URL.createObjectURL(wavBlob));
+                    await currentAudioPlayer.play();
+                } else {
+                    fallbackBrowserSpeech(cleanText);
+                }
+            } catch (e) {
+                fallbackBrowserSpeech(cleanText);
+            }
+        }
+
+        async function processAssistantQuery(query) {
+            appendChatMessage('user', query);
+            const cleanQuery = query.toLowerCase().replace(/[^\w\sàèéìòù]/g, ' ');
+
+            if (/(autobus|bus|amts|brt|treno|metro|arrivare|parcheggio|sosta|indirizzo|via messina)/.test(cleanQuery)) {
+                const transportReply = `🚌 <strong>Ospedale Cannizzaro — Via Messina 829, Catania:</strong><br>• <strong>Bus AMTS:</strong> linea veloce <strong>BRT5</strong> (capolinea interno da Stazione Centrale).<br>• <strong>Auto & Sosta:</strong> uscita Tangenziale <em>Catania Nord</em>.`;
+                appendChatMessage('bot', transportReply);
+                speakText(transportReply);
+                return;
+            }
+
+            const stopWords = new Set(['dove', 'trova', 'trovo', 'piano', 'edificio', 'reparto', 'reparti', 'numero', 'interno', 'chiama', 'qual', 'quale', 'del', 'della', 'dei', 'nel', 'nella', 'che', 'mi', 'puoi']);
+            const queryTerms = cleanQuery.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+
+            const scoredDepts = departmentsData.map(d => {
+                let score = 0;
+                if (cleanQuery.includes(d.name.toLowerCase())) score += 10;
+                queryTerms.forEach(t => {
+                    if (d.name.toLowerCase().includes(t)) score += 4;
+                    else if (d.keywords.toLowerCase().includes(t)) score += 2;
+                });
+                return { item: d, score };
+            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+            const scoredContacts = contactsData.map(c => {
+                let score = 0;
+                queryTerms.forEach(t => {
+                    if (c.name.toLowerCase().includes(t)) score += 4;
+                });
+                return { item: c, score };
+            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+            const topDepts = scoredDepts.slice(0, 2).map(x => x.item);
+            const topContacts = scoredContacts.slice(0, 2).map(x => x.item);
+
+            if (topDepts.length > 0 || topContacts.length > 0) {
+                let parts = [];
+                if (topDepts.length > 0) parts.push(topDepts.map(d => `📍 <strong>${d.name}</strong>: <strong>Ed. ${d.building}</strong> (${d.floor})`).join('<br>'));
+                if (topContacts.length > 0) parts.push(topContacts.map(c => `📞 <strong>${c.name}</strong>: <span class="font-mono font-bold">${c.phone}</span>`).join('<br>'));
+                const reply = parts.join('<br>');
+                appendChatMessage('bot', reply);
+                speakText(reply);
+                return;
+            }
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: query }] }], systemInstruction: { parts: [{ text: "Sei l'assistente dell'Ospedale Cannizzaro. Rispondi in massimo 2 frasi in italiano." }] } })
+                });
+                const result = await res.json();
+                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "Non ho trovato corrispondenze.";
+                appendChatMessage('bot', text);
+                speakText(text);
+            } catch (e) {
+                appendChatMessage('bot', "Nessun risultato trovato. Chiama il Centralino al 2107.");
+            }
+        }
+
+        function copyLocation(name, bld, floor) {
+            copyText(`${name} - ${bld}, ${floor}`);
+        }
+
+        function copyText(text) {
+            const t = document.createElement('textarea');
+            t.value = text;
+            document.body.appendChild(t);
+            t.select();
+            document.execCommand('copy');
+            document.body.removeChild(t);
+            showToast(`Copiato: ${text}`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2000);
+        }
+
+        // ==========================================
+        // CONFIGURAZIONE PWA (MANIFEST, ICONA LOGO & SERVICE WORKER)
+        // ==========================================
+        let deferredInstallPrompt = null;
+
+        function setupPwaAssets() {
+            // Genera icona PNG ad alta risoluzione (512x512) con il logo ufficiale Ospedale Cannizzaro
+            const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+                <rect width="240" height="240" rx="48" fill="#ffffff"/>
+                <g transform="translate(15, 52)">
+                    <rect x="0" y="56" width="210" height="63" fill="#ffed00"/>
+                    <path d="M 10,20 L 68,25 L 112,22 L 154,12 L 182,4 L 166,35 L 161,68 L 156,95 L 148,108 L 122,95 L 92,80 L 64,65 L 35,45 L 14,32 Z" fill="#d9291c" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M 48,24 L 46,52 M 76,24 L 74,70 M 108,22 L 106,86 M 136,16 L 134,98 M 112,48 L 164,46 M 110,72 L 158,70" stroke="#ffffff" stroke-width="1.3" fill="none"/>
+                    <g transform="translate(158, 52) rotate(24)"><rect x="-13" y="-13" width="26" height="26" fill="#ffed00"/></g>
+                    <g transform="translate(158, 52) rotate(-14)">
+                        <rect x="-11" y="-11" width="22" height="22" fill="#ffffff" stroke="#d9291c" stroke-width="0.6"/>
+                        <text x="0" y="6" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="#0044aa" text-anchor="middle">H</text>
+                    </g>
+                    <text x="5" y="83" font-family="Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">OSPEDALE</text>
+                    <text x="5" y="109" font-family="Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">CANNIZZARO</text>
+                    <text x="206" y="114" font-family="Arial, sans-serif" font-weight="700" font-size="11.5" fill="#111111" text-anchor="end">CATANIA</text>
+                    <text x="105" y="131" font-family="Arial, sans-serif" font-weight="700" font-size="8.6" fill="#111111" text-anchor="middle" letter-spacing="0.2">AZIENDA OSPEDALIERA PER L'EMERGENZA</text>
+                </g>
+            </svg>`;
+
+            const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(logoSvg);
+            const faviconEl = document.getElementById('pwa-favicon');
+            if (faviconEl) faviconEl.href = svgDataUrl;
+
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 512, 512);
+                ctx.drawImage(img, 0, 0, 512, 512);
+                const pngDataUrl = canvas.toDataURL('image/png');
+
+                const appleIcon = document.getElementById('pwa-apple-icon');
+                if (appleIcon) appleIcon.href = pngDataUrl;
+
+                const manifestObj = {
+                    name: 'Staff Navigator - Anestesia e Rianimazione',
+                    short_name: 'Staff Nav',
+                    description: 'Rubrica, Infusioni e Protocolli Antibiotici - Ospedale Cannizzaro Catania',
+                    start_url: window.location.href.split('#')[0],
+                    scope: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1),
+                    display: 'standalone',
+                    background_color: '#082f49',
+                    theme_color: '#082f49',
+                    orientation: 'portrait',
+                    icons: [
+                        { src: pngDataUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+                        { src: pngDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                    ]
+                };
+
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestEl = document.getElementById('pwa-manifest');
+                if (manifestEl) manifestEl.href = URL.createObjectURL(manifestBlob);
+            };
+            img.src = svgDataUrl;
+
+            // Registra Service Worker inline (funziona su GitHub Pages HTTPS senza file esterni)
+            if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+                const swCode = `
+                    const CACHE_NAME = 'cannizzaro-staff-nav-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        if (e.request.method !== 'GET') return;
+                        e.respondWith(
+                            fetch(e.request)
+                                .then((res) => {
+                                    const copy = res.clone();
+                                    caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+                                    return res;
+                                })
+                                .catch(() => caches.match(e.request))
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const btn = document.getElementById('installAppBtn');
+            if (btn) {
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+            }
+        });
+
+        async function triggerPwaInstall() {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('installAppBtn').classList.add('hidden');
+            }
+            deferredInstallPrompt = null;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupPwaAssets();
+            renderContacts();
+            initInfusionCalculator();
+            initAntibioticsSection();
+        });
+    </script>
+</body>
+</html>
