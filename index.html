@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cannizzaro Staff Navigator - Orientamento e Rubrica</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome per icone ospedaliere e UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        hospital: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
+        .pulse-ring {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0.4rem);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased pb-20 md:pb-6 select-none sm:select-auto">
+
+    <!-- Header Compatto con Logo Ufficiale A.O.E. Cannizzaro -->
+    <header class="bg-hospital-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-lg md:max-w-4xl mx-auto px-2.5 py-2 flex items-center justify-between gap-2">
+            <!-- Blocco Logo + Titolo -->
+            <div class="flex items-center space-x-2 min-w-0">
+                <div class="bg-white px-1.5 py-1 rounded-lg shadow-sm border border-white/30 shrink-0 flex items-center justify-center">
+                    <!-- Riproduzione vettoriale nitida del Logo Ospedale Cannizzaro Catania -->
+                    <svg viewBox="0 0 210 135" class="h-8 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
+                        <rect x="0" y="56" width="210" height="63" fill="#ffed00"/>
+                        <path d="M 10,20 L 68,25 L 112,22 L 154,12 L 182,4 L 166,35 L 161,68 L 156,95 L 148,108 L 122,95 L 92,80 L 64,65 L 35,45 L 14,32 Z" fill="#d9291c" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M 48,24 L 46,52 M 76,24 L 74,70 M 108,22 L 106,86 M 136,16 L 134,98 M 112,48 L 164,46 M 110,72 L 158,70" stroke="#ffffff" stroke-width="1.3" fill="none"/>
+                        <g transform="translate(158, 52) rotate(24)">
+                            <rect x="-13" y="-13" width="26" height="26" fill="#ffed00"/>
+                        </g>
+                        <g transform="translate(158, 52) rotate(-14)">
+                            <rect x="-11" y="-11" width="22" height="22" fill="#ffffff" stroke="#d9291c" stroke-width="0.6"/>
+                            <text x="0" y="6" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="#0044aa" text-anchor="middle">H</text>
+                        </g>
+                        <text x="5" y="83" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">OSPEDALE</text>
+                        <text x="5" y="109" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="22" fill="#111111" letter-spacing="-0.5">CANNIZZARO</text>
+                        <text x="206" y="114" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="11.5" fill="#111111" text-anchor="end">CATANIA</text>
+                        <text x="105" y="131" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="8.6" fill="#111111" text-anchor="middle" letter-spacing="0.2">AZIENDA OSPEDALIERA PER L'EMERGENZA</text>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="font-extrabold text-sm sm:text-base leading-none tracking-tight truncate">Staff Navigator</h1>
+                    <p class="text-[10px] text-sky-200 font-medium truncate mt-0.5">Reparti, Piani & Interni</p>
+                </div>
+            </div>
+            
+            <!-- Azioni Rapide Header -->
+            <div class="flex items-center space-x-1.5 shrink-0">
+                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-kit-medical"></i>
+                    <span>Urgenze</span>
+                </button>
+                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                    <span class="hidden xs:inline">Vocale</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra di Ricerca Compatta (16px su mobile previene zoom automatico iOS) -->
+        <div class="bg-hospital-950/50 px-2.5 py-1.5 border-t border-white/10">
+            <div class="max-w-lg md:max-w-4xl mx-auto relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input 
+                    type="search" 
+                    id="globalSearch" 
+                    oninput="handleSearch()"
+                    placeholder="Reparto, piano, edificio, ingresso o interno..." 
+                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-8 pr-8 py-1.5 rounded-lg text-base sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5">
+                    <i class="fa-solid fa-circle-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigazione Tab Desktop -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[88px] z-30">
+        <div class="max-w-4xl mx-auto px-4 flex space-x-6">
+            <button onclick="switchTab('reparti')" id="tab-desk-reparti" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-hospital-600 text-hospital-700 flex items-center space-x-1.5">
+                <i class="fa-solid fa-building-user"></i>
+                <span>Reparti & Piani</span>
+            </button>
+            <button onclick="switchTab('rubrica')" id="tab-desk-rubrica" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+                <i class="fa-solid fa-address-book"></i>
+                <span>Rubrica Interna</span>
+                <span id="rubricaBadgeDesk" class="bg-slate-100 text-slate-600 text-[11px] px-1.5 py-0.2 rounded-full">0</span>
+            </button>
+            <button onclick="switchTab('utilita')" id="tab-desk-utilita" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+                <i class="fa-solid fa-compass"></i>
+                <span>Come Arrivare & Percorsi</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenuto Principale Ad Alta Densità -->
+    <main class="max-w-lg md:max-w-4xl mx-auto px-2.5 pt-2.5">
+
+        <!-- SEZIONE 1: MAPPA REPARTI & EDIFICI -->
+        <section id="view-reparti" class="space-y-2">
+            
+            <!-- Filtri Edificio + Preferiti -->
+            <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar -mx-2.5 px-2.5 py-0.5">
+                <button onclick="filterBuilding('FAV')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95 flex items-center gap-1" data-bld="FAV">
+                    <i class="fa-solid fa-star text-amber-400 text-[11px]"></i>Preferiti
+                </button>
+                <button onclick="filterBuilding('ALL')" class="bld-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition shadow-sm active:scale-95" data-bld="ALL">
+                    Tutti
+                </button>
+                <button onclick="filterBuilding('F1')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="F1">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500 mr-1"></span>Ed. F1
+                </button>
+                <button onclick="filterBuilding('F2')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="F2">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1"></span>Ed. F2
+                </button>
+                <button onclick="filterBuilding('F3')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="F3">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1"></span>Ed. F3
+                </button>
+                <button onclick="filterBuilding('E')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="E">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1"></span>Ed. E
+                </button>
+                <button onclick="filterBuilding('L')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="L">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 mr-1"></span>Ed. L
+                </button>
+                <button onclick="filterBuilding('S')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="S">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-1"></span>Ed. S (USU)
+                </button>
+                <button onclick="filterBuilding('R')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="R">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1"></span>Ed. R
+                </button>
+                <button onclick="filterBuilding('G')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="G">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1"></span>Ed. G
+                </button>
+                <button onclick="filterBuilding('Q')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="Q">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 mr-1"></span>Ed. Q
+                </button>
+                <button onclick="filterBuilding('M1')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="M1">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 mr-1"></span>Ed. M1
+                </button>
+                <button onclick="filterBuilding('N2')" class="bld-filter bg-white text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-bld="N2">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 mr-1"></span>Ed. N2
+                </button>
+            </div>
+
+            <!-- Barra Contatore & Suggerimento -->
+            <div class="flex justify-between items-center text-[11px] text-slate-500 px-0.5">
+                <span id="resultsCount" class="font-semibold">Reparti</span>
+                <span class="text-sky-700 font-medium">Raggruppati per edificio</span>
+            </div>
+
+            <!-- Contenitore Gruppi Edifici -->
+            <div id="departmentsGrid" class="space-y-4">
+                <!-- Popolato da JS -->
+            </div>
+
+            <!-- Stato Vuoto Ricerca -->
+            <div id="emptyDepartments" class="hidden text-center py-8 px-4 bg-white rounded-xl border border-slate-200">
+                <p id="emptyDeptTitle" class="font-bold text-slate-800 text-sm">Nessun reparto trovato</p>
+                <p id="emptyDeptDesc" class="text-slate-500 text-xs mt-1">Prova con un'altra parola chiave o azzera i filtri.</p>
+                <button onclick="resetAllFilters()" class="mt-3 bg-hospital-50 text-hospital-700 font-bold px-3.5 py-1.5 rounded-lg text-xs active:scale-95 transition">
+                    Mostra tutti
+                </button>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: RUBRICA INTERNA COMPATTA -->
+        <section id="view-rubrica" class="hidden space-y-2">
+            
+            <!-- Controlli Rubrica Ultra-Compatti -->
+            <div class="flex items-center justify-between gap-1.5 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span>Preferiti</span>
+                    </button>
+                    <button onclick="askResetRubrica()" class="px-2 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 active:scale-95 transition" title="Ripristina rubrica predefinita">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+                <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm transition flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </div>
+
+            <!-- Lista Contatti Compatta -->
+            <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                <!-- Popolato da JS -->
+            </div>
+
+            <div id="emptyContacts" class="hidden text-center py-8 px-4 bg-white rounded-xl border border-slate-200">
+                <h3 class="font-bold text-slate-700 text-sm">Nessun contatto trovato</h3>
+                <p class="text-xs text-slate-500 mt-1">Modifica la ricerca o disattiva il filtro preferiti.</p>
+            </div>
+        </section>
+
+        <!-- SEZIONE 3: COME ARRIVARE, ACCESSI E PERCORSI INTERNI -->
+        <section id="view-utilita" class="hidden space-y-2.5">
+            
+            <!-- Banner Sede & Contatti Pubblici Ufficiali -->
+            <div class="bg-gradient-to-r from-hospital-900 to-hospital-800 text-white p-3.5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div>
+                    <div class="flex items-center gap-1.5 text-sky-300 text-[11px] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Sede Principale Presidio Ospedaliero</span>
+                    </div>
+                    <h2 class="font-extrabold text-sm sm:text-base mt-0.5">Via Messina, 829 — 95126 Catania (CT)</h2>
+                    <p class="text-[11px] text-sky-100 mt-0.5">Ingresso centrale Viale Enzo Longo / Via Messina • CUP 800 837 621 • Centralino 095 726 1111</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5 shrink-0">
+                    <a href="tel:800837621" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone text-[10px]"></i>
+                        <span>CUP: 800 837 621</span>
+                    </a>
+                    <a href="tel:0957261111" class="bg-white/15 hover:bg-white/25 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-headset text-[10px]"></i>
+                        <span>095 726 1111</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                
+                <!-- Card Come Arrivare con i Mezzi Pubblici (AMTS / Metro / Treno) -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-bus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Come Arrivare (Mezzi Pubblici)</h3>
+                            <p class="text-[10px] text-slate-500">Linee AMTS, Metropolitana e Stazione FS</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-600">
+                        <li class="flex items-start gap-2">
+                            <span class="bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BRT5</span>
+                            <span><strong>Linea Veloce AMTS BRT5:</strong> collega direttamente la <strong>Stazione Centrale</strong> e il centro città (P.le Sanzio / V.le Ulisse) con capolinea interno <strong>Ospedale Cannizzaro</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-sky-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BUS</span>
+                            <span><strong>Altre linee AMTS:</strong> <strong>948</strong> (P.zza Repubblica - Cannizzaro), <strong>247</strong> (P.le Sanzio - V.le Olimpiadi), <strong>434</strong> (Stazione Centrale - Aci Castello/Aci Trezza), <strong>241</strong> e <strong>935</strong> (fermata Scogliera / Via Messina).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-indigo-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">TRENO</span>
+                            <span><strong>Passante Ferroviario FS:</strong> fermata <strong>Catania Picanello</strong> (circa 900m / 12 min a piedi) oppure Stazione Centrale + bus BRT5.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card Accessi, Auto & Parcheggi -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-square-parking"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Accessi, Auto e Parcheggi</h3>
+                            <p class="text-[10px] text-slate-500">Viabilità interna e sosta utenti/personale</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-600">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-road text-blue-600 mt-0.5 shrink-0"></i>
+                            <span><strong>In Auto (Tangenziale / A18):</strong> uscita <strong>Catania Nord / San Gregorio - Canalicchio</strong>, proseguire verso Ognina / Via Messina 829 (rotatoria Viale Enzo Longo).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-car text-blue-600 mt-0.5 shrink-0"></i>
+                            <span><strong>Parcheggi & Sosta:</strong> disponibile <strong>Parcheggio Multipiano</strong> interno e stalli esterni nell'<strong>Area C</strong> (pagamento anche tramite app EasyPark).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-truck-medical text-red-600 mt-0.5 shrink-0"></i>
+                            <span><strong>Accesso Emergenza:</strong> rampa dedicata <strong>Pronto Soccorso / Camera Calda</strong> all'Edificio F1 (Piano Terra) ed Elidromo aziendale.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card Guida Mappa Edifici Ufficiali -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
+                    <div class="flex items-center gap-2.5 mb-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Mappa e Ubicazione Edifici Ospedalieri (Tabella Ufficiale)</h3>
+                            <p class="text-[10px] text-slate-500">Riepilogo alfabetico delle lettere degli edifici</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-700">
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F1:</strong> Pronto Soccorso, OBI, Emergenza</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F2:</strong> Monoblocco (Chirurgia, Urologia, Nefrologia)</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F3:</strong> Torre Diagnostica (Ustioni, Pediatria, Lab)</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. E:</strong> Materno-Infantile, Ostetricia, Ortopedia</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. L (L1-L7):</strong> Medicina, Oncologia, Pneumologia, Infettive</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. S:</strong> Unità Spinale (USU) & UTIR</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. Q:</strong> Anatomia Patologica, Diabetologia</div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. R, G, M1, N2:</strong> Radioterapia, Riabilitazione, Direzione, 118</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar Compatta (Mobile) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-center pt-1 pb-safe px-1 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('reparti')" id="tab-mob-reparti" class="mob-tab-btn flex flex-col items-center justify-center w-full py-1 text-hospital-700 font-bold active:scale-95 transition">
+            <i class="fa-solid fa-building-user text-base"></i>
+            <span class="text-[10px] mt-0.5">Reparti</span>
+        </button>
+        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="mob-tab-btn flex flex-col items-center justify-center w-full py-1 text-slate-400 font-medium active:scale-95 transition">
+            <i class="fa-solid fa-address-book text-base"></i>
+            <span class="text-[10px] mt-0.5">Rubrica</span>
+        </button>
+        <button onclick="toggleAssistantModal()" class="flex flex-col items-center justify-center -mt-5 px-2 active:scale-95 transition">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-hospital-800 to-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-600/30 border-3 border-white">
+                <i class="fa-solid fa-microphone text-lg"></i>
+            </div>
+            <span class="text-[10px] font-extrabold text-hospital-800 mt-0.5">Vocale</span>
+        </button>
+        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="mob-tab-btn flex flex-col items-center justify-center w-full py-1 text-slate-400 font-medium active:scale-95 transition">
+            <i class="fa-solid fa-compass text-base"></i>
+            <span class="text-[10px] mt-0.5">Arrivo & Info</span>
+        </button>
+    </nav>
+
+    <!-- MODAL: DETTAGLIO REPARTO & TUTTI GLI INTERNI -->
+    <div id="deptDetailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] pb-safe">
+            <div class="bg-hospital-800 text-white px-4 py-3 flex items-start justify-between gap-2">
+                <div>
+                    <div id="detailDeptBadges" class="flex items-center gap-1.5 mb-1"></div>
+                    <h3 id="detailDeptTitle" class="font-bold text-sm sm:text-base leading-snug">Dettaglio Reparto</h3>
+                </div>
+                <button onclick="closeDeptDetailModal()" class="text-white/80 hover:text-white p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="detailDeptBody" class="p-3.5 overflow-y-auto space-y-2.5 bg-slate-50">
+                <!-- Popolato da JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EMERGENZE & GUARDIE ATTIVE -->
+    <div id="emergencyModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] pb-safe">
+            <div class="bg-red-700 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-truck-medical"></i>
+                    <h3 class="font-bold text-sm sm:text-base">Numeri Rapidi Emergenza</h3>
+                </div>
+                <button onclick="closeEmergencyModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="emergencyList" class="p-3 overflow-y-auto space-y-1.5 bg-slate-50">
+                <!-- Popolato da JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFERMA RIPRISTINO RUBRICA -->
+    <div id="confirmResetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-2xl shadow-xl p-4 space-y-3">
+            <div class="flex items-center gap-2 text-slate-800">
+                <i class="fa-solid fa-rotate-left text-hospital-700"></i>
+                <h3 class="font-bold text-sm">Ripristinare la rubrica?</h3>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Verranno ricaricati i contatti predefiniti dell'ospedale e rimossi eventuali interni personalizzati.
+            </p>
+            <div class="flex justify-end gap-2 pt-1">
+                <button onclick="closeConfirmResetModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
+                <button onclick="confirmResetRubrica()" class="px-3.5 py-1.5 text-xs font-bold bg-hospital-700 text-white rounded-lg">Ripristina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ASSISTENTE VOCALE & CHAT AI -->
+    <div id="assistantModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] pb-safe">
+            
+            <!-- Header Modal -->
+            <div class="bg-hospital-800 text-white px-3.5 py-2.5 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+                        <i class="fa-solid fa-robot text-sky-300 text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Assistente Vocale</h3>
+                        <p class="text-[10px] text-sky-200">Chiedi reparto, piano, autobus o numero interno</p>
+                    </div>
+                </div>
+                <button onclick="toggleAssistantModal()" class="text-white/80 hover:text-white p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Area Messaggi Chat -->
+            <div id="chatMessages" class="p-3 overflow-y-auto space-y-2.5 flex-1 bg-slate-50 min-h-[200px]">
+                <div class="flex items-start gap-2">
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        <i class="fa-solid fa-staff-snake"></i>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 space-y-2">
+                        <p>Chiedi a voce o tocca un suggerimento rapido:</p>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="processAssistantQuery('Dove si trova Oncologia Medica?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Oncologia?</button>
+                            <button onclick="processAssistantQuery('Come arrivare con autobus AMTS?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Bus AMTS?</button>
+                            <button onclick="processAssistantQuery('Dove si trova Neurochirurgia?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Neurochirurgia?</button>
+                            <button onclick="processAssistantQuery('Numero CUP')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Numero CUP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controlli Input Vocale e Testuale -->
+            <div class="p-3 bg-white border-t border-slate-200 space-y-2">
+                <div class="flex flex-col items-center justify-center">
+                    <button id="micBtn" onclick="toggleVoiceRecognition()" class="w-12 h-12 rounded-full bg-hospital-600 active:scale-95 text-white flex items-center justify-center text-lg shadow-md transition-all">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <span id="micStatus" class="text-[11px] font-semibold text-slate-500 mt-1">Tocca il microfono per parlare</span>
+                </div>
+
+                <form onsubmit="handleTextAssistantSubmit(event)" class="flex items-center gap-1.5">
+                    <input type="text" id="assistantTextInput" placeholder="Scrivi qui la domanda..." class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-500">
+                    <button type="submit" class="bg-hospital-700 active:bg-hospital-800 text-white py-2 px-3.5 rounded-lg text-xs font-bold shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AGGIUNGI CONTATTO IN RUBRICA -->
+    <div id="addContactModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden pb-safe">
+            <div class="bg-hospital-800 text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-bold text-sm">Aggiungi Nuovo Interno</h3>
+                <button onclick="closeAddContactModal()" class="text-white/80 p-1"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <form onsubmit="saveNewContact(event)" class="p-3.5 space-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Reparto / Servizio *</label>
+                    <input type="text" id="newContactName" required placeholder="Es. Guardiola Cardiologia" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Interno / Tel *</label>
+                        <input type="text" id="newContactPhone" required placeholder="Es. 3153" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Edificio / Piano</label>
+                        <input type="text" id="newContactLoc" placeholder="Es. F2 - 3° Piano" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Note aggiuntive</label>
+                    <input type="text" id="newContactNote" placeholder="Es. Attivo H24, Caposala..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                </div>
+                <div class="flex justify-end gap-2 pt-1">
+                    <button type="button" onclick="closeAddContactModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-lg shadow">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifica Copia -->
+    <div id="toast" class="fixed bottom-16 md:bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-semibold px-3.5 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity z-50 flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Copiato negli appunti</span>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATABASE REPARTI & PIANI (INTEGRATO CON PORTALE UFFICIALE E INDICAZIONI DI ACCESSO)
+        // ==========================================
+        const departmentsData = [
+            // EDIFICIO F2
+            { id: 31, name: "Neurologia & Stroke Unit", building: "F2", floor: "9° Piano", category: "Area Neurologica", accessNote: "Ascensori Torre F2 fino al 9° piano (area ampliata Centro Gestione Emergenze).", matchTags: ["neurologia"], keywords: "neurologia ictus stroke unit epilessia sclerosi f2 nono piano" },
+            { id: 1, name: "Neurochirurgia (NCH)", building: "F2", floor: "8° Piano", category: "Chirurgia Specialistica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori centrali fino all'8° piano.", matchTags: ["neurochirurgia", "nch"], keywords: "neurochirurgia nch cervello colonna" },
+            { id: 2, name: "Nefrologia - Dialisi", building: "F2", floor: "7° Piano", category: "Area Medica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 7° piano.", matchTags: ["nefrologia", "dialisi"], keywords: "nefrologia dialisi reni" },
+            { id: 3, name: "Chirurgia Toracica & Chirurgia Vascolare", building: "F2", floor: "6° Piano", category: "Chirurgia", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 6° piano.", matchTags: ["chirurgia toracica", "chirurgia vascolare"], keywords: "toracica vascolare polmoni vene arterie" },
+            { id: 4, name: "Urologia", building: "F2", floor: "5° Piano", category: "Chirurgia", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 5° piano.", matchTags: ["urologia"], keywords: "urologia vie urinarie" },
+            { id: 5, name: "Chirurgia Generale & Mininvasiva Epatobiliare - Ecografia", building: "F2", floor: "4° Piano", category: "Chirurgia & Diagnostica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 4° piano.", matchTags: ["chirurgia generale", "chirurgia mininvasiva"], keywords: "chirurgia generale mininvasiva epatobiliare bariatrica ecografia" },
+            { id: 6, name: "Cardiologia (con annotazione MCAU)", building: "F2", floor: "3° Piano", category: "Area Cuore", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 3° piano.", matchTags: ["cardiologia"], keywords: "cardiologia cuore mcau" },
+            { id: 7, name: "Emodinamica - U.T.I.C.", building: "F2", floor: "2° Piano", category: "Terapia Intensiva Cardiologica", accessNote: "Ingresso principale Edificio F2 (Piano 0), ascensori fino al 2° piano.", matchTags: ["emodinamica", "utic"], keywords: "emodinamica utic coronarica infarto" },
+            { id: 8, name: "Medicina Trasfusionale (SIMT) - Endourologia - Endoscopia", building: "F2", floor: "1° Piano", category: "Servizi & Diagnostica", accessNote: "Ingresso principale Edificio F2 (Piano 0), scale o ascensori al 1° piano. Donatori dal lunedì al sabato 8:30-12:00.", matchTags: ["sit", "trasfusionale", "endoscopia"], keywords: "trasfusionale sit simt sangue donatori endourologia endoscopia gastroenterologia" },
+            { id: 9, name: "Portineria - CUP - Ticket - URP - TIPO (Rianimazione)", building: "F2", floor: "Piano 0", category: "Accettazione & Rianimazione", accessNote: "Accesso diretto dall'ingresso centrale del presidio (Viale Enzo Longo / Via Messina 829). Collegato internamente con F3.", matchTags: ["tipo", "rianimazione", "anestesisti", "centralino", "cup"], keywords: "uscita portineria cup ticket cassa urp tipo rianimazione ingresso centrale" },
+            { id: 10, name: "Pronto Soccorso (Triage) - Ambulatori PS - Posto Polizia", building: "F2", floor: "Piano -1", category: "Emergenza", accessNote: "Accesso dedicato rampa Pronto Soccorso / Camera Calda oppure tramite scale/ascensori interni da F2 Piano 0.", matchTags: ["pronto soccorso", "polizia"], keywords: "pronto soccorso triage ps ambulatori polizia" },
+            { id: 11, name: "Medicina Nucleare - PET - Sterilizzazione", building: "F2", floor: "Piano -2", category: "Diagnostica & Servizi", accessNote: "Ascensori Edificio F2 fino al piano -2. Collegato al piano -2 di F3.", matchTags: ["medicina nucleare", "pet"], keywords: "medicina nucleare pet sterilizzazione plo" },
+
+            // EDIFICIO F3
+            { id: 12, name: "Centro Grandi Ustionati (CGU)", building: "F3", floor: "7° Piano", category: "Alta Specialità", accessNote: "Raggiungibile dal Piano 0 di F2 tramite corridoio di collegamento verso F3, poi ascensori F3 al 7° piano.", matchTags: ["cgu", "grandi ustionati"], keywords: "grandi ustionati cgu ustioni" },
+            { id: 13, name: "Chirurgia Plastica & Ricostruttiva", building: "F3", floor: "6° Piano", category: "Chirurgia", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 6° piano.", matchTags: ["chirurgia plastica"], keywords: "chirurgia plastica ricostruttiva" },
+            { id: 14, name: "Oculistica - Otorinolaringoiatria (ORL)", building: "F3", floor: "5° Piano", category: "Testa-Collo", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 5° piano.", matchTags: ["oculistica", "orl"], keywords: "oculistica occhi otorino otorinolaringoiatria orl" },
+            { id: 15, name: "MCAU (Medicina e Chirurgia d'Accettazione e Urgenza)", building: "F3", floor: "4° Piano", category: "Emergenza-Urgenza", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 4° piano.", matchTags: ["mcau"], keywords: "mcau accettazione urgenza medicina" },
+            { id: 16, name: "Pediatria", building: "F3", floor: "3° Piano", category: "Area Pediatrica", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 3° piano.", matchTags: ["pediatria"], keywords: "pediatria bambini" },
+            { id: 17, name: "Senologia (Breast Unit) - Intramoenia (ALPI)", building: "F3", floor: "2° Piano", category: "Specialistica & Libera Professione", accessNote: "Ingresso F3 Piano 0 (collegato con F2), ascensori F3 fino al 2° piano.", matchTags: ["senologia", "intramoenia"], keywords: "senologia mammella intramoenia alpi" },
+            { id: 18, name: "Laboratorio Analisi - Medicina Protetta - Dip. Immagini / Neuroradiologia", building: "F3", floor: "1° Piano", category: "Diagnostica & Radiologia", accessNote: "Ingresso F3 Piano 0 (collegato con F2), scale o ascensori al 1° piano.", matchTags: ["laboratorio", "radiologia", "neuroradiologia", "risonanza", "medicina protetta"], keywords: "laboratorio analisi medicina protetta immagini neuroradiologia radiologia tac rmn" },
+            { id: 19, name: "Ambulatori Specialistici - Centro Prelievi - Collegamento F2", building: "F3", floor: "Piano 0", category: "Accesso & Prelievi", accessNote: "Accesso diretto dal piazzale interno o dal corridoio coperto di collegamento con Edificio F2 Piano 0.", matchTags: ["laboratorio"], keywords: "uscita ambulatori laboratorio prelievi collegamento f2" },
+            { id: 20, name: "Farmacia Ospedaliera - Pronto Soccorso O.B.I.", building: "F3", floor: "Piano -1", category: "Emergenza & Farmacia", accessNote: "Collegato al Pronto Soccorso (F2 Piano -1) e accessibile dagli ascensori F3 al piano -1.", matchTags: ["farmacia", "pronto soccorso"], keywords: "farmacia pronto soccorso obi osservazione breve" },
+            { id: 21, name: "Camera Iperbarica - Gamma Knife", building: "F3", floor: "Piano -2", category: "Terapie Specialistiche", accessNote: "Ascensori F3 fino al piano -2 oppure rampa esterna dedicata lato F3.", matchTags: ["camera iperbarica", "gamma knife"], keywords: "camera iperbarica gamma knife radiochirurgia" },
+
+            // EDIFICIO E (MATERNO-INFANTILE & ORTOPEDIA)
+            { id: 22, name: "Neonatologia e Terapia Intensiva Neonatale (UTIN)", building: "E", floor: "1° Piano", category: "Materno-Infantile", accessNote: "Padiglione Edificio E (area Dipartimento Materno-Infantile), salire al 1° piano.", matchTags: ["neonatologia", "utin"], keywords: "neonatologia utin neonati prematuri" },
+            { id: 23, name: "Ostetricia e Ginecologia - Blocco Parto", building: "E", floor: "1° Piano (e Piano 0)", category: "Materno-Infantile", accessNote: "Padiglione Edificio E (area Dipartimento Materno-Infantile), piano terra e 1° piano.", matchTags: ["ginecologia", "ostetricia"], keywords: "ostetricia ginecologia parto sala parto" },
+            { id: 30, name: "Ortopedia e Traumatologia", building: "E", floor: "4° Piano (Ambulatori al Piano 0)", category: "Chirurgia & Traumatologia", accessNote: "Edificio E (stesso padiglione di Ginecologia), reparto al 4° piano e ambulatori al Piano 0.", matchTags: ["ortopedia"], keywords: "ortopedia traumatologia fratture gessi edificio e ginecologia quarto piano" },
+            { id: 26, name: "Servizio PRES.CEL.T.O. (Crioconservazione / PMA)", building: "E", floor: "Piano -1", category: "Materno-Infantile & Fertilità", accessNote: "Padiglione Edificio E, livello -1 (pma@ospedale-cannizzaro.it).", matchTags: ["pma", "prescelto", "ginecologia"], keywords: "prescelto crioconservazione pma fertilita oncofertilita" },
+
+            // EDIFICIO L (L4 / L7)
+            { id: 27, name: "Oncologia Medica", building: "L", floor: "Edificio L4 - 1° Piano", category: "Area Oncologica", accessNote: "Padiglione Edificio L4, 1° piano (area padiglioni interni a est del monoblocco).", matchTags: ["oncologia"], keywords: "oncologia medica tumori chemioterapia scandurra edificio l4" },
+            { id: 37, name: "Medicina Interna", building: "L", floor: "Edificio L - Ingresso L7", category: "Area Medica", accessNote: "Padiglione Edificio L, accesso dall'ingresso L7.", matchTags: ["medicina interna"], keywords: "medicina interna colaci malatino ingresso l7 edificio l" },
+
+            // PADIGLIONE CASSA DI RISPARMIO
+            { id: 32, name: "Pneumologia (Malattie Apparato Respiratorio) & UTIR", building: "CR", floor: "3° Piano (UTIR 2° Piano)", category: "Area Pneumologica", accessNote: "Padiglione Cassa di Risparmio, 3° piano (UTIR al 2° piano dello stesso edificio).", matchTags: ["pneumologia", "utir"], keywords: "pneumologia apparato respiratorio allergologia utir cassa di risparmio" },
+
+            // EDIFICIO S (USU & TERAPIA DEL DOLORE) & INFETTIVI
+            { id: 24, name: "Unità Spinale Unipolare (USU)", building: "S", floor: "Edificio S (Piani 0, 1, 4)", category: "Riabilitazione Midollare", accessNote: "Edificio S (Unità Spinale Unipolare), padiglione dedicato con biblioteca al piano terra.", matchTags: ["usu", "unità spinale"], keywords: "unita spinale usu midollo riabilitazione edificio s" },
+            { id: 35, name: "Terapia del Dolore & Cure Palliative", building: "S", floor: "Piano -1", category: "Terapia Antalgica", accessNote: "Edificio S (stesso edificio dell'USU), livello -1 (Terapia Antalgica).", matchTags: ["terapia del dolore"], keywords: "terapia dolore antalgica edificio s piano meno uno" },
+            { id: 25, name: "Malattie Infettive & Stewardship Antimicrobica", building: "INF", floor: "Padiglione Infettivi", category: "Area Infettivologica", accessNote: "Padiglione isolato Malattie Infettive con percorsi dedicati.", matchTags: ["malattie infettive"], keywords: "malattie infettive mdr isolamento" },
+
+            // EDIFICI R & I SEPARATI
+            { id: 28, name: "Radioterapia Oncologica", building: "R", floor: "Piano 0", category: "Area Oncologica", accessNote: "Padiglione Edificio R, Piano Terra (accesso facilitato senza barriere).", matchTags: ["radioterapia"], keywords: "radioterapia edificio r marletta" },
+            { id: 29, name: "Geriatria", building: "I", floor: "Piano 0", category: "Area Medica", accessNote: "Padiglione Edificio I, Piano Terra.", matchTags: ["geriatria"], keywords: "geriatria anziani edificio i" },
+
+            // ALTRE AREE SPECIALISTICHE
+            { id: 33, name: "Psichiatria (SPDC)", building: "AREE", floor: "Area Medica", accessNote: "Servizio Psichiatrico di Diagnosi e Cura, seguire segnaletica SPDC.", matchTags: ["psichiatria"], keywords: "psichiatria spdc salute mentale" },
+            { id: 34, name: "Endocrinologia e Malattie del Ricambio", building: "AREE", floor: "Area Medica", accessNote: "Seguire segnaletica interna per UOC Endocrinologia.", matchTags: ["endocrinologia"], keywords: "endocrinologia metabolismo diabete tiroide" },
+            { id: 36, name: "Recupero e Riabilitazione Funzionale", building: "AREE", floor: "Area Riabilitativa", category: "Riabilitazione", accessNote: "Palestre e ambulatori di fisioterapia, area riabilitativa.", matchTags: ["riabilitazione"], keywords: "riabilitazione fisioterapia recupero funzionale" }
+        ];
+
+        // ==========================================
+        // RUBRICA TELEFONICA PREDEFINITA
+        // ==========================================
+        const defaultContactsData = [
+            { id: 100, name: "Centralino Ospedaliero / Portineria", phone: "2107 / 095-7261111", location: "Edificio F2 - Piano 0", note: "Centralino generale esterno 095 7262107" },
+            { id: 195, name: "CUP (Centro Unificato Prenotazioni)", phone: "800-837621 / 2182", location: "Edificio F2 - Piano 0", note: "Numero Verde 800 837 621 | Tel 095 7262182" },
+            { id: 101, name: "Ambulanza - Autisti (Interni)", phone: "4895 / 4896", location: "Emergenza", note: "Fax: 3034", emergency: true },
+            { id: 102, name: "Ambulanza - Cellulari Autisti", phone: "3336129782 / 3666176486", location: "Emergenza", note: "Cellulari servizio" },
+            { id: 103, name: "Anatomia Patologica", phone: "2388 / 2385", location: "Servizi Diagnostici", note: "" },
+            { id: 104, name: "Anestesisti - Guardia 1", phone: "4830", location: "Edificio F2 - Piano 0", note: "Guardia Anestesiologica", emergency: true },
+            { id: 105, name: "Anestesisti - Guardia 2", phone: "4831", location: "Edificio F2 - Piano 0", note: "Guardia Anestesiologica", emergency: true },
+            { id: 106, name: "Anestesisti - Guardia Ostetrica", phone: "4832", location: "Edificio E", note: "Blocco Parto", emergency: true },
+            { id: 107, name: "Ambulatorio Anestesia", phone: "4886", location: "Edificio F2 - Piano 0", note: "" },
+            { id: 108, name: "Camera Iperbarica - Reparto", phone: "4611 / 4204", location: "Edificio F3 - Piano -2", note: "Reperibilità / 911 Max" },
+            { id: 109, name: "Cardiologia - UTIC", phone: "3111 / 3118", location: "Edificio F2 - 2° Piano", note: "Terapia Intensiva Coronarica", emergency: true },
+            { id: 110, name: "Cardiologia - Medico Consulenza", phone: "3052 / 3046 / 3049", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 111, name: "Cardiologia - Infermiera Ambulatori", phone: "4747", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 112, name: "Cardiologia - Reparto / Infermeria", phone: "3153 / 3143", location: "Edificio F2 - 3° Piano", note: "" },
+            { id: 113, name: "Cardiologia - Caposala", phone: "3154", location: "Edificio F2 - 3° Piano", note: "Portatile Caposala: 4715" },
+            { id: 114, name: "CED (Centro Elaborazione Dati / Informatica)", phone: "2727 / 2163 / 4041", location: "Servizi Tecnici", note: "Assistenza IT" },
+            { id: 115, name: "CGU (Centro Grandi Ustionati) - Medico", phone: "4539 / 4973", location: "Edificio F3 - 7° Piano", note: "" },
+            { id: 116, name: "CGU (Centro Grandi Ustionati) - Reparto", phone: "4515 / 4514", location: "Edificio F3 - 7° Piano", note: "Fax: 4541 | Caposala: 4970" },
+            { id: 117, name: "Chirurgia Generale - Medico", phone: "4958", location: "Edificio F2 - 4° Piano", note: "" },
+            { id: 118, name: "Chirurgia Generale - Reparto", phone: "3233", location: "Edificio F2 - 4° Piano", note: "Dir. FF: Dott. G. La Greca" },
+            { id: 196, name: "Chirurgia Mininvasiva Epatobiliare", phone: "3586", location: "Edificio F2 - 4° Piano", note: "Resp. Dott. G. La Greca" },
+            { id: 119, name: "Chirurgia Plastica - Medico", phone: "4809 / 4953", location: "Edificio F3 - 6° Piano", note: "" },
+            { id: 120, name: "Chirurgia Plastica - Reparto", phone: "4862", location: "Edificio F3 - 6° Piano", note: "Plastica Oncologica: 4477" },
+            { id: 121, name: "Chirurgia Toracica - Medico", phone: "4807 / 6822", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 122, name: "Chirurgia Toracica - Infermeria", phone: "3317 / 6884", location: "Edificio F2 - 6° Piano", note: "Fax: 3308" },
+            { id: 123, name: "Chirurgia Toracica - Numeri Brevi Medici", phone: "6822 / 6814", location: "Edificio F2 - 6° Piano", note: "Petino 6822, Messina 6814, Tornambene 6817, Strano 6826, Lombardo 6819, Galatà 6813" },
+            { id: 124, name: "Chirurgia Vascolare - Medico / Ambulatorio", phone: "3318 / 3023", location: "Edificio F2 - 6° Piano", note: "Ambulatorio: 3023" },
+            { id: 125, name: "Chirurgia Vascolare - Sala Operatoria (S.O.)", phone: "3109", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 126, name: "Chirurgia Vascolare - Reparto", phone: "3341 / 3342", location: "Edificio F2 - 6° Piano", note: "" },
+            { id: 127, name: "Emodinamica - Reparto", phone: "3119 / 4868", location: "Edificio F2 - 2° Piano", note: "" },
+            { id: 128, name: "Endocrinologia e Malattie del Ricambio", phone: "4857 / 2429 / 2403", location: "Area Medica", note: "Segreteria UOC: 2403" },
+            { id: 129, name: "Endoscopia - Gastroenterologia d'Urgenza", phone: "4858 / 3104", location: "Edificio F2 - 1° Piano", note: "Fax (richiesta PEG): 3105" },
+            { id: 130, name: "Farmacia Ospedaliera", phone: "4216 / 4207", location: "Edificio F3 - Piano -1", note: "Magazzino: 4528" },
+            { id: 197, name: "Gamma Knife - Radiochirurgia", phone: "4939", location: "Edificio F3 - Piano -2", note: "Resp. Dott. F. Inserra" },
+            { id: 198, name: "Geriatria - Reparto", phone: "3055", location: "Edificio I - Piano 0", note: "Tel. esterno: 095 7263055" },
+            { id: 131, name: "Ginecologia e Ostetricia - Reparto", phone: "2262 / 2263 / 2266", location: "Edificio E - 1° Piano", note: "Dir. Prof. P. Scollo" },
+            { id: 132, name: "Ginecologia e Ostetricia - Medico", phone: "2277 / 4724", location: "Edificio E - 1° Piano", note: "Medico Ostetricia (Sala Parto): 4827" },
+            { id: 133, name: "Intramoenia (ALPI) - Reparto", phone: "4245", location: "Edificio F3 - 2° Piano", note: "" },
+            { id: 134, name: "Laboratorio Analisi - Urgenze", phone: "4224", location: "Edificio F3 - 1° Piano", note: "", emergency: true },
+            { id: 135, name: "Laboratorio - Microbiologia", phone: "4243", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 136, name: "Laboratorio - Tamponi", phone: "4269", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 137, name: "Malattie Infettive - Medico", phone: "4916", location: "Padiglione Infettivi", note: "" },
+            { id: 138, name: "Malattie Infettive - MDR / Stewardship", phone: "4847 / 2551 / 2550", location: "Padiglione Infettivi", note: "UOS MDR: 2550" },
+            { id: 139, name: "Malattie Infettive - Reparto", phone: "2004 / 2005", location: "Padiglione Infettivi", note: "" },
+            { id: 140, name: "Manutenzione / Elettricisti", phone: "2308", location: "Servizi Tecnici", note: "Num. Verde Elettricisti: 800422270" },
+            { id: 141, name: "MCAU - Reparto", phone: "4872 / 4388 / 4716", location: "Edificio F3 - 4° Piano", note: "Medicina e Chirurgia Accettazione Urgenza" },
+            { id: 142, name: "Medicina Interna - Reparto", phone: "2593 / 2599", location: "Edificio L - Ingresso L7", note: "Dir. FF: Prof. M. Colaci" },
+            { id: 143, name: "Medicina Interna - Medico", phone: "4727 / 4746", location: "Edificio L - Ingresso L7", note: "" },
+            { id: 144, name: "Medicina Protetta", phone: "957122468 / 4901", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 145, name: "Medicina Nucleare", phone: "3005 / 3002", location: "Edificio F2 - Piano -2", note: "" },
+            { id: 146, name: "Neurochirurgia (NCH) - Medico", phone: "4707", location: "Edificio F2 - 8° Piano", note: "" },
+            { id: 147, name: "Neurochirurgia (NCH) - Reparto", phone: "3406 / 3430", location: "Edificio F2 - 8° Piano", note: "" },
+            { id: 148, name: "Nefrologia - Dialisi", phone: "3376 / 3372", location: "Edificio F2 - 7° Piano", note: "" },
+            { id: 149, name: "Nefrologia - Medico / Reparto", phone: "4808 / 3369", location: "Edificio F2 - 7° Piano", note: "Medico: 4808 | Reparto: 3369" },
+            { id: 150, name: "Neonatologia - Reparto", phone: "2217 / 2216", location: "Edificio E - 1° Piano", note: "" },
+            { id: 151, name: "UTIN (Terapia Intensiva Neonatale)", phone: "2224 / 2217", location: "Edificio E - 1° Piano", note: "" },
+            { id: 152, name: "Neurologia - Reparto", phone: "3436 / 4378", location: "Edificio F2 - 9° Piano", note: "Caposala: 3470 | Dir. Dott. D. Maimone" },
+            { id: 153, name: "Neurologia - Medico", phone: "4923 / 3436 / 3469 / 4405", location: "Edificio F2 - 9° Piano", note: "" },
+            { id: 154, name: "Oculistica / ORL - Reparto", phone: "4456", location: "Edificio F3 - 5° Piano", note: "" },
+            { id: 155, name: "Oculistica - Medico / Ambulatorio", phone: "4432 / 2426 / 2425", location: "Edificio F3 - 5° Piano", note: "Oculista: 4432 | Amb: 2426-2425" },
+            { id: 156, name: "ORL - Ambulatorio", phone: "4219", location: "Edificio F3 - 5° Piano", note: "" },
+            { id: 157, name: "Odontoiatria - Reparto", phone: "2032 / 4927 / 2030", location: "Area Specialistica", note: "" },
+            { id: 199, name: "Oncologia Medica - Segreteria / UOC", phone: "2165 / 4135", location: "Edificio L4 - 1° Piano", note: "Dir. Dott.ssa G. Scandurra | oncologia@ospedale-cannizzaro.it" },
+            { id: 158, name: "Ortopedia - Reparto", phone: "2252 / 2235", location: "Area Chirurgica", note: "Olga: 4975 | Fax: 2879" },
+            { id: 159, name: "Ortopedia - Medico (Cellulare)", phone: "3336129738", location: "Area Chirurgica", note: "Reperibilità/Guardia" },
+            { id: 160, name: "Pediatria - Reparto / Medico", phone: "4339 / 4335 / 4325", location: "Edificio F3 - 3° Piano", note: "Reparto: 4339 | Medico: 4335 | Dir: 4325" },
+            { id: 200, name: "Pneumologia - UOC Malattie Apparato Respiratorio", phone: "2602", location: "Pad. Cassa di Risparmio - 3° Piano", note: "Dir. Dott. S. M. Distefano" },
+            { id: 161, name: "Pneumologia COVID - Reparto", phone: "2609 / 2610 / 2611 / 2612 / 2613", location: "Pad. Cassa di Risparmio", note: "" },
+            { id: 162, name: "Posto Polizia Ospedale", phone: "4933", location: "Pronto Soccorso / F2", note: "Polizia di Stato", emergency: true },
+            { id: 163, name: "Pronto Soccorso - Reparto", phone: "3548 / 3638 / 3824", location: "Edificio F2/F3 - Piano -1", note: "", emergency: true },
+            { id: 164, name: "Pronto Soccorso - Triage", phone: "3820", location: "Edificio F2 - Piano -1", note: "", emergency: true },
+            { id: 165, name: "Pronto Soccorso Pediatrico", phone: "3823 / 3009 / 3203", location: "Area Emergenza", note: "" },
+            { id: 166, name: "Psichiatria (SPDC)", phone: "2515 / 2500", location: "Area Medica", note: "" },
+            { id: 167, name: "Radiologia - PET", phone: "3596 / 3003", location: "Edificio F2 - Piano -2", note: "Medicina Nucleare / PET" },
+            { id: 168, name: "Radiologia - Angiografia", phone: "4560 / 4483", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 169, name: "Radiologia - Generale / Diagnostica Immagini", phone: "3038 / 4556 / 3526 / 4569", location: "Edificio F3 - 1° Piano", note: "Segreteria UOC: 4569" },
+            { id: 170, name: "Radiologia - TAC Urgenze / Tecnico TAC", phone: "4936 / 4888 / 4848", location: "Edificio F3 - 1° Piano", note: "Tecnico TAC: 4936" },
+            { id: 201, name: "Radioterapia Oncologica", phone: "4015 / 4018", location: "Edificio R - Piano 0", note: "Fax: 4617 | radioterapia@ospedale-cannizzaro.it" },
+            { id: 202, name: "Recupero e Riabilitazione Funzionale", phone: "2442", location: "Area Riabilitativa", note: "Resp. Dott.ssa R. Lopes" },
+            { id: 171, name: "Neuroradiologia", phone: "4741 / 4865 / 4835 / 4551", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 172, name: "Risonanza Magnetica (RMN)", phone: "4288", location: "Edificio F3 - 1° Piano", note: "" },
+            { id: 173, name: "TIPO (Terapia Intensiva Polivalente)", phone: "4996", location: "Edificio F2 - Piano 0", note: "Ausiliari TIPO: 4094", emergency: true },
+            { id: 174, name: "Rianimazione COVID", phone: "3660", location: "Area Intensiva", note: "" },
+            { id: 175, name: "Rianimazione - Sala", phone: "3534 / 3068", location: "Edificio F2 - Piano 0", note: "Fax Rianimazione: 3071", emergency: true },
+            { id: 176, name: "Rianimazione - Stanza Denaro / Stanza 2", phone: "3066 / 3065", location: "Edificio F2 - Piano 0", note: "Stanza Denaro: 3066 | Stanza 2: 3065" },
+            { id: 177, name: "Rianimazione - Ausiliari (Ria / TIPO)", phone: "4846 / 4094", location: "Edificio F2 - Piano 0", note: "Ria Ausiliari: 4846 | Ausiliari TIPO: 4094" },
+            { id: 178, name: "Senologia - Reparto / Segreteria", phone: "4261 / 4519 / 2805", location: "Edificio F3 - 2° Piano", note: "Fax: 2205 | Dir. Dott.ssa F. Catalano" },
+            { id: 179, name: "SIT - Centro Trasfusionale / Donatori", phone: "3077 / 3087 / 3081 / 3084", location: "Edificio F2 - 1° Piano", note: "Prenotazione aferesi: 3084 | simt@ospedale-cannizzaro.it" },
+            { id: 180, name: "Sala Operatoria - Gruppo B (Chirurgie)", phone: "3110", location: "Blocco Operatorio", note: "" },
+            { id: 181, name: "Sala Operatoria - Gruppo A (Ort./Ginecol.)", phone: "4905 / 2211", location: "Blocco Operatorio", note: "" },
+            { id: 182, name: "Sala Operatoria - Gruppo PS (Urgenze)", phone: "3016", location: "Blocco Operatorio Emergenza", note: "" },
+            { id: 183, name: "Urologia - Reparto / Segreteria", phone: "3285 / 4712", location: "Edificio F2 - 5° Piano", note: "Dir. FF: Dott. L. D'Arrigo" },
+            { id: 184, name: "UTIR - Reparto", phone: "3908 / 3921", location: "Pad. Cassa di Risparmio - 2° Piano", note: "" },
+            { id: 185, name: "USU (Unità Spinale) - Reparto / Medici", phone: "3925 / 3930", location: "Padiglione USU", note: "Caposala: 4737 | Fax: 3900" },
+            { id: 186, name: "Direzione - Fax Autorizzazione File Z", phone: "2466", location: "Direzione Sanitaria", note: "Fax" },
+            { id: 187, name: "Chirurgia Maxillo Facciale (Osp. S. Marco)", phone: "095-4794259 / 335-1841937", location: "Consulenza Esterna S. Marco", note: "" },
+            { id: 188, name: "Assistenza Software Lab (Thealth Winlab)", phone: "0221711922 / 3291353085", location: "Supporto Esterno", note: "Email: hd@tesigroup.tec" },
+            { id: 189, name: "Medico Competente", phone: "2311", location: "Sorveglianza Sanitaria", note: "" },
+            { id: 190, name: "Lab. Policlinico BDG", phone: "095-3781233", location: "Consulenza Esterna Policlinico", note: "Email: labpolict@gmail.com" },
+            { id: 191, name: "Ventilatori Domiciliari - Aldo La Ferla", phone: "339-6581469 / 340-8710676", location: "Assistenza Domiciliare", note: "" },
+            { id: 192, name: "Ventilatori Domiciliari - Davide Oddoni (Sapio)", phone: "331-6222894 / 095-7411129", location: "Assistenza Sapio", note: "" },
+            { id: 193, name: "Coordinatore - Sortino", phone: "4930", location: "Coordinamento", note: "" },
+            { id: 194, name: "Coordinatore - Catia", phone: "4839", location: "Coordinamento", note: "" }
+        ];
+
+        // ==========================================
+        // PERSISTENZA DATI (LOCALSTORAGE) & STATO
+        // ==========================================
+        const STORAGE_KEYS = {
+            CONTACTS: 'cannizzaro_custom_contacts_v4',
+            FAV_DEPTS: 'cannizzaro_fav_depts_v1',
+            FAV_CONTACTS: 'cannizzaro_fav_contacts_v1'
+        };
+
+        let contactsData = loadContacts();
+        let favDeptIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS.FAV_DEPTS) || '[]'));
+        let favContactIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS.FAV_CONTACTS) || '[]'));
+
+        let currentBuildingFilter = 'ALL';
+        let onlyFavContacts = false;
+        let currentTab = 'reparti';
+
+        function loadContacts() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEYS.CONTACTS);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
+            return [...defaultContactsData];
+        }
+
+        function persistContacts() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contactsData));
+            } catch (e) {}
+        }
+
+        function persistFavorites() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.FAV_DEPTS, JSON.stringify([...favDeptIds]));
+                localStorage.setItem(STORAGE_KEYS.FAV_CONTACTS, JSON.stringify([...favContactIds]));
+            } catch (e) {}
+        }
+
+        function toggleDeptFav(id, event) {
+            if (event) event.stopPropagation();
+            if (favDeptIds.has(id)) {
+                favDeptIds.delete(id);
+                showToast('Rimosso dai preferiti');
+            } else {
+                favDeptIds.add(id);
+                showToast('Aggiunto ai preferiti');
+            }
+            persistFavorites();
+            renderDepartments();
+        }
+
+        function toggleContactFav(id, event) {
+            if (event) event.stopPropagation();
+            if (favContactIds.has(id)) {
+                favContactIds.delete(id);
+                showToast('Contatto rimosso dai preferiti');
+            } else {
+                favContactIds.add(id);
+                showToast('Contatto aggiunto ai preferiti');
+            }
+            persistFavorites();
+            renderContacts();
+        }
+
+        function getRelatedContactsForDept(dept) {
+            const tags = dept.matchTags || [dept.name.split(/[\s-(]+/)[0].toLowerCase()];
+            return contactsData.filter(c => {
+                const cName = c.name.toLowerCase();
+                return tags.some(tag => tag.length > 2 && cName.includes(tag));
+            });
+        }
+
+        function getBuildingBadgeStyle(bld) {
+            switch(bld) {
+                case 'F2': return { bg: 'bg-blue-100 text-blue-800 border-blue-200', headerBg: 'bg-blue-50 border-blue-200 text-blue-900', dot: 'bg-blue-600', label: 'Ed. F2', fullTitle: 'Edificio F2 (Monoblocco Centrale)', accent: 'border-l-blue-500' };
+                case 'F3': return { bg: 'bg-emerald-100 text-emerald-800 border-emerald-200', headerBg: 'bg-emerald-50 border-emerald-200 text-emerald-900', dot: 'bg-emerald-600', label: 'Ed. F3', fullTitle: 'Edificio F3 (Ala Diagnostica & Urgenze)', accent: 'border-l-emerald-500' };
+                case 'E': return { bg: 'bg-purple-100 text-purple-800 border-purple-200', headerBg: 'bg-purple-50 border-purple-200 text-purple-900', dot: 'bg-purple-600', label: 'Ed. E', fullTitle: 'Edificio E (Dipartimento Materno-Infantile)', accent: 'border-l-purple-500' };
+                case 'L': return { bg: 'bg-rose-100 text-rose-800 border-rose-200', headerBg: 'bg-rose-50 border-rose-200 text-rose-900', dot: 'bg-rose-600', label: 'Ed. L', fullTitle: 'Edificio L (Ingressi L4 e L7)', accent: 'border-l-rose-500' };
+                case 'CR': return { bg: 'bg-teal-100 text-teal-800 border-teal-200', headerBg: 'bg-teal-50 border-teal-200 text-teal-900', dot: 'bg-teal-600', label: 'Cassa Risp.', fullTitle: 'Padiglione Cassa di Risparmio', accent: 'border-l-teal-500' };
+                case 'S': return { bg: 'bg-orange-100 text-orange-800 border-orange-200', headerBg: 'bg-orange-50 border-orange-200 text-orange-900', dot: 'bg-orange-600', label: 'Ed. S', fullTitle: 'Edificio S — Unità Spinale Unipolare (USU)', accent: 'border-l-orange-500' };
+                case 'INF': return { bg: 'bg-amber-100 text-amber-800 border-amber-200', headerBg: 'bg-amber-50 border-amber-200 text-amber-900', dot: 'bg-amber-600', label: 'Infettivi', fullTitle: 'Padiglione Malattie Infettive', accent: 'border-l-amber-500' };
+                case 'R': return { bg: 'bg-indigo-100 text-indigo-800 border-indigo-200', headerBg: 'bg-indigo-50 border-indigo-200 text-indigo-900', dot: 'bg-indigo-600', label: 'Ed. R', fullTitle: 'Edificio R (Radioterapia Oncologica)', accent: 'border-l-indigo-500' };
+                case 'I': return { bg: 'bg-cyan-100 text-cyan-800 border-cyan-200', headerBg: 'bg-cyan-50 border-cyan-200 text-cyan-900', dot: 'bg-cyan-600', label: 'Ed. I', fullTitle: 'Edificio I (Geriatria)', accent: 'border-l-cyan-500' };
+                default: return { bg: 'bg-slate-100 text-slate-700 border-slate-200', headerBg: 'bg-slate-100 border-slate-200 text-slate-800', dot: 'bg-slate-600', label: 'Area Spec.', fullTitle: 'Altre Aree Specialistiche', accent: 'border-l-slate-500' };
+            }
+        }
+
+        const BUILDING_ORDER = ['F2', 'F3', 'E', 'L', 'CR', 'S', 'INF', 'R', 'I', 'AREE'];
+
+        function renderDeptCard(dept) {
+            const style = getBuildingBadgeStyle(dept.building);
+            const isFav = favDeptIds.has(dept.id);
+            const relatedContacts = getRelatedContactsForDept(dept);
+            const previewContacts = relatedContacts.slice(0, 1);
+
+            const phonesHtml = previewContacts.length > 0 
+                ? `<div class="mt-2 pt-1.5 border-t border-slate-100 space-y-1" onclick="event.stopPropagation()">
+                    ${previewContacts.map(rc => {
+                        const rawNum = rc.phone.split('/')[0].trim();
+                        const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                        return `
+                        <div class="flex items-center justify-between text-[11px] bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
+                            <span class="text-slate-600 font-medium truncate pr-1.5">${rc.name.split('-')[1]?.trim() || rc.name}</span>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button onclick="copyText('${rc.phone}')" class="font-mono font-bold text-hospital-700 bg-white px-1.5 py-0.5 rounded border border-slate-200 active:scale-95">
+                                    ${rc.phone}
+                                </button>
+                                <a href="tel:${fullNum}" class="w-6 h-6 rounded bg-emerald-600 text-white flex items-center justify-center active:scale-95" title="Chiama ${fullNum}">
+                                    <i class="fa-solid fa-phone text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `}).join('')}
+                    ${relatedContacts.length > 1 ? `
+                        <div class="text-[10px] font-bold text-hospital-700 flex items-center justify-between px-0.5 pt-0.5">
+                            <span>+${relatedContacts.length - 1} altri interni</span>
+                            <span class="underline">Indicazioni & scheda &rarr;</span>
+                        </div>
+                    ` : ''}
+                   </div>`
+                : '';
+
+            return `
+                <div onclick="openDeptDetail(${dept.id})" class="cursor-pointer bg-white rounded-xl p-2.5 border border-slate-200 border-l-4 ${style.accent} shadow-xs hover:border-hospital-400 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-1.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md border ${style.bg}">
+                                    ${style.label}
+                                </span>
+                                <span class="text-[11px] font-extrabold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md">
+                                    ${dept.floor}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-0.5 shrink-0" onclick="event.stopPropagation()">
+                                <button onclick="copyLocation('${dept.name.replace(/'/g, "\\'")}', '${style.label}', '${dept.floor}')" class="p-1.5 text-slate-400 hover:text-hospital-700 active:scale-90 transition" title="Copia posizione">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
+                                <button onclick="toggleDeptFav(${dept.id}, event)" class="p-1.5 rounded-md active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-[13px] sm:text-sm leading-snug mt-1">${dept.name}</h3>
+                        ${dept.accessNote ? `<p class="text-[11px] text-slate-500 mt-1 line-clamp-1"><i class="fa-solid fa-signs-post text-sky-600 mr-1"></i>${dept.accessNote}</p>` : ''}
+                        ${phonesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // RENDERING REPARTI RAGGRUPPATI PER EDIFICIO
+        // ==========================================
+        function renderDepartments() {
+            const container = document.getElementById('departmentsGrid');
+            const emptyState = document.getElementById('emptyDepartments');
+            const emptyTitle = document.getElementById('emptyDeptTitle');
+            const emptyDesc = document.getElementById('emptyDeptDesc');
+            const countLabel = document.getElementById('resultsCount');
+            const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+
+            let filtered = departmentsData.filter(dept => {
+                const matchesBld = currentBuildingFilter === 'ALL'
+                    || (currentBuildingFilter === 'FAV' && favDeptIds.has(dept.id))
+                    || dept.building === currentBuildingFilter;
+                const searchString = `${dept.name} ${dept.building} ${dept.floor} ${dept.category} ${dept.accessNote || ''} ${dept.keywords}`.toLowerCase();
+                const matchesQuery = !query || searchString.includes(query);
+                return matchesBld && matchesQuery;
+            });
+
+            countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'reparto' : 'reparti'}`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                if (currentBuildingFilter === 'FAV' && !query) {
+                    emptyTitle.textContent = 'Nessun reparto nei preferiti';
+                    emptyDesc.textContent = 'Tocca la stellina su un reparto per salvarlo qui.';
+                } else {
+                    emptyTitle.textContent = 'Nessun reparto trovato';
+                    emptyDesc.textContent = 'Prova con un altro nome oppure chiedi all\'Assistente Vocale.';
+                }
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            // Raggruppamento per edificio secondo BUILDING_ORDER
+            const groupsHtml = BUILDING_ORDER.map(bldCode => {
+                const groupDepts = filtered.filter(d => d.building === bldCode);
+                if (groupDepts.length === 0) return '';
+
+                groupDepts.sort((a, b) => (favDeptIds.has(b.id) ? 1 : 0) - (favDeptIds.has(a.id) ? 1 : 0));
+
+                const style = getBuildingBadgeStyle(bldCode);
+                return `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg border ${style.headerBg}">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full ${style.dot}"></span>
+                                <h2 class="font-extrabold text-xs uppercase tracking-wide">${style.fullTitle}</h2>
+                            </div>
+                            <span class="text-[11px] font-bold opacity-80">${groupDepts.length}</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            ${groupDepts.map(renderDeptCard).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = groupsHtml;
+        }
+
+        // ==========================================
+        // RENDERING RUBRICA COMPATTA SU RIGA SINGOLA
+        // ==========================================
+        function renderContacts() {
+            const list = document.getElementById('contactsList');
+            const empty = document.getElementById('emptyContacts');
+            const badge = document.getElementById('rubricaBadgeDesk');
+            const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+
+            badge.textContent = contactsData.length;
+
+            let filtered = contactsData.filter(c => {
+                const matchesFav = !onlyFavContacts || favContactIds.has(c.id);
+                const str = `${c.name} ${c.phone} ${c.location} ${c.note}`.toLowerCase();
+                const matchesQuery = !query || str.includes(query);
+                return matchesFav && matchesQuery;
+            });
+
+            filtered.sort((a, b) => {
+                const aFav = favContactIds.has(a.id) ? 1 : 0;
+                const bFav = favContactIds.has(b.id) ? 1 : 0;
+                return bFav - aFav;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            list.innerHTML = filtered.map(c => {
+                const rawNum = c.phone.split('/')[0].trim();
+                const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                const isFav = favContactIds.has(c.id);
+                return `
+                <div class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1">
+                            <button onclick="toggleContactFav(${c.id}, event)" class="shrink-0 p-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                                <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
+                            </button>
+                            <h4 class="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight truncate">${c.name}</h4>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-0.5 pl-4 text-[10px] text-slate-500 truncate">
+                            <span class="font-semibold text-hospital-700 shrink-0">${c.location || 'Sede'}</span>
+                            ${c.note ? `<span class="truncate">• ${c.note}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="copyText('${c.phone}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-xs px-2 py-1.5 rounded-lg transition max-w-[115px] truncate" title="Copia ${c.phone}">
+                            ${c.phone}
+                        </button>
+                        <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
+                            <i class="fa-solid fa-phone text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // ==========================================
+        // MODALI DETTAGLIO REPARTO & EMERGENZE
+        // ==========================================
+        function openDeptDetail(deptId) {
+            const dept = departmentsData.find(d => d.id === deptId);
+            if (!dept) return;
+
+            const style = getBuildingBadgeStyle(dept.building);
+            const related = getRelatedContactsForDept(dept);
+
+            document.getElementById('detailDeptBadges').innerHTML = `
+                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-white/15 text-white border border-white/20">${style.label}</span>
+                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-sky-500/30 text-sky-100">${dept.floor}</span>
+            `;
+            document.getElementById('detailDeptTitle').textContent = dept.name;
+
+            const contactsHtml = related.length > 0
+                ? related.map(rc => {
+                    const rawNum = rc.phone.split('/')[0].trim();
+                    const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                    return `
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-bold text-slate-800 text-xs">${rc.name}</div>
+                                ${rc.note ? `<div class="text-[11px] text-slate-500 mt-0.5">${rc.note}</div>` : ''}
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="copyText('${rc.phone}')" class="bg-slate-100 text-slate-800 font-mono font-bold text-xs px-2.5 py-1.5 rounded-lg">
+                                    ${rc.phone}
+                                </button>
+                                <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center" title="Chiama ${fullNum}">
+                                    <i class="fa-solid fa-phone text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('')
+                : `<div class="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-slate-500 text-center">
+                    Nessun interno specifico associato. Consulta la Rubrica o chiama il Centralino (2107).
+                   </div>`;
+
+            const accessHtml = dept.accessNote
+                ? `<div class="bg-sky-50 border border-sky-200 p-2.5 rounded-xl text-xs text-sky-950 flex items-start gap-2">
+                    <i class="fa-solid fa-signs-post text-sky-700 mt-0.5 shrink-0"></i>
+                    <div>
+                        <div class="font-bold text-[11px] uppercase tracking-wide text-sky-800">Come Raggiungere il Reparto</div>
+                        <p class="mt-0.5 leading-relaxed">${dept.accessNote}</p>
+                    </div>
+                   </div>`
+                : '';
+
+            document.getElementById('detailDeptBody').innerHTML = `
+                ${accessHtml}
+                <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                    <span class="text-slate-600"><i class="fa-solid fa-tag text-slate-400 mr-1.5"></i>${dept.category}</span>
+                    <button onclick="copyLocation('${dept.name.replace(/'/g, "\\'")}', '${style.label}', '${dept.floor}')" class="bg-hospital-50 text-hospital-700 font-bold px-2.5 py-1 rounded-lg">
+                        <i class="fa-regular fa-copy mr-1"></i>Copia indicazioni
+                    </button>
+                </div>
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wide pt-1">Interni e Contatti Collegati (${related.length})</div>
+                <div class="space-y-1.5">${contactsHtml}</div>
+            `;
+
+            document.getElementById('deptDetailModal').classList.remove('hidden');
+        }
+
+        function closeDeptDetailModal() {
+            document.getElementById('deptDetailModal').classList.add('hidden');
+        }
+
+        function openEmergencyModal() {
+            const emergencyContacts = contactsData.filter(c => c.emergency);
+            const container = document.getElementById('emergencyList');
+            container.innerHTML = emergencyContacts.map(c => {
+                const rawNum = c.phone.split('/')[0].trim();
+                const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                return `
+                    <div class="bg-white p-2.5 rounded-xl border border-red-100 flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="font-bold text-slate-900 text-xs truncate">${c.name}</div>
+                            <div class="text-[10px] text-slate-500">${c.location}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="copyText('${c.phone}')" class="bg-red-50 text-red-800 font-mono font-bold text-xs px-2 py-1.5 rounded-lg border border-red-100">
+                                ${c.phone}
+                            </button>
+                            <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-red-600 active:bg-red-700 text-white flex items-center justify-center shadow-xs" title="Chiama ${fullNum}">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('emergencyModal').classList.remove('hidden');
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById('emergencyModal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // FILTRI, RICERCA E NAVIGAZIONE TAB
+        // ==========================================
+        function filterBuilding(bld) {
+            currentBuildingFilter = bld;
+            document.querySelectorAll('.bld-filter').forEach(btn => {
+                if (btn.dataset.bld === bld) {
+                    btn.classList.add('active', 'bg-hospital-700', 'text-white', 'shadow-sm');
+                    btn.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-200');
+                } else {
+                    btn.classList.remove('active', 'bg-hospital-700', 'text-white', 'shadow-sm');
+                    btn.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-200');
+                }
+            });
+            renderDepartments();
+        }
+
+        function toggleContactFavFilter() {
+            onlyFavContacts = !onlyFavContacts;
+            const btn = document.getElementById('btnFilterFavContacts');
+            if (onlyFavContacts) {
+                btn.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
+                btn.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            } else {
+                btn.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-900');
+                btn.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            }
+            renderContacts();
+        }
+
+        function resetAllFilters() {
+            clearSearch();
+            filterBuilding('ALL');
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            ['reparti', 'rubrica', 'utilita'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            ['reparti', 'rubrica', 'utilita'].forEach(t => {
+                const deskBtn = document.getElementById(`tab-desk-${t}`);
+                if (deskBtn) {
+                    if (t === tabName) {
+                        deskBtn.classList.add('border-hospital-600', 'text-hospital-700');
+                        deskBtn.classList.remove('border-transparent', 'text-slate-500');
+                    } else {
+                        deskBtn.classList.remove('border-hospital-600', 'text-hospital-700');
+                        deskBtn.classList.add('border-transparent', 'text-slate-500');
+                    }
+                }
+
+                const mobBtn = document.getElementById(`tab-mob-${t}`);
+                if (mobBtn) {
+                    if (t === tabName) {
+                        mobBtn.classList.add('text-hospital-700', 'font-bold');
+                        mobBtn.classList.remove('text-slate-400', 'font-medium');
+                    } else {
+                        mobBtn.classList.remove('text-hospital-700', 'font-bold');
+                        mobBtn.classList.add('text-slate-400', 'font-medium');
+                    }
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('globalSearch');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (input.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderDepartments();
+            renderContacts();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('globalSearch');
+            input.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderDepartments();
+            renderContacts();
+        }
+
+        function openAddContactModal() {
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
+
+        function closeAddContactModal() {
+            document.getElementById('addContactModal').classList.add('hidden');
+        }
+
+        function saveNewContact(e) {
+            e.preventDefault();
+            const name = document.getElementById('newContactName').value.trim();
+            const phone = document.getElementById('newContactPhone').value.trim();
+            const location = document.getElementById('newContactLoc').value.trim();
+            const note = document.getElementById('newContactNote').value.trim();
+
+            const newId = Date.now();
+            contactsData.unshift({
+                id: newId,
+                name,
+                phone,
+                location: location || 'Ospedale Cannizzaro',
+                note
+            });
+            favContactIds.add(newId);
+
+            persistContacts();
+            persistFavorites();
+            e.target.reset();
+            closeAddContactModal();
+            renderContacts();
+            renderDepartments();
+            showToast('Interno salvato');
+        }
+
+        function askResetRubrica() {
+            document.getElementById('confirmResetModal').classList.remove('hidden');
+        }
+
+        function closeConfirmResetModal() {
+            document.getElementById('confirmResetModal').classList.add('hidden');
+        }
+
+        function confirmResetRubrica() {
+            contactsData = [...defaultContactsData];
+            persistContacts();
+            renderContacts();
+            renderDepartments();
+            closeConfirmResetModal();
+            showToast('Rubrica predefinita ripristinata');
+        }
+
+        // ==========================================
+        // ASSISTENTE VOCALE & GEMINI API
+        // ==========================================
+        let recognition = null;
+        let isRecording = false;
+        let currentAudioPlayer = null;
+
+        function toggleAssistantModal() {
+            const modal = document.getElementById('assistantModal');
+            modal.classList.toggle('hidden');
+            if (modal.classList.contains('hidden')) {
+                if (isRecording && recognition) recognition.stop();
+                if (currentAudioPlayer) {
+                    currentAudioPlayer.pause();
+                    currentAudioPlayer = null;
+                }
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function toggleVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                appendChatMessage('bot', 'Riconoscimento vocale non supportato su questo browser. Scrivi pure la domanda qui sotto!');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtn = document.getElementById('micBtn');
+            const micStatus = document.getElementById('micStatus');
+
+            recognition.onstart = () => {
+                isRecording = true;
+                micBtn.classList.remove('bg-hospital-600');
+                micBtn.classList.add('bg-red-600', 'pulse-ring');
+                micStatus.textContent = 'In ascolto... Parla ora';
+                micStatus.classList.add('text-red-600', 'font-bold');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                processAssistantQuery(transcript);
+            };
+
+            recognition.onerror = () => {
+                micStatus.textContent = 'Errore microfono. Riprova o scrivi.';
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                micBtn.classList.add('bg-hospital-600');
+                micBtn.classList.remove('bg-red-600', 'pulse-ring');
+                micStatus.textContent = 'Tocca il microfono per parlare';
+                micStatus.classList.remove('text-red-600', 'font-bold');
+            };
+
+            recognition.start();
+        }
+
+        function handleTextAssistantSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('assistantTextInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            processAssistantQuery(text);
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            
+            if (sender === 'user') {
+                div.className = 'flex justify-end';
+                div.innerHTML = `
+                    <div class="bg-hospital-700 text-white p-2.5 rounded-xl rounded-tr-none shadow-xs text-xs max-w-[85%]">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                div.className = 'flex items-start gap-2';
+                div.innerHTML = `
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        <i class="fa-solid fa-staff-snake"></i>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 max-w-[88%] leading-relaxed">
+                        ${text}
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const dataSize = pcm16.length * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            const writeString = (offset, str) => {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset + i, str.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function fallbackBrowserSpeech(cleanText) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'it-IT';
+                const voices = window.speechSynthesis.getVoices();
+                const bestItVoice = voices.find(v => v.lang.includes('it') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Elsa') || v.name.includes('Alice')))
+                    || voices.find(v => v.lang.includes('it'));
+                if (bestItVoice) utterance.voice = bestItVoice;
+                utterance.rate = 1.02;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        async function speakText(text) {
+            if (currentAudioPlayer) {
+                currentAudioPlayer.pause();
+                currentAudioPlayer = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            const cleanText = text
+                .replace(/<a[^>]*>.*?<\/a>/gi, '')
+                .replace(/<br\s*\/?>/gi, '. ')
+                .replace(/<[^>]*>?/gm, '')
+                .replace(/[📍📞🚌•]/g, '')
+                .replace(/\//g, ' oppure ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            if (!cleanText) return;
+
+            const micStatus = document.getElementById('micStatus');
+            const prevStatus = micStatus ? micStatus.textContent : '';
+            if (micStatus) micStatus.textContent = 'Generazione voce neurale...';
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `Leggi con un tono vocale estremamente caldo, naturale, empatico e professionale, come un assistente medico accogliente: ${cleanText}` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Aoede" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('TTS API error');
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const rateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                    const pcmBuffer = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+
+                    currentAudioPlayer = new Audio(audioUrl);
+                    currentAudioPlayer.onplay = () => {
+                        if (micStatus) micStatus.textContent = 'Assistente sta parlando...';
+                    };
+                    currentAudioPlayer.onended = () => {
+                        if (micStatus) micStatus.textContent = prevStatus || 'Tocca il microfono per parlare';
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    await currentAudioPlayer.play();
+                } else {
+                    throw new Error('Formato audio non valido');
+                }
+            } catch (err) {
+                if (micStatus) micStatus.textContent = prevStatus || 'Tocca il microfono per parlare';
+                fallbackBrowserSpeech(cleanText);
+            }
+        }
+
+        async function processAssistantQuery(query) {
+            appendChatMessage('user', query);
+            
+            const cleanQuery = query.toLowerCase().replace(/[^\w\sàèéìòù]/g, ' ');
+
+            // Risposta rapida su come arrivare / trasporti / parcheggi
+            if (/(autobus|bus|amts|brt|treno|metro|arrivare|parcheggio|sosta|indirizzo|via messina)/.test(cleanQuery)) {
+                const transportReply = `🚌 <strong>Ospedale Cannizzaro — Via Messina 829, Catania:</strong><br>• <strong>Bus AMTS:</strong> linea veloce <strong>BRT5</strong> (capolinea interno da Stazione Centrale/P.le Sanzio), oltre alle linee <strong>948</strong>, <strong>247</strong> e <strong>434</strong>.<br>• <strong>Auto & Sosta:</strong> uscita Tangenziale <em>Catania Nord / Canalicchio</em>, disponibile Parcheggio Multipiano interno e stalli Area C.`;
+                appendChatMessage('bot', transportReply);
+                speakText(transportReply);
+                return;
+            }
+
+            const stopWords = new Set([
+                'dove', 'trova', 'trovo', 'piano', 'edificio', 'reparto', 'reparti', 
+                'numero', 'numeri', 'interno', 'interni', 'telefono', 'chiama', 'chiamare',
+                'qual', 'quale', 'sono', 'come', 'per', 'con', 'del', 'della', 'dello', 
+                'dei', 'degli', 'delle', 'nel', 'nella', 'nello', 'nei', 'negli', 'nelle',
+                'che', 'cosa', 'sta', 'stanno', 'vorrei', 'sapere', 'mi', 'puoi', 'dire',
+                'area', 'servizio', 'servizi', 'ambulatorio', 'ambulatori', 'medico', 'medici',
+                'raggiungere', 'raggiungo', 'arrivo'
+            ]);
+
+            const queryTerms = cleanQuery.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+
+            const scoredDepts = departmentsData.map(d => {
+                const nameNorm = d.name.toLowerCase();
+                const kwNorm = d.keywords.toLowerCase();
+                let score = 0;
+
+                if (cleanQuery.includes(nameNorm)) score += 10;
+                queryTerms.forEach(term => {
+                    if (nameNorm.includes(term)) score += 4;
+                    else if (kwNorm.includes(term)) score += 2;
+                });
+                return { item: d, score };
+            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+            const scoredContacts = contactsData.map(c => {
+                const nameNorm = c.name.toLowerCase();
+                const noteNorm = (c.note || '').toLowerCase();
+                let score = 0;
+
+                queryTerms.forEach(term => {
+                    if (nameNorm.includes(term)) score += 4;
+                    else if (noteNorm.includes(term)) score += 2;
+                });
+                return { item: c, score };
+            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+            const topDepts = scoredDepts.length > 0 
+                ? scoredDepts.filter(x => x.score >= scoredDepts[0].score * 0.7).slice(0, 3).map(x => x.item)
+                : [];
+            
+            const topContacts = scoredContacts.length > 0 
+                ? scoredContacts.filter(x => x.score >= scoredContacts[0].score * 0.7).slice(0, 4).map(x => x.item)
+                : [];
+
+            if (topDepts.length > 0 || topContacts.length > 0) {
+                let replyParts = [];
+                
+                if (topDepts.length > 0) {
+                    const deptList = topDepts.map(d => 
+                        `📍 <strong>${d.name}</strong>: <strong>${['F2', 'F3', 'E'].includes(d.building) ? `Edificio ${d.building}, ${d.floor}` : d.floor}</strong>.${d.accessNote ? ` <em>(${d.accessNote})</em>` : ''}`
+                    ).join('<br>');
+                    replyParts.push(deptList);
+                }
+
+                if (topContacts.length > 0) {
+                    const contactList = topContacts.map(c => {
+                        const rawNum = c.phone.split('/')[0].trim();
+                        const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                        const callBtn = ` <a href="tel:${fullNum}" class="inline-flex items-center gap-1 bg-emerald-600 text-white px-2 py-0.5 rounded text-[11px] font-bold ml-1" title="Chiama ${fullNum}"><i class="fa-solid fa-phone text-[9px]"></i> Chiama</a>`;
+                        return `📞 <strong>${c.name}</strong>: <span class="font-mono font-bold text-hospital-700">${c.phone}</span>${callBtn}`;
+                    }).join('<br>');
+                    replyParts.push(contactList);
+                }
+
+                const finalReply = replyParts.join('<br><br>');
+                appendChatMessage('bot', finalReply);
+                speakText(finalReply);
+                return;
+            }
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                
+                const contextData = JSON.stringify({
+                    sede: "A.O.E. Cannizzaro, Via Messina 829, 95126 Catania. Bus AMTS BRT5, 948, 247, 434. CUP 800 837 621 / 2182. Centralino 2107.",
+                    reparti: departmentsData,
+                    rubrica: contactsData
+                });
+                const systemPrompt = `Sei l'assistente vocale per l'Ospedale Cannizzaro di Catania. Rispondi in modo conciso e diretto in italiano (massimo 3 frasi) usando ESCLUSIVAMENTE questi dati: ${contextData}. Se non trovi l'informazione esatta, suggerisci di contattare il Centralino al 2107 (095 7261111) o la portineria al Piano 0 di F2.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: query }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const aiText = result?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                    "Non ho trovato un reparto o un numero corrispondente alla tua richiesta.";
+                
+                appendChatMessage('bot', aiText);
+                speakText(aiText);
+
+            } catch (err) {
+                const fallback = "Non ho trovato corrispondenze dirette. Prova a cercare nella barra in alto o chiama il Centralino al 2107.";
+                appendChatMessage('bot', fallback);
+                speakText(fallback);
+            }
+        }
+
+        // ==========================================
+        // UTILITÀ CLIPBOARD & TOAST
+        // ==========================================
+        function copyLocation(name, bld, floor) {
+            copyText(`${name} - ${bld}, ${floor} (Ospedale Cannizzaro, Via Messina 829)`);
+        }
+
+        function copyText(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`Copiato: ${text}`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2200);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderDepartments();
+            renderContacts();
+        });
+    </script>
+</body>
+</html>
