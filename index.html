@@ -276,16 +276,16 @@
                     </div>
                 </div>
 
-                <!-- Azioni Rapide Turni: Scansiona Foto Foglio Turni & Legenda -->
+                <!-- Azioni Rapide Turni: Scansiona Foto Foglio Turni & Impostazioni API Key -->
                 <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100">
                     <input type="file" id="shiftPhotoInput" accept="image/*" class="hidden" onchange="handleShiftPhotoUpload(event)">
-                    <button type="button" onclick="triggerShiftPhotoPicker()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2 px-3 rounded-xl font-bold text-xs shadow-xs flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2 px-3 rounded-xl font-bold text-xs shadow-xs flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-camera"></i>
                         <span>Aggiorna da Foto Turni</span>
                     </button>
-                    <button type="button" onclick="openApiKeyModal()" id="btnApiKeyConfig" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-xl font-bold text-xs border border-slate-200 flex items-center gap-1 shrink-0" title="Imposta API Key Gemini per lettura foto in locale">
+                    <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-xl font-bold text-xs border border-slate-200 flex items-center gap-1 shrink-0" title="Configura Chiave AI per uso offline/browser">
                         <i class="fa-solid fa-key text-amber-600"></i>
-                        <span class="hidden sm:inline">API</span>
+                        <span>Chiave AI</span>
                     </button>
                     <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-xl font-bold text-xs border border-slate-200 flex items-center gap-1 shrink-0" title="Legenda sigle turni">
                         <i class="fa-solid fa-circle-info text-hospital-700"></i>
@@ -396,7 +396,7 @@
                         </h3>
                         <p class="text-[10px] text-slate-500">Controlla sempre il foglio originale o tocca per ingrandire</p>
                     </div>
-                    <button type="button" onclick="triggerShiftPhotoPicker()" class="px-2.5 py-1.5 rounded-lg bg-hospital-50 hover:bg-hospital-100 text-hospital-800 border border-hospital-200 text-[11px] font-bold shrink-0">
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="px-2.5 py-1.5 rounded-lg bg-hospital-50 hover:bg-hospital-100 text-hospital-800 border border-hospital-200 text-[11px] font-bold shrink-0">
                         <i class="fa-solid fa-upload mr-1"></i>Carica Foto
                     </button>
                 </div>
@@ -750,36 +750,68 @@
         </section>
     </main>
 
-    <!-- MODAL: CONFIGURAZIONE API KEY GEMINI (PER USO IN LOCALE / BROWSER) -->
+    <!-- MODAL: CONFIGURAZIONE GEMINI API KEY PER USO DA BROWSER / LOCALE -->
     <div id="apiKeyModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe">
             <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-key text-amber-400"></i>
-                    <h3 class="font-bold text-sm">Chiave API Google Gemini</h3>
+                    <h3 class="font-bold text-sm">Come attivare la lettura foto turni (Gratis)</h3>
                 </div>
                 <button type="button" onclick="closeApiKeyModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-4 space-y-3 text-xs text-slate-700">
-                <p class="leading-relaxed">
-                    Quando apri l'app fuori dalla chat (file HTML scaricato), serve una <strong>API Key gratuita di Google AI Studio</strong> per leggere automaticamente le foto dei turni. Viene salvata solo sul tuo dispositivo.
+            <div class="p-4 space-y-3 max-h-[82vh] overflow-y-auto">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Per permettere all'app di leggere automaticamente la foto dei turni dal tuo telefono/PC, serve una <strong>chiave gratuita Google Gemini</strong> (si crea una sola volta in 30 secondi):
                 </p>
-                <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-[11px] text-hospital-900 space-y-1">
-                    <div class="font-bold">Come ottenerla gratis in 30 secondi:</div>
-                    <div>1. Vai su <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="underline font-bold text-sky-700">aistudio.google.com/apikey</a></div>
-                    <div>2. Clicca su <strong>"Create API key"</strong> e copiala qui sotto.</div>
+
+                <!-- Guida rapida in 3 passi -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 text-xs text-slate-700">
+                    <div class="flex items-start gap-2">
+                        <span class="w-5 h-5 rounded-full bg-hospital-700 text-white font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <div class="flex-1">
+                            <span>Apri la pagina ufficiale gratuita di Google:</span>
+                            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1.5 bg-hospital-700 hover:bg-hospital-600 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg shadow-xs">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                <span>Ottieni Chiave su Google AI Studio</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="w-5 h-5 rounded-full bg-hospital-700 text-white font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Accedi con il tuo account Google e tocca il pulsante blu <strong>"Create API key"</strong> (Crea chiave API).</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="w-5 h-5 rounded-full bg-hospital-700 text-white font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Copia il codice che inizia con <code class="bg-slate-200 px-1 rounded font-mono text-[11px]">AIza...</code> e incollalo qui sotto:</span>
+                    </div>
                 </div>
+
                 <div>
-                    <label class="block text-[10px] font-extrabold uppercase text-slate-600 mb-1">Incolla API Key Gemini</label>
-                    <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-3 font-mono text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                    <label class="block text-[10px] font-extrabold uppercase text-slate-600 mb-1">Incolla qui la tua Chiave API</label>
+                    <div class="flex gap-1.5">
+                        <input type="text" id="geminiApiKeyInput" placeholder="Incolla codice AIzaSy..." class="flex-1 h-10 bg-white border border-slate-300 rounded-xl px-3 font-mono text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <button type="button" onclick="pasteApiKeyFromClipboard()" class="px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-xs shrink-0 flex items-center gap-1" title="Incolla dagli appunti">
+                            <i class="fa-solid fa-paste"></i>
+                            <span>Incolla</span>
+                        </button>
+                    </div>
                 </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2 text-[11px] text-emerald-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock text-emerald-600 shrink-0"></i>
+                    <span>La chiave resta salvata <strong>solo su questo dispositivo</strong>.</span>
+                </div>
+
                 <div class="flex items-center justify-between gap-2 pt-1">
-                    <button type="button" onclick="clearSavedApiKey()" class="px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl">Rimuovi chiave</button>
+                    <button type="button" onclick="clearSavedApiKey()" class="px-2.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl">
+                        Rimuovi
+                    </button>
                     <div class="flex gap-2">
                         <button type="button" onclick="closeApiKeyModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-xl">Annulla</button>
-                        <button type="button" onclick="saveGeminiApiKey()" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-xl shadow">Salva Chiave</button>
+                        <button type="button" onclick="saveApiKeyFromModal()" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-xl shadow">Salva Chiave</button>
                     </div>
                 </div>
             </div>
@@ -815,24 +847,28 @@
                         <button type="button" onclick="setEditShiftPreset('CS')" class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 font-bold text-xs">CS</button>
                         <button type="button" onclick="setEditShiftPreset('F')" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs">F</button>
                         <button type="button" onclick="setEditShiftPreset('104')" class="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-800 font-bold text-xs">104</button>
-                        <button type="button" onclick="setEditShiftPreset('/')" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs">/ (Riposo)</button>
+                        <button type="button" onclick="setEditShiftPreset('Rb')" class="px-2.5 py-1 rounded-lg bg-cyan-100 text-cyan-900 font-bold text-xs">Rb</button>
+                        <button type="button" onclick="setEditShiftPreset('118')" class="px-2.5 py-1 rounded-lg bg-orange-100 text-orange-900 font-bold text-xs">118</button>
+                        <button type="button" onclick="setEditShiftPreset('FS')" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs">FS</button>
+                        <button type="button" onclick="setEditShiftPreset('H')" class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-900 font-bold text-xs">H</button>
+                        <button type="button" onclick="setEditShiftPreset('/')" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs">/ (Libero)</button>
                     </div>
                 </div>
 
-                <!-- Selettore Cerchiatura (Intero turno o solo una parte nei turni doppi) -->
+                <!-- Selettore Cerchiatura / Barratura a penna -->
                 <div class="p-3 rounded-xl border border-red-200 bg-red-50/70 space-y-2">
                     <div class="flex items-center gap-2">
                         <span class="w-6 h-6 rounded-full border-2 border-red-600 border-dashed flex items-center justify-center text-red-600 font-extrabold text-xs shrink-0">✕</span>
                         <div>
-                            <div class="text-xs font-extrabold text-red-900">Turno Annullato (Cerchiato / Barrato / Croce)</div>
-                            <div class="text-[10px] text-red-700">Nei turni doppi (es. MP / MP') puoi annullare solo Mattina o solo Pomeriggio</div>
+                            <div class="text-xs font-extrabold text-red-900">Correzione a penna (Cerchiato o Barrato)</div>
+                            <div class="text-[10px] text-red-700">Nei turni doppi (MP / MP') puoi togliere solo Mattina o solo Pomeriggio</div>
                         </div>
                     </div>
                     <select id="editShiftCircleMode" class="w-full h-9 bg-white border border-red-300 rounded-lg px-2.5 text-xs font-bold text-slate-900 focus:outline-none">
-                        <option value="none">Attivo (Nessun annullamento)</option>
-                        <option value="all">Annullato INTERO turno (cerchiato / barrato / croce)</option>
-                        <option value="morning">Annullata SOLO MATTINA (resta Pomeriggio attivo)</option>
-                        <option value="afternoon">Annullato SOLO POMERIGGIO (resta Mattina attiva)</option>
+                        <option value="none">Attivo (Nessuna correzione a penna)</option>
+                        <option value="all">Tolto per cambio — INTERO turno (cerchiato o barrato)</option>
+                        <option value="morning">Tolto per cambio — SOLO MATTINA (resta Pomeriggio)</option>
+                        <option value="afternoon">Tolto per cambio — SOLO POMERIGGIO (resta Mattina)</option>
                     </select>
                 </div>
 
@@ -867,21 +903,19 @@
                 </button>
             </div>
             <div class="p-3.5 space-y-1.5 text-xs text-slate-700 max-h-[75vh] overflow-y-auto">
-                <div class="flex justify-between p-2 rounded-lg bg-sky-50"><strong>M / M'</strong><span>Mattina</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-amber-50"><strong>P / P'</strong><span>Pomeriggio</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-teal-50"><strong>MP / MP'</strong><span>12 ore (Mattina + Pomeriggio)</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-indigo-50"><strong>N / N'</strong><span>Notte</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-cyan-50"><strong>RF</strong><span>Rip. Fest. lavorato</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-slate-100"><strong>RC</strong><span>Riposo Compensativo</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-sky-50"><strong>M' / M</strong><span>Mattina</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-amber-50"><strong>P' / P</strong><span>Pomeriggio</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-teal-50"><strong>MP' / MP</strong><span>12 ore</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-indigo-50"><strong>N' / N</strong><span>Notte</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-emerald-50"><strong>F</strong><span>Ferie</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-purple-50"><strong>CS</strong><span>Congedo Straordinario</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-rose-50"><strong>H</strong><span>Malattia</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-slate-100"><strong>104</strong><span>Permesso 104</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-slate-100"><strong>Rb</strong><span>Riposo Biologico</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-cyan-50"><strong>Rb</strong><span>Riposo Biologico</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-orange-50"><strong>118</strong><span>Turno 118</span></div>
                 <div class="flex justify-between p-2 rounded-lg bg-emerald-50"><strong>FS</strong><span>Festività Soppresse</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-slate-50"><strong>/</strong><span>Riposo / Smonto notte</span></div>
-                <div class="flex justify-between p-2 rounded-lg bg-red-50 border border-red-200 text-red-900"><strong>Cerchiato / Sbarra / Croce</strong><span>Turno annullato (tolto/cambio)</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-slate-50"><strong>/</strong><span>Libero</span></div>
+                <div class="flex justify-between p-2 rounded-lg bg-red-50 border border-red-200 text-red-900"><strong>Cerchiato / Barrato</strong><span>Turno tolto per cambio (correzione a penna)</span></div>
             </div>
         </div>
     </div>
@@ -1064,11 +1098,116 @@
 
     <script>
         // ==========================================
+        // GESTIONE CHIAVE API GEMINI PER USO IN LOCALE / BROWSER
+        // ==========================================
+        const GEMINI_API_KEY_STORAGE = 'cannizzaro_gemini_api_key_v1';
+        let openFilePickerAfterApiKeySave = false;
+
+        function getSavedGeminiApiKey() {
+            try {
+                return (localStorage.getItem(GEMINI_API_KEY_STORAGE) || '').trim();
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function isCanvasRuntimeEnvironment() {
+            try {
+                return window.location.protocol !== 'file:' && (
+                    window.self !== window.top ||
+                    window.location.hostname.includes('googleusercontent.com') ||
+                    window.location.hostname.includes('google.com')
+                );
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function updateApiKeyButtonIndicator() {
+            const btn = document.getElementById('apiKeySettingsBtn');
+            if (!btn) return;
+            const hasKey = getSavedGeminiApiKey().length > 0;
+            if (hasKey) {
+                btn.classList.remove('border-slate-200', 'bg-slate-100');
+                btn.classList.add('border-emerald-300', 'bg-emerald-50', 'text-emerald-900');
+                btn.innerHTML = `<i class="fa-solid fa-key text-emerald-600"></i><span>Chiave AI ✓</span>`;
+            } else {
+                btn.classList.add('border-slate-200', 'bg-slate-100');
+                btn.classList.remove('border-emerald-300', 'bg-emerald-50', 'text-emerald-900');
+                btn.innerHTML = `<i class="fa-solid fa-key text-amber-600"></i><span>Chiave AI</span>`;
+            }
+        }
+
+        async function pasteApiKeyFromClipboard() {
+            try {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        document.getElementById('geminiApiKeyInput').value = text.trim();
+                        showToast('Chiave incollata!');
+                        return;
+                    }
+                }
+            } catch (e) {}
+            const input = document.getElementById('geminiApiKeyInput');
+            if (input) input.focus();
+            showToast('Tieni premuto nel campo e seleziona Incolla');
+        }
+
+        function openApiKeyModal(continueWithUpload = false) {
+            openFilePickerAfterApiKeySave = continueWithUpload;
+            const input = document.getElementById('geminiApiKeyInput');
+            if (input) input.value = getSavedGeminiApiKey();
+            document.getElementById('apiKeyModal').classList.remove('hidden');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').classList.add('hidden');
+            openFilePickerAfterApiKeySave = false;
+        }
+
+        function saveApiKeyFromModal() {
+            const input = document.getElementById('geminiApiKeyInput');
+            const val = (input?.value || '').trim();
+            if (!val) {
+                showToast('Inserisci una chiave API valida');
+                return;
+            }
+            try {
+                localStorage.setItem(GEMINI_API_KEY_STORAGE, val);
+            } catch (e) {}
+            updateApiKeyButtonIndicator();
+            const shouldUpload = openFilePickerAfterApiKeySave;
+            closeApiKeyModal();
+            showToast('Chiave AI salvata nel browser!');
+            if (shouldUpload) {
+                setTimeout(() => {
+                    document.getElementById('shiftPhotoInput').click();
+                }, 150);
+            }
+        }
+
+        function clearSavedApiKey() {
+            try {
+                localStorage.removeItem(GEMINI_API_KEY_STORAGE);
+            } catch (e) {}
+            const input = document.getElementById('geminiApiKeyInput');
+            if (input) input.value = '';
+            updateApiKeyButtonIndicator();
+            showToast('Chiave AI rimossa');
+        }
+
+        function triggerShiftPhotoUpload() {
+            const savedKey = getSavedGeminiApiKey();
+            if (!savedKey && !isCanvasRuntimeEnvironment()) {
+                openApiKeyModal(true);
+                return;
+            }
+            document.getElementById('shiftPhotoInput').click();
+        }
+
+        // ==========================================
         // DATABASE TURNI MENSILI (PRE-CARICATO DA FOTO NOVEMBRE 2026)
-        // Notazioni cerchiatura:
-        //   [O]    = intero turno cerchiato (tolto per cambio)
-        //   M[O]P  = nei turni doppi, solo la Mattina (M) è cerchiata, resta il Pomeriggio (P)
-        //   MP[O]  = nei turni doppi, solo il Pomeriggio (P) è cerchiato, resta la Mattina (M)
         // ==========================================
         const defaultShiftsDatabase = {
             "2026-11": {
@@ -1107,75 +1246,8 @@
             DATA: 'cannizzaro_shifts_db_v2',
             DEFAULT_DOC: 'cannizzaro_default_doctor_v2',
             SELECTED_MONTH: 'cannizzaro_selected_month_v2',
-            PHOTOS: 'cannizzaro_shift_photos_v1',
-            GEMINI_API_KEY: 'cannizzaro_gemini_api_key_v1'
+            PHOTOS: 'cannizzaro_shift_photos_v1'
         };
-
-        let pendingPhotoUploadAfterKey = false;
-
-        function getEffectiveGeminiApiKey() {
-            const inlineKey = "";
-            if (inlineKey && inlineKey.trim()) return inlineKey.trim();
-            return (localStorage.getItem(SHIFT_STORAGE_KEYS.GEMINI_API_KEY) || '').trim();
-        }
-
-        function updateApiKeyButtonUI() {
-            const btn = document.getElementById('btnApiKeyConfig');
-            if (!btn) return;
-            const hasKey = Boolean(getEffectiveGeminiApiKey());
-            if (hasKey) {
-                btn.className = 'bg-emerald-50 hover:bg-emerald-100 active:scale-95 transition text-emerald-800 py-2 px-2.5 rounded-xl font-bold text-xs border border-emerald-200 flex items-center gap-1 shrink-0';
-                btn.title = 'API Key Gemini attiva';
-            } else {
-                btn.className = 'bg-amber-50 hover:bg-amber-100 active:scale-95 transition text-amber-800 py-2 px-2.5 rounded-xl font-bold text-xs border border-amber-300 flex items-center gap-1 shrink-0';
-                btn.title = 'Configura API Key Gemini per lettura foto';
-            }
-        }
-
-        function openApiKeyModal() {
-            const input = document.getElementById('geminiApiKeyInput');
-            if (input) input.value = localStorage.getItem(SHIFT_STORAGE_KEYS.GEMINI_API_KEY) || '';
-            document.getElementById('apiKeyModal').classList.remove('hidden');
-        }
-
-        function closeApiKeyModal() {
-            document.getElementById('apiKeyModal').classList.add('hidden');
-            pendingPhotoUploadAfterKey = false;
-        }
-
-        function saveGeminiApiKey() {
-            const val = (document.getElementById('geminiApiKeyInput').value || '').trim();
-            if (!val) {
-                showToast('Inserisci una chiave API valida');
-                return;
-            }
-            localStorage.setItem(SHIFT_STORAGE_KEYS.GEMINI_API_KEY, val);
-            updateApiKeyButtonUI();
-            const shouldTriggerPicker = pendingPhotoUploadAfterKey;
-            closeApiKeyModal();
-            showToast('Chiave API Gemini salvata!');
-            if (shouldTriggerPicker) {
-                document.getElementById('shiftPhotoInput').click();
-            }
-        }
-
-        function clearSavedApiKey() {
-            localStorage.removeItem(SHIFT_STORAGE_KEYS.GEMINI_API_KEY);
-            document.getElementById('geminiApiKeyInput').value = '';
-            updateApiKeyButtonUI();
-            showToast('Chiave API rimossa');
-        }
-
-        function triggerShiftPhotoPicker() {
-            // Se siamo in locale (es. file://) e non c'è una API Key salvata, chiedila prima
-            const isLocalOrStandalone = window.location.protocol === 'file:' || !window.location.hostname.includes('googleusercontent');
-            if (isLocalOrStandalone && !getEffectiveGeminiApiKey()) {
-                pendingPhotoUploadAfterKey = true;
-                openApiKeyModal();
-                return;
-            }
-            document.getElementById('shiftPhotoInput').click();
-        }
 
         let shiftsDatabase = loadShiftsDatabase();
         let shiftPhotosMap = loadShiftPhotos();
@@ -1217,18 +1289,9 @@
             } catch (e) {}
         }
 
-        // Analizza anche cerchiature parziali sui turni doppi:
-        // "M[O]P" -> mattina cancellata, resta P (pomeriggio)
-        // "MP[O]" -> pomeriggio cancellato, resta M (mattina)
-        // "N[O]"  -> intero turno cancellato
         function parseShiftCell(rawCell) {
-            let val = (rawCell || '/').trim();
-            // Normalizza eventuali 'I', 'l' o '|' letti per errore dall'OCR al posto di '/'
-            if (/^[Il|]$/.test(val)) {
-                val = '/';
-            }
+            const val = (rawCell || '/').trim();
 
-            // Caso 1: M[O]P o M'[O]P o M[O]P' (mattina cerchiata, pomeriggio attivo)
             const morningCircledMatch = val.match(/^(M'?)\[O\](P'?)$/i);
             if (morningCircledMatch) {
                 const mPart = morningCircledMatch[1];
@@ -1243,7 +1306,6 @@
                 };
             }
 
-            // Caso 2: MP[O] o M'P[O] o MP'[O] (pomeriggio cerchiato, mattina attiva)
             const afternoonCircledMatch = val.match(/^(M'?)(P'?)\[O\]$/i);
             if (afternoonCircledMatch) {
                 const mPart = afternoonCircledMatch[1];
@@ -1258,7 +1320,6 @@
                 };
             }
 
-            // Caso 3: Intero turno cerchiato (es. N[O], P[O], M[O], [MP][O])
             if (val.includes('[O]')) {
                 const clean = val.replace(/\[O\]/g, '').replace(/[\[\]]/g, '').trim() || '/';
                 return {
@@ -1271,7 +1332,6 @@
                 };
             }
 
-            // Caso 4: Turno normale non cerchiato
             const clean = val || '/';
             return {
                 raw: val,
@@ -1285,17 +1345,15 @@
 
         function describeSingleCode(code) {
             const upper = (code || '/').toUpperCase();
-            if (upper === '/' || upper === '-') return 'Riposo / Smonto';
+            if (upper === '/' || upper === '-') return 'Libero';
             if (upper === 'M') return 'Mattina';
             if (upper === "M'") return "Mattina (M')";
             if (upper === 'P') return 'Pomeriggio';
             if (upper === "P'") return "Pomeriggio (P')";
-            if (upper === 'MP') return '12 ore (Mattina + Pomeriggio)';
+            if (upper === 'MP') return '12 ore';
             if (upper === "MP'") return "12 ore (MP')";
             if (upper === 'N') return 'Notte';
             if (upper === "N'") return "Notte (N')";
-            if (upper === 'RF') return 'Rip. Fest. lavorato';
-            if (upper === 'RC') return 'Riposo Compensativo';
             if (upper === 'F') return 'Ferie';
             if (upper === 'CS') return 'Congedo Straordinario';
             if (upper === 'H') return 'Malattia';
@@ -1303,18 +1361,20 @@
             if (upper === 'RB') return 'Riposo Biologico';
             if (upper === '118') return 'Turno 118';
             if (upper === 'FS') return 'Festività Soppresse';
+            if (upper === 'RF') return 'Rip. Fest. lavorato';
+            if (upper === 'RC') return 'Riposo Compensativo';
             return `Turno ${code}`;
         }
 
         function describeParsedCell(cell) {
             if (cell.circleMode === 'morning') {
-                return `${describeSingleCode(cell.activeCode)} attivo (Mattina annullata per cambio)`;
+                return `${describeSingleCode(cell.activeCode)} attivo (Mattina tolta per cambio)`;
             }
             if (cell.circleMode === 'afternoon') {
-                return `${describeSingleCode(cell.activeCode)} attivo (Pomeriggio annullato per cambio)`;
+                return `${describeSingleCode(cell.activeCode)} attivo (Pomeriggio tolto per cambio)`;
             }
             if (cell.isFullCircled) {
-                return `${describeSingleCode(cell.baseCode)} — ANNULLATO (Cerchiato/Barrato)`;
+                return `${describeSingleCode(cell.baseCode)} — TOLTO PER CAMBIO (Cerchiato/Barrato)`;
             }
             return describeSingleCode(cell.baseCode);
         }
@@ -1357,7 +1417,6 @@
         }
 
         function initShiftsSection() {
-            updateApiKeyButtonUI();
             const monthSelect = document.getElementById('shiftMonthSelect');
             const docSelect = document.getElementById('shiftDoctorSelect');
             if (!monthSelect || !docSelect) return;
@@ -1367,6 +1426,7 @@
             monthSelect.value = selectedShiftMonth;
 
             populateDoctorsDropdown();
+            updateApiKeyButtonIndicator();
 
             const now = new Date();
             const monthObj = shiftsDatabase[selectedShiftMonth];
@@ -1502,11 +1562,11 @@
             const weekdayName = weekdayNames[weekdayIdx];
 
             const resBox = document.getElementById('shiftQueryResultBox');
-            let badgeClasses = 'bg-white text-hospital-950';
+            let badgeClasses = 'bg-white text-slate-900 border border-slate-200 hover:bg-sky-50';
             if (cell.isFullCircled) {
-                badgeClasses = 'bg-red-500/30 border-2 border-dashed border-red-300 text-red-100 line-through';
+                badgeClasses = 'bg-red-50 border-2 border-dashed border-red-400 text-red-700 line-through';
             } else if (cell.isPartialCircled) {
-                badgeClasses = 'bg-amber-100 border-2 border-dashed border-red-400 text-hospital-950';
+                badgeClasses = 'bg-amber-100 border-2 border-dashed border-red-400 text-slate-900';
             }
 
             resBox.innerHTML = `
@@ -1514,12 +1574,12 @@
                     <div class="text-[10px] text-sky-200 font-semibold truncate">${weekdayName} ${day} ${monthObj.label}</div>
                     <div class="text-xs sm:text-sm font-extrabold text-white leading-tight mt-0.5">${desc}</div>
                 </div>
-                <button type="button" onclick="openEditShiftModal(${day})" class="shrink-0 px-2.5 py-1.5 rounded-lg font-mono font-extrabold text-sm ${badgeClasses} shadow-xs" title="Tocca per modificare">
-                    ${renderShiftCellHtml(cell)}
+                <button type="button" onclick="openEditShiftModal(${day})" class="shrink-0 px-3 py-1.5 rounded-lg font-mono font-extrabold text-sm ${badgeClasses} shadow-sm flex items-center gap-1.5 active:scale-95 transition" title="Tocca per modificare">
+                    <span>${renderShiftCellHtml(cell)}</span>
+                    <i class="fa-solid fa-pen text-[10px] opacity-60"></i>
                 </button>
             `;
 
-            // Mostra anche chi altro lavora in quel giorno usando il turno effettivamente attivo (activeCode)
             const nonWorkingCodes = new Set(['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC']);
             const workingColleagues = [];
             Object.entries(monthObj.doctors).forEach(([docName, shifts]) => {
@@ -1544,7 +1604,6 @@
 
             document.getElementById('calendarMonthHeader').textContent = monthObj.label;
 
-            // Calcolo statistiche mensili del medico considerando i turni effettivamente attivi
             const nonWorkingCodes = new Set(['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC']);
             let countActive = 0, countNights = 0, countFerie = 0, countCircled = 0;
             rawArr.forEach(raw => {
@@ -1582,7 +1641,6 @@
                 </div>
             `;
 
-            // Renderizza griglia calendario
             const grid = document.getElementById('shiftCalendarGrid');
             let cellsHtml = '';
 
@@ -1683,6 +1741,24 @@
         // ==========================================
         // AGGIORNAMENTO TURNI DA FOTO CON GEMINI VISION AI
         // ==========================================
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            let delay = 1000;
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    const res = await fetch(url, options);
+                    if (res.ok || (res.status !== 429 && res.status < 500)) {
+                        return res;
+                    }
+                } catch (err) {
+                    if (attempt === maxRetries) throw err;
+                }
+                if (attempt < maxRetries) {
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
         async function handleShiftPhotoUpload(event) {
             const file = event.target.files?.[0];
             if (!file) return;
@@ -1691,18 +1767,14 @@
             const progressBox = document.getElementById('shiftScanProgress');
             progressBox.classList.remove('hidden');
 
+            let compressedDataUrl = '';
             try {
-                const compressedDataUrl = await compressImageToDataUrl(file, 1400, 0.82);
+                compressedDataUrl = await compressImageToDataUrl(file, 1400, 0.82);
                 const base64Data = compressedDataUrl.split(',')[1];
                 const mimeType = 'image/jpeg';
 
-                // Salva subito la foto originale sul mese corrente
-                shiftPhotosMap[selectedShiftMonth] = compressedDataUrl;
-                persistShiftPhotos();
-                renderUploadedShiftPhoto();
-
-                const apiKey = getEffectiveGeminiApiKey();
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+                const apiKey = getSavedGeminiApiKey();
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(apiKey)}`;
 
                 const promptText = `Analizza questa foto della tabella dei turni mensili medici (Ospedale Cannizzaro - Anestesia e Rianimazione).
 Estrai con massima precisione:
@@ -1710,13 +1782,11 @@ Estrai con massima precisione:
 2. Il numero di giorni del mese (28, 30 o 31) e il giorno della settimana del giorno 1 (0=Lunedì, 1=Martedì, 2=Mercoledì, 3=Giovedì, 4=Venerdì, 5=Sabato, 6=Domenica).
 3. L'elenco di tutti i medici (righe) e per ciascuno l'array esatto dei turni dal giorno 1 all'ultimo giorno del mese.
 
-SIGLE E GIUSTIFICATIVI UFFICIALI DA RICONOSCERE:
+SIMBOLI UFFICIALI PRESENTI SUI TURNI:
 - M' / M = Mattina
 - P' / P = Pomeriggio
 - MP' / MP = 12 ore
 - N' / N = Notte
-- RF = Rip. Fest. lavorato
-- RC = Riposo Compensativo
 - F = Ferie
 - CS = Congedo Straordinario
 - H = Malattia
@@ -1724,11 +1794,12 @@ SIGLE E GIUSTIFICATIVI UFFICIALI DA RICONOSCERE:
 - Rb = Riposo Biologico
 - 118 = Turno 118
 - FS = Festività Soppresse
-- / o cella vuota = Riposo / Smonto (ATTENZIONE: nella tabella i giorni di riposo sono segnati con una barra obliqua "/". Non esiste alcuna sigla "I" maiuscola: qualsiasi barra verticale o obliqua "/" va sempre trascritta come "/" e MAI come "I")
+- / (o cella vuota) = Libero
 
-REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/MATITA):
-- Se una sigla è cerchiata, barrata con una linea/sbarra o cancellata con una croce (X) sopra a penna/matita, è ANNULLATA: aggiungi "[O]" subito dopo la sigla (es. "N[O]", "P[O]", "M[O]", "MP[O]", "118[O]").
-- Nei turni doppi da 12 ore "MP" o "MP'", controlla attentamente se il cerchio, la sbarra o la croce copre SOLO la M (mattina annullata, resta pomeriggio -> scrivi "M[O]P" o "M[O]P'"), oppure SOLO la P (pomeriggio annullato, resta mattina -> scrivi "MP[O]" o "MP'[O]"), oppure l'intera sigla.`;
+CORREZIONI A PENNA (TURNI TOLTI PER CAMBIO):
+- I fogli sono stampati ma soggetti a correzioni a penna: quando un turno viene tolto per cambio viene cerchiato oppure barrato con una linea/sbarra a penna.
+- Ogni volta che una sigla è cerchiata o barrata a penna, aggiungi "[O]" subito dopo la sigla (es. "N[O]", "P[O]", "M[O]", "MP[O]", "118[O]").
+- Nei turni doppi da 12 ore "MP" o "MP'", controlla attentamente se il cerchio o la barratura a penna riguarda SOLO la M (Mattina tolta, resta Pomeriggio -> scrivi "M[O]P" o "M[O]P'"), oppure SOLO la P (Pomeriggio tolto, resta Mattina -> scrivi "MP[O]" o "MP'[O]"), oppure l'intera sigla ("MP[O]" / "MP'[O]").`;
 
                 const payload = {
                     contents: [{
@@ -1766,20 +1837,35 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
                     }
                 };
 
-                const response = await fetch(apiUrl, {
+                const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const result = await response.json();
 
-                if (!response.ok || result.error) {
-                    const apiMsg = result?.error?.message || `HTTP ${response.status}`;
-                    throw new Error(`API_AUTH_OR_REQUEST: ${apiMsg}`);
+                if (!response || !response.ok) {
+                    if (compressedDataUrl) {
+                        shiftPhotosMap[selectedShiftMonth] = compressedDataUrl;
+                        persistShiftPhotos();
+                        renderUploadedShiftPhoto();
+                    }
+                    if (response && (response.status === 400 || response.status === 401 || response.status === 403)) {
+                        openApiKeyModal(false);
+                        showToast('Inserisci una Gemini API Key valida per leggere la tabella');
+                        return;
+                    }
+                    throw new Error(`HTTP ${response ? response.status : 'network'}`);
                 }
 
+                const result = await response.json();
                 const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
                 if (!jsonText) {
+                    if (compressedDataUrl) {
+                        shiftPhotosMap[selectedShiftMonth] = compressedDataUrl;
+                        persistShiftPhotos();
+                        renderUploadedShiftPhoto();
+                    }
                     throw new Error("Risposta vuota dall'AI");
                 }
 
@@ -1787,10 +1873,7 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
                 const doctorsMap = {};
                 (parsed.doctorsList || []).forEach(doc => {
                     if (doc.name && Array.isArray(doc.shifts)) {
-                        const normalized = doc.shifts.slice(0, parsed.daysCount).map(s => {
-                            const trimmed = String(s || '/').trim();
-                            return (/^[Il|]$/.test(trimmed) || trimmed === '') ? '/' : trimmed;
-                        });
+                        const normalized = doc.shifts.slice(0, parsed.daysCount);
                         while (normalized.length < parsed.daysCount) normalized.push('/');
                         doctorsMap[doc.name.trim()] = normalized;
                     }
@@ -1814,16 +1897,14 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
                 persistShiftsDatabase();
                 persistShiftPhotos();
                 initShiftsSection();
-                showToast(`Turni e foto di ${parsed.label} aggiornati!`);
+                showToast(`Turni e foto di ${parsed.label} salvati!`);
             } catch (err) {
-                console.error("Errore scansione turni:", err);
-                const msg = String(err?.message || '');
-                if (msg.includes('API_AUTH_OR_REQUEST') || msg.includes('API key')) {
-                    showToast('Chiave API mancante o non valida: configurala per leggere la tabella');
-                    openApiKeyModal();
-                } else {
-                    showToast('Errore lettura AI: foto salvata, verifica connessione o API Key');
+                if (compressedDataUrl) {
+                    shiftPhotosMap[selectedShiftMonth] = compressedDataUrl;
+                    persistShiftPhotos();
+                    renderUploadedShiftPhoto();
                 }
+                showToast('Foto salvata: verifica la Chiave AI o modifica le celle manualmente');
             } finally {
                 progressBox.classList.add('hidden');
             }
@@ -2965,16 +3046,23 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             { id: 'metronidazolo', name: 'METRONIDAZOLO', category: 'Nitroimidazolo', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '500 mg / 100 ml S.F. in 30 min × 3/die' } ] },
             { id: 'meropenem', name: 'MEROPENEM', category: 'Carbapeneme', loadingDose: 'd.c. 2 g / 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 1 g in 50 ml S.F.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 8,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 4 ml/h' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '1 g / 50 ml S.F. — infusione a 1 ml/h' } ] },
             { id: 'meropenem_vaborbactam', name: 'MEROPENEM / VABORBACTAM (VABOREM)', category: 'Carbapeneme / Inibitore beta-lattamasi', loadingDose: 'd.c. 2/2 g in 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '2/2 g in 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 4 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1/1 g in 50 ml S.F. — infusione a 2 ml/h' } ] },
-            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Beta-lattamico / Inibitore beta-lattamasi', loadingDose: 'd.c. 4,5 g / 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 9 g in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '9 g / 50 ml S.F. — infusione a 4 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '9 g / 50 ml S.F. — infusione a 3 ml/h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '9 g / 50 ml S.F. — infusione a 2 ml/h' } ] },
-            { id: 'rifampicina', name: 'RIFAMPICINA', category: 'Rifamicina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 500 ml S.F. in 3 ore × 1/die' } ] },
-            { id: 'tigeciclina', name: 'TIGECICLINA', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: 'd.c. 100 mg / 100 ml in 1 ora, poi 50 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
-            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOSID)', category: 'Glicopeptide', loadingDose: '6 mg/kg in 100 ml S.F. in 30 min ogni 12 ore per 3 volte', note: 'Dopo le prime 3 somministrazioni ogni 12h, proseguire con mantenimento secondo Cl.Cr.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '6 mg/kg in 100 ml S.F. in 30 min × 1/die' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: '6 mg/kg in 100 ml S.F. in 30 min ogni 48 ore' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '6 mg/kg in 100 ml S.F. in 30 min ogni 72 ore' } ] },
-            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 25–30 mg/kg in 250 ml S.F. in 2 ore', note: 'Mantenimento in infusione continua: 2 g in 50 ml S.F. Monitorare vancocinemia (target 20–25 mcg/ml).', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2,5 ml/h (2,5 g/die)' }, { min: 61, max: 80, label: 'Cl.Cr 61 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h (2 g/die)' }, { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h (1,5 g/die)' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h (1 g/die)' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h (500 mg/die)' } ] }
+            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Ureidopenicillina / Inibitore beta-lattamasi', loadingDose: 'd.c. 6,75 g / 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 4,5 g in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 8,5 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 4 ml/h' } ] },
+            { id: 'tigeciclina', name: 'TIGECICLINA (TYGACIL)', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
+            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOSID)', category: 'Glicopeptide', loadingDose: 'd.c. 12 mg/kg ogni 12 ore per 3 volte (prime 36h)', note: 'Dal 4° giorno in poi: 12 mg/kg / 50 ml S.F. in 1 ora con intervallo in base a Cl.Cr.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: 'Dal 4° giorno: 12 mg/kg / 50 ml S.F. in 1 ora ogni 24 ore' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: 'Dal 4° giorno: 12 mg/kg / 50 ml S.F. in 1 ora ogni 48 ore' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: 'Dal 4° giorno: 12 mg/kg / 50 ml S.F. in 1 ora ogni 72 ore' } ] },
+            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 15 mg/kg in 100 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 2 g in 50 ml S.F. (monitorare vancocinemia target 20–25 mcg/ml).', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 51, max: 80, label: 'Cl.Cr 51 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' } ] },
+            { id: 'fluconazolo', name: 'FLUCONAZOLO (DIFLUCAN)', category: 'Antimicotico Triazolico', loadingDose: '1° giorno: 800 mg / 200 ml S.F. in 2 ore', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1° giorno 800 mg / 200 ml in 2h, poi 400 mg / 100 ml in 1h × 1/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: '1° giorno 800 mg / 200 ml in 2h, poi 200 mg / 100 ml in 1h × 1/die' } ] },
+            { id: 'caspofungina', name: 'CASPOFUNGINA (CANCIDAS)', category: 'Antimicotico Echinocandina', loadingDose: '1° giorno: 70 mg / 250 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '1° giorno 70 mg / 250 ml in 1h, poi 50 mg / 100 ml in 1h × 1/die' } ] },
+            { id: 'anidulafungina', name: 'ANIDULAFUNGINA (ECALTA)', category: 'Antimicotico Echinocandina', loadingDose: '1° giorno: 200 mg / 200 ml S.F. in 2 ore', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '1° giorno 200 mg / 200 ml in 2h, poi 100 mg / 100 ml in 1h × 1/die' } ] },
+            { id: 'voriconazolo', name: 'VORICONAZOLO (VFEND)', category: 'Antimicotico Triazolico', loadingDose: '1° giorno: 6 mg/kg / 100 ml S.F. in 1 ora × 2/die', note: 'Controindicata formulazione EV per Cl.Cr ≤ 50 ml/min (accumulo veicolo ciclodestrina SBECD).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1° giorno 6 mg/kg × 2/die, poi 4 mg/kg / 100 ml S.F. in 1h × 2/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: 'CONTROINDICATO (formulazione EV)', contraindicated: true } ] },
+            { id: 'ambisome', name: 'AMBISOME (AMFOTERICINA B LIPOSOMIALE)', category: 'Antimicotico Polienico', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '3 – 5 mg/kg in 500 ml Glucosata 5% in 2 ore × 1/die' } ] },
+            { id: 'aciclovir', name: 'ACICLOVIR', category: 'Antivirale', loadingDose: 'Nessuna dose di carico specifica', note: 'Dose standard 10 mg/kg in 100 ml S.F. in 1 ora; aumentare intervallo per Cl.Cr ridotta.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '10 mg/kg / 100 ml S.F. in 1 ora × 3/die (ogni 8 ore)' }, { min: 26, max: 50, label: 'Cl.Cr 26 – 50 ml/min', dose: '10 mg/kg / 100 ml S.F. in 1 ora × 2/die (ogni 12 ore)' }, { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '10 mg/kg / 100 ml S.F. in 1 ora × 1/die (ogni 24 ore)' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '5 mg/kg / 100 ml S.F. in 1 ora × 1/die (ogni 24 ore)' } ] }
         ];
 
-        function initAntibioticsSection() {
+        function initAntibioticsCalculator() {
+            const sorted = [...antibioticsDatabase].sort((a, b) => a.name.localeCompare(b.name));
+            window._sortedAntibiotics = sorted;
             renderAbxPickerList();
-            onAbxChange();
+            onAntibioticChange();
         }
 
         function openAbxPickerModal() {
@@ -2996,9 +3084,9 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             const abxSelectEl = document.getElementById('abxSelect');
             const currentId = abxSelectEl ? abxSelectEl.value : 'piperacillina_tazobactam';
             const q = (document.getElementById('abxSearchInput')?.value || '').toLowerCase().trim();
+            const list = window._sortedAntibiotics || antibioticsDatabase;
 
-            const sorted = [...antibioticsDatabase].sort((a, b) => a.name.localeCompare(b.name));
-            const filtered = sorted.filter(a => {
+            const filtered = list.filter(a => {
                 if (!q) return true;
                 return a.name.toLowerCase().includes(q) || a.category.toLowerCase().includes(q);
             });
@@ -3016,7 +3104,9 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
                             <div class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${a.name}</div>
                             <div class="text-[10px] text-slate-500 truncate">${a.category}</div>
                         </div>
-                        ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-600 text-sm shrink-0"></i>' : '<i class="fa-solid fa-chevron-right text-slate-300 text-xs shrink-0"></i>'}
+                        <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600'}">
+                            ${a.bands.length} ${a.bands.length === 1 ? 'fascia' : 'fasce'}
+                        </span>
                     </button>
                 `;
             }).join('');
@@ -3026,43 +3116,60 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             const abxSelectEl = document.getElementById('abxSelect');
             if (abxSelectEl) abxSelectEl.value = abxId;
             closeAbxPickerModal();
-            onAbxChange();
+            onAntibioticChange();
         }
 
         function setQuickCrCl(val) {
-            const input = document.getElementById('crclInput');
-            if (input) {
-                input.value = val;
-                onCrClChange();
+            document.getElementById('crclInput').value = val;
+            onCrClChange();
+        }
+
+        function onAntibioticChange() {
+            const abxId = document.getElementById('abxSelect').value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+
+            const titleEl = document.getElementById('selectedAbxTitle');
+            const catEl = document.getElementById('selectedAbxCategory');
+            if (titleEl) titleEl.textContent = abx.name;
+            if (catEl) catEl.textContent = abx.category;
+
+            const amikBox = document.getElementById('amikacinaCalcBox');
+            if (abx.specialAmikacina) {
+                amikBox.classList.remove('hidden');
+                updateAmikacinaInterval();
+            } else {
+                amikBox.classList.add('hidden');
+            }
+
+            onCrClChange();
+        }
+
+        function updateAmikacinaInterval() {
+            const creat = parseFloat(document.getElementById('amikacinaCreatInput').value);
+            const resEl = document.getElementById('amikacinaResultBadge');
+            if (!isNaN(creat) && creat > 0) {
+                const hours = Math.round(creat * 9 * 10) / 10;
+                resEl.textContent = `Ogni ${hours} ore`;
+            } else {
+                resEl.textContent = 'Inserisci creatinina';
             }
         }
 
         function onCrClChange() {
-            const crclVal = Math.max(0, parseFloat(document.getElementById('crclInput').value) || 0);
-            const badge = document.getElementById('renalStatusBadge');
-
-            if (badge) {
-                if (crclVal > 80) {
-                    badge.textContent = 'Normofunzione (> 80)';
-                    badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate';
-                } else if (crclVal > 50) {
-                    badge.textContent = 'IR Lieve (51–80)';
-                    badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 truncate';
-                } else if (crclVal > 30) {
-                    badge.textContent = 'IR Moderata (31–50)';
-                    badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 truncate';
-                } else if (crclVal > 15) {
-                    badge.textContent = 'IR Severa (16–30)';
-                    badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-100 text-orange-900 truncate';
-                } else {
-                    badge.textContent = 'IR Terminale (≤ 15)';
-                    badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-900 truncate';
-                }
-            }
+            const abxId = document.getElementById('abxSelect').value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+            const rawCrCl = parseFloat(document.getElementById('crclInput').value);
+            const crcl = isNaN(rawCrCl) ? 90 : Math.max(0, rawCrCl);
 
             document.querySelectorAll('.crcl-chip').forEach(btn => {
-                const chipVal = parseFloat(btn.dataset.crcl);
-                const isActive = (chipVal === 90 && crclVal > 80) || (chipVal !== 90 && Math.abs(crclVal - chipVal) <= 4);
+                const chipVal = parseInt(btn.dataset.crcl);
+                const isActive = (chipVal === 90 && crcl > 80) ||
+                                 (chipVal === 60 && crcl > 50 && crcl <= 80) ||
+                                 (chipVal === 50 && crcl > 40 && crcl <= 50) ||
+                                 (chipVal === 40 && crcl > 30 && crcl <= 40) ||
+                                 (chipVal === 30 && crcl > 15 && crcl <= 30) ||
+                                 (chipVal === 15 && crcl > 10 && crcl <= 15) ||
+                                 (chipVal === 10 && crcl <= 10);
                 if (isActive) {
                     btn.classList.add('bg-indigo-700', 'text-white', 'border-indigo-700');
                     btn.classList.remove('bg-slate-50', 'text-slate-700', 'border-slate-200');
@@ -3072,44 +3179,27 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
                 }
             });
 
-            onAbxChange();
-        }
-
-        function updateAmikacinaInterval() {
-            const creat = parseFloat(document.getElementById('amikacinaCreatInput')?.value) || 0;
-            const resEl = document.getElementById('amikacinaResultBadge');
-            if (!resEl) return;
-            if (creat <= 0) {
-                resEl.textContent = 'Inserisci creatinina';
-                return;
-            }
-            const hours = Math.round(creat * 9 * 10) / 10;
-            resEl.textContent = `Ogni ${hours} ore (${creat} × 9)`;
-        }
-
-        function onAbxChange() {
-            const abxSelect = document.getElementById('abxSelect');
-            if (!abxSelect) return;
-            const abxId = abxSelect.value;
-            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
-            const crclVal = Math.max(0, parseFloat(document.getElementById('crclInput')?.value) || 0);
-
-            const titleEl = document.getElementById('selectedAbxTitle');
-            if (titleEl) titleEl.textContent = abx.name;
-            const catEl = document.getElementById('selectedAbxCategory');
-            if (catEl) catEl.textContent = abx.category;
-
-            const amikBox = document.getElementById('amikacinaCalcBox');
-            if (amikBox) {
-                if (abx.specialAmikacina) {
-                    amikBox.classList.remove('hidden');
-                    updateAmikacinaInterval();
-                } else {
-                    amikBox.classList.add('hidden');
-                }
+            const statusBadge = document.getElementById('renalStatusBadge');
+            if (crcl > 80) {
+                statusBadge.textContent = 'Normofunzione (> 80)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate';
+            } else if (crcl >= 51) {
+                statusBadge.textContent = 'IRC Lieve (51–80)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 truncate';
+            } else if (crcl >= 31) {
+                statusBadge.textContent = 'IRC Moderata (31–50)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 truncate';
+            } else if (crcl >= 15) {
+                statusBadge.textContent = 'IRC Severa (15–30)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 truncate';
+            } else {
+                statusBadge.textContent = 'IRC Terminale (< 15)';
+                statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-800 truncate';
             }
 
-            let activeBand = abx.bands.find(b => crclVal >= b.min && crclVal <= b.max) || abx.bands[abx.bands.length - 1];
+            let activeBandIndex = abx.bands.findIndex(b => crcl >= b.min && crcl <= b.max);
+            if (activeBandIndex === -1) activeBandIndex = 0;
+            const activeBand = abx.bands[activeBandIndex];
 
             document.getElementById('abxResultDrugName').textContent = abx.name;
             document.getElementById('abxResultBandLabel').textContent = activeBand.label;
@@ -3118,6 +3208,7 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             const maintBox = document.getElementById('abxMaintenanceBox');
             const maintText = document.getElementById('abxMaintenanceText');
             maintText.textContent = activeBand.dose;
+
             if (activeBand.contraindicated) {
                 maintBox.className = 'bg-red-600/35 border border-red-400 rounded-lg p-2 flex items-start gap-2';
                 maintText.className = 'text-xs sm:text-sm font-extrabold text-red-200 mt-0.5 leading-snug';
@@ -3128,7 +3219,7 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
 
             const noteBox = document.getElementById('abxClinicalNoteBox');
             const noteText = document.getElementById('abxClinicalNoteText');
-            if (abx.note && abx.note.trim().length > 0) {
+            if (abx.note) {
                 noteText.textContent = abx.note;
                 noteBox.classList.remove('hidden');
             } else {
@@ -3136,112 +3227,99 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             }
 
             const bandsList = document.getElementById('abxBandsList');
-            bandsList.innerHTML = abx.bands.map((b) => {
-                const isCurrent = b === activeBand;
-                const sampleCrCl = b.max >= 900 ? Math.max(90, b.min + 10) : Math.max(0, Math.round((b.min + b.max) / 2));
+            bandsList.innerHTML = abx.bands.map((b, idx) => {
+                const isSelected = idx === activeBandIndex;
+                const sampleCrCl = b.max >= 999 ? Math.max(90, b.min + 10) : Math.max(5, Math.floor((b.min + b.max) / 2));
+                const rowStyle = b.contraindicated
+                    ? (isSelected ? 'bg-red-50 border-red-400 ring-1 ring-red-400' : 'bg-red-50/40 border-red-200')
+                    : (isSelected ? 'bg-indigo-50 border-indigo-600 ring-1 ring-indigo-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100');
+
                 return `
-                    <button type="button" onclick="setQuickCrCl(${sampleCrCl})" class="w-full text-left px-2.5 py-1.5 rounded-lg border transition flex items-center justify-between gap-2 ${isCurrent ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
+                    <button type="button" onclick="setQuickCrCl(${sampleCrCl})" class="w-full text-left px-2.5 py-1.5 rounded-lg border transition flex items-center justify-between gap-2 ${rowStyle}">
                         <div class="min-w-0 flex-1">
-                            <span class="text-[10px] font-extrabold uppercase ${isCurrent ? 'text-indigo-700' : 'text-slate-500'} block">${b.label}</span>
-                            <div class="text-xs font-bold leading-snug ${b.contraindicated ? 'text-red-700' : 'text-slate-900'}">${b.dose}</div>
+                            <span class="inline-block text-[10px] font-extrabold uppercase tracking-wide ${b.contraindicated ? 'text-red-700' : (isSelected ? 'text-indigo-800' : 'text-slate-600')}">
+                                ${b.label}
+                            </span>
+                            <div class="text-xs font-bold ${b.contraindicated ? 'text-red-700' : 'text-slate-900'} leading-tight mt-0.5">
+                                ${b.dose}
+                            </div>
                         </div>
-                        ${isCurrent ? '<span class="shrink-0 text-[9px] font-extrabold bg-indigo-700 text-white px-1.5 py-0.5 rounded uppercase">Attiva</span>' : ''}
+                        ${isSelected ? `<span class="shrink-0 text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-indigo-700 text-white uppercase">Attiva</span>` : ''}
                     </button>
                 `;
             }).join('');
         }
 
         // ==========================================
-        // GESTIONE RUBRICA PERSONALE & MODAL
+        // ASSISTENTE VOCALE E CHAT AI (INCLUSI TURNI)
         // ==========================================
-        function askResetRubrica() {
-            document.getElementById('confirmResetModal').classList.remove('hidden');
-        }
-        function closeConfirmResetModal() {
-            document.getElementById('confirmResetModal').classList.add('hidden');
-        }
-        function confirmResetRubrica() {
-            contactsData = [...defaultContactsData];
-            persistContacts();
-            renderContacts();
-            closeConfirmResetModal();
-            showToast('Rubrica predefinita ripristinata');
-        }
-
-        function openAddContactModal() {
-            document.getElementById('addContactModal').classList.remove('hidden');
-        }
-        function closeAddContactModal() {
-            document.getElementById('addContactModal').classList.add('hidden');
-        }
-        function saveNewContact(e) {
-            e.preventDefault();
-            const name = document.getElementById('newContactName').value.trim();
-            const phone = document.getElementById('newContactPhone').value.trim();
-            const location = document.getElementById('newContactLoc').value.trim() || "Ospedale";
-            const note = document.getElementById('newContactNote').value.trim();
-            
-            const newId = Date.now();
-            contactsData.unshift({ id: newId, name, phone, location, note });
-            favContactIds.add(newId);
-            persistContacts();
-            persistFavorites();
-            renderContacts();
-            
-            document.getElementById('newContactName').value = '';
-            document.getElementById('newContactPhone').value = '';
-            document.getElementById('newContactLoc').value = '';
-            document.getElementById('newContactNote').value = '';
-            
-            closeAddContactModal();
-            showToast('Interno aggiunto ai preferiti');
-        }
-
-        function clearSearch() {
-            const input = document.getElementById('globalSearch');
-            input.value = '';
-            document.getElementById('clearSearchBtn').classList.add('hidden');
-            renderContacts();
-        }
-
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(`Copiato: ${text}`);
-            }).catch(() => {
-                const temp = document.createElement('textarea');
-                temp.value = text;
-                document.body.appendChild(temp);
-                temp.select();
-                document.execCommand('copy');
-                document.body.removeChild(temp);
-                showToast(`Copiato: ${text}`);
-            });
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').textContent = msg;
-            toast.classList.remove('opacity-0');
-            setTimeout(() => toast.classList.add('opacity-0'), 2200);
-        }
-
-        // ==========================================
-        // ASSISTENTE VOCALE E CHAT AI (TURNI + REPARTI + INTERNI)
-        // ==========================================
-        let isRecording = false;
         let recognition = null;
+        let isRecording = false;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isRecording = true;
+                const btn = document.getElementById('micBtn');
+                btn.classList.remove('bg-hospital-600');
+                btn.classList.add('bg-red-600', 'pulse-ring');
+                document.getElementById('micStatus').textContent = "In ascolto... Parla ora";
+                document.getElementById('micStatus').classList.add('text-red-600');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                processAssistantQuery(transcript);
+            };
+
+            recognition.onerror = () => {
+                stopVoiceUI();
+                addBotMessage("Microfono non rilevato. Puoi scrivere la richiesta qui sotto.");
+            };
+
+            recognition.onend = () => {
+                stopVoiceUI();
+            };
+        }
+
+        function stopVoiceUI() {
+            isRecording = false;
+            const btn = document.getElementById('micBtn');
+            btn.classList.add('bg-hospital-600');
+            btn.classList.remove('bg-red-600', 'pulse-ring');
+            document.getElementById('micStatus').textContent = "Tocca il microfono per parlare";
+            document.getElementById('micStatus').classList.remove('text-red-600');
+        }
+
+        function toggleVoiceRecognition() {
+            if (!recognition) {
+                addBotMessage("Riconoscimento vocale non supportato su questo browser. Scrivi la domanda nel box qui sotto.");
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    recognition.stop();
+                }
+            }
+        }
 
         function toggleAssistantModal(prefillQuery = null) {
             const modal = document.getElementById('assistantModal');
             modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                if (prefillQuery) {
-                    processAssistantQuery(prefillQuery);
-                } else {
-                    setTimeout(() => document.getElementById('assistantTextInput').focus(), 100);
-                }
-            } else if (isRecording && recognition) {
-                recognition.stop();
+            if (modal.classList.contains('hidden')) {
+                if (isRecording && recognition) recognition.stop();
+                window.speechSynthesis.cancel();
+            } else if (prefillQuery) {
+                processAssistantQuery(prefillQuery);
             }
         }
 
@@ -3254,246 +3332,133 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             processAssistantQuery(text);
         }
 
-        function toggleVoiceRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                addChatMessage("Il browser in uso non supporta il riconoscimento vocale diretto. Usa la barra di testo qui sotto.", 'bot');
-                return;
-            }
+        function processAssistantQuery(query) {
+            addUserMessage(query);
+            const q = query.toLowerCase();
+            let replyHtml = '';
+            let speechText = '';
 
-            if (isRecording) {
-                recognition.stop();
-                return;
-            }
+            const isShiftQuery = q.includes('turno') || q.includes('turni') || q.includes('lavoro') || q.includes('notte') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('smonto') || q.includes('ferie') || q.includes('guardia');
 
-            recognition = new SpeechRecognition();
-            recognition.lang = 'it-IT';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            const micBtn = document.getElementById('micBtn');
-            const micStatus = document.getElementById('micStatus');
-
-            recognition.onstart = () => {
-                isRecording = true;
-                micBtn.classList.remove('bg-hospital-600');
-                micBtn.classList.add('bg-red-600', 'pulse-ring');
-                micStatus.textContent = "In ascolto... parla ora";
-                micStatus.classList.add('text-red-600');
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                processAssistantQuery(transcript);
-            };
-
-            recognition.onerror = (event) => {
-                micStatus.textContent = "Errore microfono: " + event.error;
-            };
-
-            recognition.onend = () => {
-                isRecording = false;
-                micBtn.classList.add('bg-hospital-600');
-                micBtn.classList.remove('bg-red-600', 'pulse-ring');
-                micStatus.textContent = "Tocca il microfono per parlare";
-                micStatus.classList.remove('text-red-600');
-            };
-
-            recognition.start();
-        }
-
-        function processAssistantQuery(queryText) {
-            addChatMessage(queryText, 'user');
-            const response = generateIntelligentResponse(queryText);
-            addChatMessage(response.html, 'bot');
-            speakResponse(response.speech);
-        }
-
-        function addChatMessage(content, sender) {
-            const container = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            
-            if (sender === 'user') {
-                div.className = 'flex justify-end';
-                div.innerHTML = `<div class="bg-hospital-700 text-white px-3 py-2 rounded-xl rounded-tr-none max-w-[85%] text-xs shadow-xs font-medium">${content}</div>`;
-            } else {
-                div.className = 'flex items-start gap-2';
-                div.innerHTML = `
-                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                        <i class="fa-solid fa-staff-snake"></i>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 max-w-[88%] space-y-1.5 leading-relaxed">
-                        ${content}
-                    </div>
-                `;
-            }
-            
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function generateIntelligentResponse(query) {
-            const q = query.toLowerCase().trim();
-            const monthObj = shiftsDatabase[selectedShiftMonth];
-
-            // 1) RICONOSCIMENTO DOMANDE SUI TURNI MENSILI
-            const isShiftIntent = q.includes('turno') || q.includes('turni') || q.includes('notte') || q.includes('notti') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('smonto') || q.includes('ferie') || q.includes('guardia') || q.includes('lavoro') || q.includes('lavora') || q.includes('chi c\'è') || q.includes('chi è');
-            if (isShiftIntent && monthObj) {
+            if (isShiftQuery) {
+                const monthObj = shiftsDatabase[selectedShiftMonth];
                 const now = new Date();
-                let targetDay = null;
-                if (q.includes('dopodomani')) targetDay = Math.min(monthObj.daysCount, now.getDate() + 2);
-                else if (q.includes('domani')) targetDay = Math.min(monthObj.daysCount, now.getDate() + 1);
-                else if (q.includes('oggi')) targetDay = Math.min(monthObj.daysCount, now.getDate());
-                else {
-                    const dayMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
-                    if (dayMatch) targetDay = parseInt(dayMatch[1]);
+                let targetDay = Math.min(monthObj.daysCount, now.getDate());
+
+                if (q.includes('domani')) {
+                    targetDay = Math.min(monthObj.daysCount, now.getDate() + 1);
+                } else {
+                    const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
+                    if (numMatch) {
+                        targetDay = Math.min(monthObj.daysCount, parseInt(numMatch[1], 10));
+                    }
                 }
 
-                // Controlla se nella domanda è nominato uno specifico collega
-                let targetDoc = selectedShiftDoctor;
+                let targetDoctor = defaultShiftDoctor;
                 for (const docName of Object.keys(monthObj.doctors)) {
                     if (q.includes(docName.toLowerCase())) {
-                        targetDoc = docName;
+                        targetDoctor = docName;
                         break;
                     }
                 }
 
-                // Caso A: "Chi è di notte / chi lavora il giorno X?"
-                if ((q.includes('chi ') || q.includes('chi è') || q.includes('chi fa')) && targetDay && targetDay <= monthObj.daysCount) {
-                    const activeWorkers = [];
-                    const nonWorking = new Set(['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC']);
-                    Object.entries(monthObj.doctors).forEach(([doc, arr]) => {
-                        const cell = parseShiftCell(arr[targetDay - 1]);
-                        const u = cell.activeCode.toUpperCase();
-                        if (!cell.isFullCircled && !nonWorking.has(u)) {
-                            activeWorkers.push(`<strong>Dott. ${doc}</strong> (${cell.activeCode} - ${describeSingleCode(cell.activeCode)})`);
-                        }
+                if (q.includes('chi') && (q.includes('notte') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('guardia'))) {
+                    const whoList = [];
+                    Object.entries(monthObj.doctors).forEach(([docName, shifts]) => {
+                        const c = parseShiftCell(shifts[targetDay - 1]);
+                        if (c.isFullCircled) return;
+                        const u = c.activeCode.toUpperCase();
+                        if (q.includes('notte') && u.startsWith('N')) whoList.push(`Dott. ${docName} (${c.activeCode})`);
+                        else if (q.includes('mattina') && u.startsWith('M')) whoList.push(`Dott. ${docName} (${c.activeCode})`);
+                        else if (q.includes('pomeriggio') && (u.startsWith('P') || u.startsWith('MP'))) whoList.push(`Dott. ${docName} (${c.activeCode})`);
+                        else if (q.includes('guardia') && !['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC'].includes(u)) whoList.push(`Dott. ${docName} (${c.activeCode})`);
                     });
-                    const listStr = activeWorkers.length > 0 ? activeWorkers.join('<br>• ') : 'Nessun medico attivo registrato';
-                    return {
-                        html: `<strong>Turni attivi del ${targetDay} ${monthObj.label}:</strong><br>• ${listStr}`,
-                        speech: `Il ${targetDay} ${monthObj.label} sono in servizio: ${activeWorkers.map(w => w.replace(/<[^>]+>/g, '')).join(', ')}.`
-                    };
-                }
 
-                // Caso B: "Che turno ho il giorno X?" (o per il medico selezionato/nominato)
-                if (targetDay && targetDay >= 1 && targetDay <= monthObj.daysCount) {
-                    const cell = parseShiftCell((monthObj.doctors[targetDoc] || [])[targetDay - 1]);
-                    const desc = describeParsedCell(cell);
-                    let extraAlert = '';
-                    if (cell.isFullCircled) {
-                        extraAlert = `<br><span class="text-red-600 font-bold">⚠️ Attenzione: questo turno (${cell.baseCode}) risulta cerchiato/barrato (annullato per cambio).</span>`;
-                    } else if (cell.isPartialCircled) {
-                        extraAlert = `<br><span class="text-amber-700 font-bold">⚠️ Turno doppio modificato: resta attivo solo ${describeSingleCode(cell.activeCode)} (${cell.activeCode}).</span>`;
+                    if (whoList.length > 0) {
+                        replyHtml = `Il giorno <strong>${targetDay} ${monthObj.label}</strong> risultano in servizio: <strong>${whoList.join(', ')}</strong>.`;
+                        speechText = `Il giorno ${targetDay} risultano in servizio: ${whoList.join(', ')}.`;
+                    } else {
+                        replyHtml = `Nessun collega trovato con quel turno il giorno <strong>${targetDay} ${monthObj.label}</strong>.`;
+                        speechText = `Nessun collega trovato per il giorno ${targetDay}.`;
                     }
-                    return {
-                        html: `<strong>Dott. ${targetDoc} — ${targetDay} ${monthObj.label}:</strong><br>Sigla attiva: <span class="font-mono font-extrabold bg-sky-100 text-hospital-950 px-1.5 py-0.5 rounded">${cell.activeCode}</span> (${desc})${extraAlert}`,
-                        speech: `Per il Dottor ${targetDoc}, il ${targetDay} ${monthObj.label} risulta: ${desc}.`
-                    };
+                } else {
+                    const rawArr = monthObj.doctors[targetDoctor] || [];
+                    const cell = parseShiftCell(rawArr[targetDay - 1]);
+                    const desc = describeParsedCell(cell);
+                    replyHtml = `<strong>Dott. ${targetDoctor}</strong> — Giorno <strong>${targetDay} ${monthObj.label}</strong>:<br><span class="inline-block mt-1 px-2 py-0.5 rounded bg-hospital-100 text-hospital-900 font-mono font-extrabold">${cell.activeCode}</span> <strong>${desc}</strong>`;
+                    speechText = `Dottor ${targetDoctor}, il giorno ${targetDay} ${monthObj.label} hai: ${desc}.`;
                 }
-
-                // Caso C: "Quante notti / ferie ho questo mese?"
-                if (q.includes('quante notti') || q.includes('notti')) {
-                    const arr = monthObj.doctors[targetDoc] || [];
-                    const nightDays = [];
-                    arr.forEach((raw, idx) => {
-                        const c = parseShiftCell(raw);
-                        if (!c.isFullCircled && c.activeCode.toUpperCase().startsWith('N')) nightDays.push(`${idx + 1} (${c.activeCode})`);
-                    });
-                    return {
-                        html: `<strong>Notti attive Dott. ${targetDoc} (${monthObj.label}):</strong> ${nightDays.length}<br>Giorni: ${nightDays.join(', ') || 'nessuna'}`,
-                        speech: `Il Dottor ${targetDoc} ha ${nightDays.length} notti attive a ${monthObj.label}, nei giorni ${nightDays.join(', ')}.`
-                    };
-                }
-            }
-
-            // 2) RICERCA REPARTI & CONTATTI OSPEDALIERI
-            const cleanWords = q.replace(/dove|si trova|reparto|numero|interno|telefono|piano|edificio|per|andare|arrivare|il|la|lo|l'|un|una|al|alla|del|della|dei|degli/g, ' ')
-                                .split(/\s+/).filter(w => w.length > 2);
-
-            let bestDept = null;
-            let bestDeptScore = 0;
-
-            departmentsData.forEach(d => {
-                let score = 0;
-                const searchSpace = `${d.name} ${d.keywords} ${d.building} ${d.floor}`.toLowerCase();
-                if (searchSpace.includes(q) && q.length > 3) score += 10;
-                cleanWords.forEach(w => {
-                    if (d.name.toLowerCase().includes(w)) score += 4;
-                    else if (searchSpace.includes(w)) score += 2;
+            } else {
+                const matchedDepts = departmentsData.filter(d => {
+                    return d.name.toLowerCase().includes(q) || 
+                           d.keywords.split(' ').some(k => k.length > 2 && q.includes(k));
                 });
-                if (score > bestDeptScore) {
-                    bestDeptScore = score;
-                    bestDept = d;
-                }
-            });
 
-            let matchedContacts = [];
-            contactsData.forEach(c => {
-                let score = 0;
-                const searchSpace = `${c.name} ${c.phone} ${c.location} ${c.note}`.toLowerCase();
-                cleanWords.forEach(w => {
-                    if (c.name.toLowerCase().includes(w)) score += 4;
-                    else if (searchSpace.includes(w)) score += 1;
+                const matchedContacts = contactsData.filter(c => {
+                    return c.name.toLowerCase().includes(q) || 
+                           q.split(' ').some(word => word.length > 3 && c.name.toLowerCase().includes(word));
                 });
-                if (score >= 3) matchedContacts.push({ contact: c, score });
-            });
-            matchedContacts.sort((a, b) => b.score - a.score);
 
-            if (bestDept && bestDeptScore >= 2) {
-                let html = `
-                    <div>
-                        <span class="font-bold text-hospital-900">${bestDept.name}</span><br>
-                        <strong>Edificio ${bestDept.building} — ${bestDept.floor}</strong>
-                    </div>
-                    <p class="text-[11px] text-slate-600">${bestDept.accessNote}</p>
-                `;
+                if (matchedDepts.length > 0) {
+                    const topDept = matchedDepts[0];
+                    const bLabel = topDept.building === 'AREE' ? topDept.floor : `Edificio ${topDept.building}, ${topDept.floor}`;
+                    replyHtml = `<strong>${topDept.name}</strong>: <strong>${bLabel}</strong>. <span class="block text-[11px] text-slate-600 mt-1">${topDept.accessNote}</span>`;
+                    speechText = `${topDept.name} si trova in ${bLabel}. ${topDept.accessNote}`;
 
-                if (matchedContacts.length > 0) {
-                    html += `<div class="pt-1 border-t border-slate-100 space-y-1">`;
-                    matchedContacts.slice(0, 2).forEach(item => {
-                        const rawNum = item.contact.phone.split('/')[0].trim();
-                        const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
-                        html += `
-                            <div class="flex items-center justify-between bg-slate-50 px-2 py-1 rounded">
-                                <span class="text-[11px] font-medium truncate pr-2">${item.contact.name}</span>
-                                <a href="tel:${fullNum}" class="font-mono font-bold text-emerald-700 text-xs shrink-0"><i class="fa-solid fa-phone mr-1"></i>${item.contact.phone}</a>
-                            </div>
-                        `;
-                    });
-                    html += `</div>`;
+                    const relatedPhones = contactsData.filter(c => 
+                        topDept.matchTags.some(tag => c.name.toLowerCase().includes(tag))
+                    );
+
+                    if (relatedPhones.length > 0) {
+                        const phonePills = relatedPhones.slice(0, 3).map(p => 
+                            `<button onclick="copyText('${p.phone}')" class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold mt-1 mr-1 inline-flex items-center gap-1">
+                                <i class="fa-solid fa-phone text-[9px]"></i> ${p.name.split('-')[0].trim()}: ${p.phone}
+                            </button>`
+                        ).join('');
+                        replyHtml += `<div class="mt-1.5 pt-1.5 border-t border-slate-100">${phonePills}</div>`;
+                    }
+                } else if (matchedContacts.length > 0) {
+                    const topC = matchedContacts[0];
+                    replyHtml = `<strong>${topC.name}</strong> (${topC.location}): interno <button onclick="copyText('${topC.phone}')" class="bg-hospital-100 text-hospital-800 font-mono font-bold px-2 py-0.5 rounded">${topC.phone}</button>`;
+                    speechText = `L'interno di ${topC.name} è ${topC.phone}.`;
+                } else {
+                    replyHtml = `Non ho trovato corrispondenze per "<em>${query}</em>". Prova a chiedere "Che turno ho il 18?" oppure il nome di un reparto.`;
+                    speechText = `Non ho trovato risultati per ${query}.`;
                 }
-
-                const speech = `${bestDept.name} si trova nell'Edificio ${bestDept.building}, al ${bestDept.floor}. ${bestDept.accessNote}`;
-                return { html, speech };
             }
 
-            if (matchedContacts.length > 0) {
-                const top = matchedContacts[0].contact;
-                const rawNum = top.phone.split('/')[0].trim();
-                const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
-                const html = `
-                    <div>
-                        <span class="font-bold text-hospital-900">${top.name}</span><br>
-                        <span class="text-[11px] text-slate-500">${top.location}</span>
-                    </div>
-                    <a href="tel:${fullNum}" class="inline-flex items-center gap-1.5 bg-emerald-600 text-white font-mono font-bold px-2.5 py-1 rounded-lg text-xs">
-                        <i class="fa-solid fa-phone"></i> Chiama ${top.phone}
-                    </a>
-                `;
-                return {
-                    html,
-                    speech: `L'interno per ${top.name} è ${top.phone}, situato presso ${top.location}.`
-                };
-            }
-
-            return {
-                html: `Non ho trovato corrispondenze per "<em>${query}</em>". Prova a chiedere ad esempio <strong>"Che turno ho il 18?"</strong>, <strong>"Chi è di notte il 20?"</strong> oppure il nome di un reparto.`,
-                speech: `Non ho trovato corrispondenze esatte. Riprova chiedendo un giorno del mese per i turni oppure il nome del reparto.`
-            };
+            setTimeout(() => {
+                addBotMessage(replyHtml);
+                speakItalian(speechText);
+            }, 200);
         }
 
-        function speakResponse(text) {
+        function addUserMessage(text) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'flex justify-end';
+            div.innerHTML = `<div class="bg-hospital-700 text-white px-3 py-2 rounded-xl rounded-tr-none text-xs max-w-[82%] shadow-xs">${text}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addBotMessage(html) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'flex items-start gap-2';
+            div.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                    <i class="fa-solid fa-staff-snake"></i>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-800 max-w-[85%] leading-relaxed">
+                    ${html}
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function speakItalian(text) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
@@ -3503,22 +3468,103 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
         }
 
         // ==========================================
-        // CONFIGURAZIONE PWA SINGLE-FILE (ICONA & MANIFEST)
+        // FUNZIONI AGGIUNTA / RIPRISTINO RUBRICA & UTILITÀ
         // ==========================================
-        let deferredInstallPrompt = null;
+        function openAddContactModal() {
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
 
-        function setupDynamicPwa() {
+        function closeAddContactModal() {
+            document.getElementById('addContactModal').classList.add('hidden');
+        }
+
+        function saveNewContact(e) {
+            e.preventDefault();
+            const name = document.getElementById('newContactName').value.trim();
+            const phone = document.getElementById('newContactPhone').value.trim();
+            const location = document.getElementById('newContactLoc').value.trim() || 'Sede Centrale';
+            const note = document.getElementById('newContactNote').value.trim();
+
+            if (!name || !phone) return;
+
+            const newId = Date.now();
+            contactsData.unshift({ id: newId, name, phone, location, note, emergency: false });
+            favContactIds.add(newId);
+            persistContacts();
+            persistFavorites();
+            renderContacts();
+            closeAddContactModal();
+            e.target.reset();
+            showToast('Interno salvato e aggiunto ai preferiti');
+        }
+
+        function askResetRubrica() {
+            document.getElementById('confirmResetModal').classList.remove('hidden');
+        }
+
+        function closeConfirmResetModal() {
+            document.getElementById('confirmResetModal').classList.add('hidden');
+        }
+
+        function confirmResetRubrica() {
+            contactsData = [...defaultContactsData];
+            persistContacts();
+            renderContacts();
+            closeConfirmResetModal();
+            showToast('Rubrica predefinita ripristinata');
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('globalSearch');
+            input.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderContacts();
+        }
+
+        function copyText(text) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`Copiato: ${text}`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('opacity-0');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2200);
+        }
+
+        // ==========================================
+        // CONFIGURAZIONE PWA (MANIFEST, ICONA APP E INSTALLAZIONE)
+        // ==========================================
+        let deferredPwaPrompt = null;
+
+        function setupPwaAssets() {
             const appIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <rect width="512" height="512" rx="112" fill="#082f49"/>
-                <rect x="36" y="216" width="440" height="175" rx="18" fill="#ffed00"/>
-                <path d="M 55,105 L 185,115 L 285,108 L 380,82 L 445,62 L 408,142 L 395,225 L 382,295 L 362,332 L 302,300 L 230,262 L 162,222 L 95,172 L 62,138 Z" fill="#d9291c" stroke="#ffffff" stroke-width="5" stroke-linejoin="round"/>
-                <g transform="translate(388, 185) rotate(-12)">
-                    <rect x="-32" y="-32" width="64" height="64" rx="8" fill="#ffffff" stroke="#d9291c" stroke-width="3"/>
-                    <text x="0" y="18" font-family="Arial, sans-serif" font-weight="900" font-size="46" fill="#0044aa" text-anchor="middle">H</text>
+                <defs>
+                    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#082f49"/>
+                        <stop offset="100%" stop-color="#0369a1"/>
+                    </linearGradient>
+                </defs>
+                <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+                <rect x="66" y="210" width="380" height="128" rx="22" fill="#ffed00"/>
+                <path d="M 96,120 L 210,132 L 295,124 L 380,104 L 424,90 L 392,162 L 382,226 L 372,276 L 354,302 L 302,276 L 240,246 L 180,214 L 126,174 L 98,146 Z" fill="#d9291c" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+                <g transform="translate(362, 186) rotate(-14)">
+                    <rect x="-26" y="-26" width="52" height="52" rx="8" fill="#ffffff" stroke="#d9291c" stroke-width="3"/>
+                    <text x="0" y="14" font-family="Arial, sans-serif" font-weight="900" font-size="38" fill="#0044aa" text-anchor="middle">H</text>
                 </g>
-                <text x="256" y="286" font-family="Arial, sans-serif" font-weight="900" font-size="52" fill="#111111" text-anchor="middle" letter-spacing="-1">CANNIZZARO</text>
-                <text x="256" y="346" font-family="Arial, sans-serif" font-weight="800" font-size="38" fill="#082f49" text-anchor="middle">STAFF NAV</text>
-                <text x="256" y="452" font-family="Arial, sans-serif" font-weight="700" font-size="26" fill="#7dd3fc" text-anchor="middle">ANESTESIA &amp; RIANIMAZIONE</text>
+                <text x="256" y="274" font-family="Arial, sans-serif" font-weight="900" font-size="44" fill="#111111" text-anchor="middle" letter-spacing="-1">CANNIZZARO</text>
+                <text x="256" y="316" font-family="Arial, sans-serif" font-weight="800" font-size="26" fill="#111111" text-anchor="middle">STAFF NAVIGATOR</text>
+                <text x="256" y="422" font-family="Arial, sans-serif" font-weight="700" font-size="28" fill="#bae6fd" text-anchor="middle">Anestesia &amp; Rianimazione</text>
             </svg>`;
 
             const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(appIconSvg);
@@ -3528,13 +3574,14 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             if (appleIconEl) appleIconEl.href = svgDataUrl;
 
             const manifestObj = {
-                name: "Cannizzaro Staff Navigator",
+                name: "Cannizzaro Staff Navigator - Anestesia e Rianimazione",
                 short_name: "Staff Nav",
-                description: "Turni, rubrica, infusioni ml/h e antibiotici A.O.E. Cannizzaro Catania",
+                description: "Rubrica interna, turni mensili, calcolatore infusionale ml/h e antibiotici A.O.E. Cannizzaro Catania",
                 start_url: window.location.href,
                 display: "standalone",
                 background_color: "#082f49",
                 theme_color: "#082f49",
+                orientation: "portrait-primary",
                 icons: [
                     { src: svgDataUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
                     { src: svgDataUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
@@ -3550,7 +3597,7 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
 
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
-                deferredInstallPrompt = e;
+                deferredPwaPrompt = e;
                 const installBtn = document.getElementById('installAppBtn');
                 if (installBtn) {
                     installBtn.classList.remove('hidden');
@@ -3559,7 +3606,7 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
             });
 
             window.addEventListener('appinstalled', () => {
-                deferredInstallPrompt = null;
+                deferredPwaPrompt = null;
                 const installBtn = document.getElementById('installAppBtn');
                 if (installBtn) {
                     installBtn.classList.add('hidden');
@@ -3570,21 +3617,20 @@ REGOLA FONDAMENTALE SU TURNI ANNULLATI (CERCHIATI, BARRATI O CON CROCE A PENNA/M
         }
 
         async function triggerPwaInstall() {
-            if (!deferredInstallPrompt) return;
-            deferredInstallPrompt.prompt();
-            await deferredInstallPrompt.userChoice;
-            deferredInstallPrompt = null;
+            if (!deferredPwaPrompt) return;
+            deferredPwaPrompt.prompt();
+            const { outcome } = await deferredPwaPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredPwaPrompt = null;
+            }
         }
 
-        // ==========================================
-        // INIZIALIZZAZIONE
-        // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
-            setupDynamicPwa();
+            setupPwaAssets();
             renderContacts();
             initShiftsSection();
             initInfusionCalculator();
-            initAntibioticsSection();
+            initAntibioticsCalculator();
         });
     </script>
 </body>
