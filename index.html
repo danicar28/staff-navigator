@@ -74,11 +74,11 @@
 
     <!-- Header Compatto con Logo Ufficiale A.O.E. Cannizzaro -->
     <header class="bg-hospital-900 text-white sticky top-0 z-40 shadow-md">
-        <div class="max-w-lg md:max-w-4xl mx-auto px-2.5 py-2 flex items-center justify-between gap-2">
+        <div class="max-w-lg md:max-w-4xl mx-auto px-2.5 py-1.5 flex items-center justify-between gap-1.5">
             <!-- Blocco Logo + Titolo -->
             <div class="flex items-center space-x-2 min-w-0">
-                <div class="bg-white px-1.5 py-1 rounded-lg shadow-sm border border-white/30 shrink-0 flex items-center justify-center">
-                    <svg viewBox="0 0 210 135" class="h-8 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
+                <div class="bg-white px-1 py-0.5 rounded-md shadow-sm border border-white/30 shrink-0 flex items-center justify-center">
+                    <svg viewBox="0 0 210 135" class="h-7 sm:h-8 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
                         <rect x="0" y="56" width="210" height="63" fill="#ffed00"/>
                         <path d="M 10,20 L 68,25 L 112,22 L 154,12 L 182,4 L 166,35 L 161,68 L 156,95 L 148,108 L 122,95 L 92,80 L 64,65 L 35,45 L 14,32 Z" fill="#d9291c" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
                         <path d="M 48,24 L 46,52 M 76,24 L 74,70 M 108,22 L 106,86 M 136,16 L 134,98 M 112,48 L 164,46 M 110,72 L 158,70" stroke="#ffffff" stroke-width="1.3" fill="none"/>
@@ -102,18 +102,18 @@
             </div>
             
             <!-- Azioni Rapide Header -->
-            <div class="flex items-center space-x-1.5 shrink-0">
-                <button id="installAppBtn" onclick="triggerPwaInstall()" class="hidden items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+            <div class="flex items-center space-x-1 shrink-0">
+                <button id="installAppBtn" onclick="triggerPwaInstall()" class="hidden items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-download"></i>
                     <span>Installa</span>
                 </button>
-                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-kit-medical"></i>
                     <span>Urgenze</span>
                 </button>
-                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-microphone-lines"></i>
-                    <span class="hidden xs:inline">Vocale</span>
+                    <span class="hidden sm:inline">Vocale</span>
                 </button>
             </div>
         </div>
@@ -127,9 +127,9 @@
                     id="globalSearch" 
                     oninput="handleSearch()"
                     placeholder="Reparto, piano, edificio, ingresso o interno..." 
-                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-8 pr-8 py-1.5 rounded-lg text-base sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
+                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-8 pr-8 py-1.5 rounded-lg text-sm sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
                 >
-                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5">
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
                     <i class="fa-solid fa-circle-xmark text-sm"></i>
                 </button>
             </div>
@@ -137,7 +137,7 @@
     </header>
 
     <!-- Navigazione Tab Desktop -->
-    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[88px] z-30">
+    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[76px] z-30">
         <div class="max-w-4xl mx-auto px-4 flex space-x-6">
             <button onclick="switchTab('rubrica')" id="tab-desk-rubrica" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-hospital-600 text-hospital-700 flex items-center space-x-1.5">
                 <i class="fa-solid fa-address-book"></i>
@@ -163,70 +163,65 @@
         </div>
     </nav>
 
-    <!-- Navigazione Tab Mobile Inferiore (5 tab compatte) -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-40 grid grid-cols-5 items-center py-1 pb-safe shadow-lg">
-        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-0.5 px-1 text-hospital-700 font-bold text-[10px] gap-0.5">
+    <!-- Navigazione Tab Mobile Inferiore (compatta ad alta densità) -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 grid grid-cols-5 items-center py-1 pb-safe shadow-[0_-3px_10px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-1 px-0.5 text-hospital-700 font-bold text-[10px] gap-0.5 active:scale-95 transition">
             <i class="fa-solid fa-address-book text-sm"></i>
             <span>Rubrica</span>
         </button>
-        <button onclick="switchTab('turni')" id="tab-mob-turni" class="flex flex-col items-center justify-center py-0.5 px-1 text-slate-400 font-medium text-[10px] gap-0.5">
+        <button onclick="switchTab('turni')" id="tab-mob-turni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
             <i class="fa-solid fa-calendar-days text-sm"></i>
             <span>Turni</span>
         </button>
-        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-0.5 px-1 text-slate-400 font-medium text-[10px] gap-0.5">
+        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
             <i class="fa-solid fa-syringe text-sm"></i>
             <span>ml/h</span>
         </button>
-        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-0.5 px-1 text-slate-400 font-medium text-[10px] gap-0.5">
+        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
             <i class="fa-solid fa-capsules text-sm"></i>
             <span>Antibiotici</span>
         </button>
-        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-0.5 px-1 text-slate-400 font-medium text-[10px] gap-0.5">
+        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
             <i class="fa-solid fa-compass text-sm"></i>
             <span>Percorsi</span>
         </button>
     </nav>
 
-    <!-- Contenuto Principale Ad Alta Densità -->
+    <!-- Contenuto Principale Compatto -->
     <main class="max-w-lg md:max-w-4xl mx-auto px-2 pt-2">
 
         <!-- SEZIONE 1: RUBRICA INTERNA -->
-        <section id="view-rubrica" class="space-y-2">
-            <!-- Controlli Rapidi & Filtri Sede -->
-            <div class="flex items-center justify-between gap-1.5 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
+        <section id="view-rubrica" class="space-y-1.5">
+            <!-- Controlli Rapidi & Filtri Sede su singola barra scorrevole -->
+            <div class="flex items-center justify-between gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-xs">
+                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
+                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
                         <i class="fa-solid fa-star text-amber-400"></i>
-                        <span>Preferiti</span>
+                        <span>Pref.</span>
                     </button>
-                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
+                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
                         Tutti
                     </button>
-                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
-                        Ed. F2
+                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
+                        F2
                     </button>
-                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
-                        Ed. F3
+                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
+                        F3
                     </button>
-                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
+                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
                         Ed. E
                     </button>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
-                    <button onclick="askResetRubrica()" class="px-2 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 active:scale-95 transition" title="Ripristina rubrica predefinita">
+                    <span id="contactsCountLabel" class="hidden">Contatti</span>
+                    <button onclick="askResetRubrica()" class="p-1.5 rounded-lg text-xs text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition" title="Ripristina rubrica predefinita">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
-                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2.5 py-1.5 rounded-lg text-xs shadow-sm transition flex items-center gap-1">
+                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2.5 py-1.5 rounded-lg text-[11px] shadow-xs transition flex items-center gap-1">
                         <i class="fa-solid fa-plus"></i>
                         <span>Nuovo</span>
                     </button>
                 </div>
-            </div>
-
-            <!-- Contatore Risultati -->
-            <div class="flex justify-between items-center text-[11px] text-slate-500 px-0.5">
-                <span id="contactsCountLabel" class="font-semibold">Contatti</span>
-                <span class="text-sky-700 font-medium">Tocca il numero per copiare o chiama</span>
             </div>
 
             <!-- Lista Contatti Compatta -->
@@ -244,56 +239,357 @@
         </section>
 
         <!-- SEZIONE 1B: TURNI MENSILI S.O.C. ANESTESIA RIANIMAZIONE E TIPO -->
-        <section id="view-turni" class="hidden space-y-2">
+        <section id="view-turni" class="hidden space-y-1.5">
             
-            <!-- Header Turni: Selettore Medico + Mese + Upload Foto AI -->
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="min-w-0 flex-1">
+            <!-- Header Turni Compatto: Selettore Medico + Mese + Azioni su 2 righe dense -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="grid grid-cols-12 gap-1.5 items-end">
+                    <div class="col-span-7 sm:col-span-8 min-w-0">
                         <div class="flex items-center justify-between mb-0.5">
-                            <label class="block text-[9px] font-extrabold uppercase tracking-wider text-hospital-600">
-                                <i class="fa-solid fa-user-doctor mr-1"></i>Profilo Visualizzato
+                            <label class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600 truncate">
+                                <i class="fa-solid fa-user-doctor mr-0.5"></i>Medico (<span id="defaultDoctorBadge" class="text-emerald-700">Default: Bucolo</span>)
                             </label>
-                            <span id="defaultDoctorBadge" class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                                <i class="fa-solid fa-star text-[8px] mr-0.5"></i>Tuo default: Dott. Bucolo
-                            </span>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <select id="shiftDoctorSelect" onchange="onShiftDoctorChange()" class="w-full h-9 bg-slate-50 border border-hospital-600/40 text-hospital-950 font-extrabold rounded-xl px-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <div class="flex items-center gap-1">
+                            <select id="shiftDoctorSelect" onchange="onShiftDoctorChange()" class="w-full h-8 bg-slate-50 border border-hospital-600/40 text-hospital-950 font-extrabold rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
                                 <!-- Popolato da JS -->
                             </select>
-                            <button type="button" id="setDefaultDoctorBtn" onclick="setAsDefaultDoctor()" class="h-9 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1" title="Imposta questo collega come tuo profilo predefinito">
+                            <button type="button" id="setDefaultDoctorBtn" onclick="setAsDefaultDoctor()" class="h-8 px-2 rounded-lg bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1" title="Imposta come predefinito">
                                 <i class="fa-solid fa-star text-amber-500"></i>
-                                <span>Mio Profilo</span>
                             </button>
                         </div>
                     </div>
-                    <div class="shrink-0">
+                    <div class="col-span-5 sm:col-span-4">
                         <label class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-500 mb-0.5">Mese</label>
-                        <select id="shiftMonthSelect" onchange="onShiftMonthChange()" class="h-9 bg-slate-50 border border-slate-300 text-slate-800 font-bold rounded-xl px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <select id="shiftMonthSelect" onchange="onShiftMonthChange()" class="w-full h-8 bg-slate-50 border border-slate-300 text-slate-800 font-bold rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
                             <!-- Popolato da JS -->
                         </select>
                     </div>
                 </div>
 
-                <!-- Azioni Rapide Turni: Scansiona Foto Foglio Turni & Impostazioni API Key -->
-                <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100">
+                <!-- Azioni Rapide Turni su una sola riga -->
+                <div class="flex items-center gap-1 pt-1 border-t border-slate-100">
                     <input type="file" id="shiftPhotoInput" accept="image/*" class="hidden" onchange="handleShiftPhotoUpload(event)">
-                    <button type="button" onclick="triggerShiftPhotoUpload()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2 px-3 rounded-xl font-bold text-xs shadow-xs flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-1.5 px-2.5 rounded-lg font-bold text-[11px] shadow-xs flex items-center justify-center gap-1.5 truncate">
                         <i class="fa-solid fa-camera"></i>
-                        <span>Aggiorna da Foto Turni</span>
+                        <span>Foto Turni AI</span>
                     </button>
-                    <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-xl font-bold text-xs border border-slate-200 flex items-center gap-1 shrink-0" title="Configura Chiave AI per uso offline/browser">
+                    <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Configura Chiave AI">
                         <i class="fa-solid fa-key text-amber-600"></i>
-                        <span>Chiave AI</span>
+                        <span>Key</span>
                     </button>
-                    <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-xl font-bold text-xs border border-slate-200 flex items-center gap-1 shrink-0" title="Legenda sigle turni">
+                    <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Legenda sigle turni">
                         <i class="fa-solid fa-circle-info text-hospital-700"></i>
                         <span>Sigle</span>
                     </button>
-                    <button type="button" onclick="toggleAssistantModal('Che turno ho oggi?')" class="bg-sky-50 hover:bg-sky-100 active:scale-95 transition text-hospital-800 py-2 px-2.5 rounded-xl font-bold text-xs border border-sky-200 flex items-center gap-1 shrink-0" title="Chiedi a voce">
+                    <button type="button" onclick="toggleAssistantModal('Che turno ho oggi?')" class="bg-sky-50 hover:bg-sky-100 active:scale-95 transition text-hospital-800 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-sky-200 flex items-center justify-center shrink-0" title="Chiedi a voce">
                         <i class="fa-solid fa-microphone"></i>
                     </button>
+                </div>
+
+                <!-- Barra Avanzamento Analisi Foto AI -->
+                <div id="shiftScanProgress" class="hidden bg-sky-50 border border-sky-200 rounded-lg p-1.5 flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-[11px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box Interrogazione Rapida Compatto -->
+            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-2 rounded-xl shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between gap-1.5">
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" onclick="stepShiftQueryDay(-1)" class="w-7 h-8 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <div class="bg-white text-slate-900 rounded-lg px-2 py-0.5 text-center flex items-center gap-1">
+                            <span class="text-[9px] font-bold uppercase text-slate-400">Gg</span>
+                            <input type="number" id="shiftQueryDayInput" min="1" max="31" value="14" oninput="renderShiftQueryResult()" class="w-8 text-center font-extrabold text-sm text-hospital-950 focus:outline-none">
+                        </div>
+                        <button type="button" onclick="stepShiftQueryDay(1)" class="w-7 h-8 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                        <button type="button" onclick="setShiftQueryToday()" class="px-2 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-[10px] font-bold">Oggi</button>
+                        <button type="button" onclick="setShiftQueryTomorrow()" class="px-2 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-[10px] font-bold">Domani</button>
+                    </div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-sky-300 hidden sm:inline">Verifica Giorno</span>
+                </div>
+
+                <!-- Risultato Giorno Selezionato -->
+                <div id="shiftQueryResultBox" class="bg-white/10 border border-white/15 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2">
+                    <!-- Popolato da JS -->
+                </div>
+
+                <!-- Colleghi di guardia nello stesso giorno -->
+                <div id="shiftColleaguesOnDay" class="text-[10px] text-sky-100 bg-white/5 rounded-lg px-2 py-1 border border-white/10 leading-snug">
+                    <!-- Popolato da JS -->
+                </div>
+            </div>
+
+            <!-- Riepilogo Statistiche Mensili Medico Selezionato -->
+            <div id="shiftMonthlyStats" class="grid grid-cols-4 gap-1">
+                <!-- Popolato da JS -->
+            </div>
+
+            <!-- Calendario Mensile Compatto -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between gap-1">
+                    <h3 class="font-extrabold text-xs text-slate-800">
+                        <i class="fa-solid fa-calendar-check text-hospital-600 mr-1"></i><span id="calendarMonthHeader">Novembre 2026</span>
+                    </h3>
+                    <span class="text-[9px] text-slate-500 font-medium">1 tap seleziona • 2° tap modifica</span>
+                </div>
+
+                <!-- Intestazione Giorni Settimana -->
+                <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] font-extrabold text-slate-400 uppercase">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mer</div>
+                    <div>Gio</div>
+                    <div>Ven</div>
+                    <div class="text-amber-600">Sab</div>
+                    <div class="text-red-500">Dom</div>
+                </div>
+
+                <!-- Griglia Giorni del Mese -->
+                <div id="shiftCalendarGrid" class="grid grid-cols-7 gap-0.5">
+                    <!-- Popolato da JS -->
+                </div>
+
+                <!-- Legenda rapida compatta -->
+                <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100 text-[9px] text-slate-600 flex-wrap">
+                    <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span>M</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>P</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-700 inline-block"></span>N</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-red-500 border-dashed inline-block"></span>Cerchiato = Cambio</span>
+                </div>
+            </div>
+
+            <!-- Riquadro Foto Originale Foglio Turni Caricata (Compatto) -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between gap-2">
+                    <h3 class="font-extrabold text-[11px] text-slate-800 flex items-center gap-1 truncate">
+                        <i class="fa-solid fa-image text-hospital-600"></i>
+                        <span>Foto Originale (<span id="photoMonthLabel">Novembre 2026</span>)</span>
+                    </h3>
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="px-2 py-1 rounded-md bg-hospital-50 hover:bg-hospital-100 text-hospital-800 border border-hospital-200 text-[10px] font-bold shrink-0">
+                        <i class="fa-solid fa-upload mr-0.5"></i>Carica
+                    </button>
+                </div>
+
+                <div id="uploadedShiftPhotoContainer" class="hidden">
+                    <button type="button" onclick="openShiftPhotoLightbox()" class="w-full relative group overflow-hidden rounded-lg border border-slate-300 bg-slate-100 block">
+                        <img id="uploadedShiftPhotoImg" src="" alt="Foglio turni originale" class="w-full max-h-40 object-contain mx-auto">
+                        <div class="absolute bottom-1.5 right-1.5 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                            <span>Ingrandisci</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="noShiftPhotoPlaceholder" class="bg-slate-50 border border-dashed border-slate-300 rounded-lg py-1.5 px-2.5 text-center">
+                    <p class="text-[10px] text-slate-500">Nessuna foto salvata per questo mese. Caricala per aggiornare la tabella.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: CONVERTITORE BIDIREZIONALE ml/h ↔ DOSE -->
+        <section id="view-infusioni" class="hidden space-y-1.5">
+            <!-- Selezione Farmaco & Diluizione -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between gap-1.5">
+                    <div class="min-w-0 flex-1">
+                        <input type="hidden" id="drugSelect" value="noradrenalina">
+                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600">Farmaco</span>
+                                    <span id="finalConcBadge" class="text-[10px] font-mono font-extrabold bg-hospital-100 text-hospital-900 px-1.5 py-0.2 rounded">160 mcg/ml</span>
+                                </div>
+                                <div id="selectedDrugTitle" class="font-extrabold text-xs sm:text-sm text-hospital-950 truncate leading-tight">Noradrenalina (2 mg/1 ml)</div>
+                            </div>
+                            <div class="w-7 h-7 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <button type="button" onclick="resetInfusionCalc()" class="h-10 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold text-xs border border-slate-200 shrink-0" title="Azzera valori">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <!-- Diluizioni Rapide Preimpostate -->
+                <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                    <div id="dilutionButtons" class="flex flex-wrap gap-1">
+                        <!-- Popolato da JS -->
+                    </div>
+                    <span id="drugPrepNote" class="text-[9px] font-semibold text-slate-500"></span>
+                </div>
+
+                <!-- Parametri Diluizione Personalizzabili (Quantità / Unità / Volume) -->
+                <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100">
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Quantità</label>
+                        <input type="number" step="any" min="0" id="concAmount" value="8" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Unità</label>
+                        <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <option value="mg">mg</option>
+                            <option value="mcg">mcg</option>
+                            <option value="g">g</option>
+                            <option value="UI">UI</option>
+                            <option value="mEq">mEq</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vol. (ml)</label>
+                        <input type="number" step="any" min="0.1" id="concVolume" value="50" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                </div>
+
+                <!-- Peso Paziente & Unità Dose -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 border-t border-slate-100">
+                    <div id="weightContainer" class="space-y-1 transition-opacity">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[9px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-weight-scale text-hospital-600 mr-0.5"></i>Peso (kg)</label>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="setQuickWeight(60)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">60</button>
+                                <button type="button" onclick="setQuickWeight(70)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">70</button>
+                                <button type="button" onclick="setQuickWeight(80)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">80</button>
+                                <button type="button" onclick="setQuickWeight(90)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">90</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="adjustWeight(-5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-[11px] text-slate-700 border border-slate-200">-5</button>
+                            <input type="number" step="0.5" min="1" max="300" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="flex-1 h-8 bg-white border border-slate-300 rounded-lg text-center font-extrabold text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <button type="button" onclick="adjustWeight(5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-[11px] text-slate-700 border border-slate-200">+5</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-gauge-high text-hospital-600 mr-0.5"></i>Unità Dose</label>
+                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-hospital-950 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <!-- Popolato da JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box Calcolo Bidirezionale Affiancato su 2 colonne anche su mobile -->
+            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-2 rounded-xl shadow-xs space-y-1.5">
+                <div class="grid grid-cols-2 gap-1.5">
+                    <!-- Campo 1: Velocità Pompa (ml/h) -->
+                    <div class="bg-white/10 border border-white/20 rounded-lg p-2 space-y-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-sky-300 truncate">Pompa</span>
+                            <span class="text-[9px] font-mono font-bold text-sky-200 bg-sky-500/20 px-1 py-0.2 rounded shrink-0">ml/h</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="stepMlH(-1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">-</button>
+                            <input type="number" step="any" min="0" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full min-w-0 h-8 bg-white text-hospital-950 rounded-md px-1 text-center font-mono font-extrabold text-base focus:outline-none focus:ring-2 focus:ring-sky-400">
+                            <button type="button" onclick="stepMlH(1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Campo 2: Dose Somministrata -->
+                    <div class="bg-white/10 border border-white/20 rounded-lg p-2 space-y-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 truncate">Dose</span>
+                            <span id="doseUnitBadge" class="text-[9px] font-mono font-bold text-emerald-200 bg-emerald-500/20 px-1 py-0.2 rounded truncate">mcg/kg/min</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="stepDose(-1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">-</button>
+                            <input type="number" step="any" min="0" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full min-w-0 h-8 bg-white text-emerald-950 rounded-md px-1 text-center font-mono font-extrabold text-base focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                            <button type="button" onclick="stepDose(1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">+</button>
+                        </div>
+                        <span id="doseInputUnitLabel" class="sr-only">mcg/kg/min</span>
+                    </div>
+                </div>
+
+                <!-- Range Terapeutico Indicativo -->
+                <div class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-sky-100 flex items-start gap-1.5 leading-snug">
+                    <i class="fa-solid fa-circle-info text-sky-300 mt-0.5 shrink-0"></i>
+                    <div><strong class="text-white">Range:</strong> <span id="drugRangeText">0,01 – 0,5 mcg/kg/min</span></div>
+                </div>
+            </div>
+
+            <!-- Tabella Rapida Velocità Standard -->
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-table-cells text-hospital-600 mr-1"></i>Rapide ml/h → Dose</h3>
+                    <span id="refTableSubtitle" class="text-[10px] font-semibold text-slate-500">Peso 70 kg</span>
+                </div>
+                <div id="quickRefGrid" class="grid grid-cols-6 gap-1">
+                    <!-- Popolato da JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE -->
+        <section id="view-antibiotici" class="hidden space-y-1.5">
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div>
+                    <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
+                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-600">Antibiotico</span>
+                                <span id="selectedAbxCategory" class="text-[9px] text-indigo-700 font-medium truncate">Beta-lattamico / Inibitore beta-lattamasi</span>
+                            </div>
+                            <div id="selectedAbxTitle" class="font-extrabold text-xs sm:text-sm text-indigo-950 truncate leading-tight">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
+                        </div>
+                        <div class="w-7 h-7 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="space-y-1.5 pt-1 border-t border-slate-100">
+                    <div class="flex items-center justify-between gap-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-700 uppercase">Cl.Cr:</label>
+                            <div class="relative w-24">
+                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-8 bg-white border border-slate-300 rounded-lg pl-2 pr-9 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">ml/m</span>
+                            </div>
+                        </div>
+                        <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-1">
+                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">&gt;80</button>
+                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">60</button>
+                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">50</button>
+                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">40</button>
+                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">30</button>
+                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">15</button>
+                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">≤10</button>
+                    </div>
+                </div>
+
+                <!-- Azioni Rapide Turni: Scansiona Foto Foglio Turni & Impostazioni API Key -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2 border-t border-slate-100">
+                    <input type="file" id="shiftPhotoInput" accept="image/*" class="hidden" onchange="handleShiftPhotoUpload(event)">
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="sm:col-span-6 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2.5 px-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Aggiorna da Foto Turni</span>
+                    </button>
+                    <div class="sm:col-span-6 grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-1" title="Configura Chiave AI per uso offline/browser">
+                            <i class="fa-solid fa-key text-amber-600"></i>
+                            <span>Chiave AI</span>
+                        </button>
+                        <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2.5 px-2 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-1" title="Legenda sigle turni">
+                            <i class="fa-solid fa-circle-info text-hospital-700"></i>
+                            <span>Sigle</span>
+                        </button>
+                        <button type="button" onclick="toggleAssistantModal('Che turno ho oggi?')" class="bg-sky-50 hover:bg-sky-100 active:scale-95 transition text-hospital-800 py-2.5 px-2 rounded-xl font-bold text-xs border border-sky-200 flex items-center justify-center gap-1" title="Chiedi a voce">
+                            <i class="fa-solid fa-microphone"></i>
+                            <span>Chiedi</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Barra Avanzamento Analisi Foto AI -->
@@ -307,40 +603,40 @@
             </div>
 
             <!-- Box Interrogazione Rapida "Che turno ho il giorno..." -->
-            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-2.5 rounded-xl shadow-sm space-y-2">
+            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-3 rounded-2xl shadow-sm space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5">
                         <i class="fa-solid fa-magnifying-glass-chart text-sky-300 text-xs"></i>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-200">Verifica Rapida Giorno</span>
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-200">Verifica Rapida Giorno</span>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <button type="button" onclick="setShiftQueryToday()" class="px-2 py-0.5 rounded bg-white/15 hover:bg-white/25 text-[10px] font-bold">Oggi</button>
-                        <button type="button" onclick="setShiftQueryTomorrow()" class="px-2 py-0.5 rounded bg-white/15 hover:bg-white/25 text-[10px] font-bold">Domani</button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="setShiftQueryToday()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-xs font-bold">Oggi</button>
+                        <button type="button" onclick="setShiftQueryTomorrow()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-xs font-bold">Domani</button>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1 shrink-0">
-                        <button type="button" onclick="stepShiftQueryDay(-1)" class="w-8 h-9 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
-                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div class="flex items-center justify-between sm:justify-start gap-1.5 shrink-0">
+                        <button type="button" onclick="stepShiftQueryDay(-1)" class="w-10 h-11 rounded-xl bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
                         </button>
-                        <div class="bg-white text-slate-900 rounded-lg px-2 py-1 text-center min-w-[62px]">
-                            <div class="text-[8px] font-bold uppercase text-slate-400 leading-none">Giorno</div>
-                            <input type="number" id="shiftQueryDayInput" min="1" max="31" value="14" oninput="renderShiftQueryResult()" class="w-10 text-center font-extrabold text-sm text-hospital-950 focus:outline-none">
+                        <div class="bg-white text-slate-900 rounded-xl px-3 py-1 text-center flex-1 sm:flex-none sm:min-w-[76px]">
+                            <div class="text-[9px] font-bold uppercase text-slate-400 leading-none">Giorno</div>
+                            <input type="number" id="shiftQueryDayInput" min="1" max="31" value="14" oninput="renderShiftQueryResult()" class="w-12 text-center font-extrabold text-base text-hospital-950 focus:outline-none">
                         </div>
-                        <button type="button" onclick="stepShiftQueryDay(1)" class="w-8 h-9 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
-                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        <button type="button" onclick="stepShiftQueryDay(1)" class="w-10 h-11 rounded-xl bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                            <i class="fa-solid fa-chevron-right text-sm"></i>
                         </button>
                     </div>
 
                     <!-- Risultato Giorno Selezionato -->
-                    <div id="shiftQueryResultBox" class="flex-1 min-w-0 bg-white/10 border border-white/15 rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2">
+                    <div id="shiftQueryResultBox" class="flex-1 min-w-0 bg-white/10 border border-white/15 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
                         <!-- Popolato da JS -->
                     </div>
                 </div>
 
                 <!-- Colleghi di guardia nello stesso giorno -->
-                <div id="shiftColleaguesOnDay" class="text-[10px] text-sky-100 bg-white/5 rounded-lg px-2 py-1.5 border border-white/10 leading-snug">
+                <div id="shiftColleaguesOnDay" class="text-[11px] text-sky-100 bg-white/5 rounded-xl px-2.5 py-2 border border-white/10 leading-relaxed">
                     <!-- Popolato da JS -->
                 </div>
             </div>
@@ -351,16 +647,16 @@
             </div>
 
             <!-- Calendario Mensile Interattivo (Tocca un giorno per modificare/cerchiare) -->
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-extrabold text-xs text-slate-800">
-                        <i class="fa-solid fa-calendar-check text-hospital-600 mr-1"></i>Calendario <span id="calendarMonthHeader">Novembre 2026</span>
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <h3 class="font-extrabold text-sm text-slate-800">
+                        <i class="fa-solid fa-calendar-check text-hospital-600 mr-1.5"></i>Calendario <span id="calendarMonthHeader">Novembre 2026</span>
                     </h3>
-                    <span class="text-[10px] text-slate-500 font-medium">Tocca un giorno per modificare o cerchiare</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Tocca un giorno per selezionarlo, ritocca per modificare</span>
                 </div>
 
                 <!-- Intestazione Giorni Settimana -->
-                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-extrabold text-slate-400 uppercase">
+                <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-extrabold text-slate-400 uppercase">
                     <div>Lun</div>
                     <div>Mar</div>
                     <div>Mer</div>
@@ -418,26 +714,26 @@
         </section>
 
         <!-- SEZIONE 2: CONVERTITORE BIDIREZIONALE ml/h ↔ DOSE -->
-        <section id="view-infusioni" class="hidden space-y-2">
+        <section id="view-infusioni" class="hidden space-y-2.5">
             <!-- Selezione Farmaco & Diluizione -->
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0 flex-1">
                         <input type="hidden" id="drugSelect" value="noradrenalina">
-                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-left">
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600">Farmaco in Infusione</span>
                                     <span id="finalConcBadge" class="text-[10px] font-mono font-extrabold bg-hospital-100 text-hospital-900 px-1.5 py-0.2 rounded">160 mcg/ml</span>
                                 </div>
-                                <div id="selectedDrugTitle" class="font-extrabold text-[13px] sm:text-sm text-hospital-950 truncate leading-tight">Noradrenalina (2 mg/1 ml)</div>
+                                <div id="selectedDrugTitle" class="font-extrabold text-sm text-hospital-950 truncate leading-tight mt-0.5">Noradrenalina (2 mg/1 ml)</div>
                             </div>
-                            <div class="w-7 h-7 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
+                            <div class="w-8 h-8 rounded-xl bg-hospital-700 text-white flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
                         </button>
                     </div>
-                    <button type="button" onclick="resetInfusionCalc()" class="h-11 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold text-xs border border-slate-200 shrink-0" title="Azzera valori">
+                    <button type="button" onclick="resetInfusionCalc()" class="h-12 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold text-xs border border-slate-200 shrink-0" title="Azzera valori">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
@@ -451,14 +747,14 @@
                 </div>
 
                 <!-- Parametri Diluizione Personalizzabili (Quantità / Unità / Volume) -->
-                <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100">
+                <div class="grid grid-cols-3 gap-2 pt-1.5 border-t border-slate-100">
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Quantità Tot.</label>
-                        <input type="number" step="any" min="0" id="concAmount" value="8" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Quantità Tot.</label>
+                        <input type="number" step="any" min="0" id="concAmount" value="8" oninput="recalcFromCurrentDirection()" class="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-2.5 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Unità</label>
-                        <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Unità</label>
+                        <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
                             <option value="mg">mg</option>
                             <option value="mcg">mcg</option>
                             <option value="g">g</option>
@@ -467,33 +763,33 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Volume (ml)</label>
-                        <input type="number" step="any" min="0.1" id="concVolume" value="50" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Volume (ml)</label>
+                        <input type="number" step="any" min="0.1" id="concVolume" value="50" oninput="recalcFromCurrentDirection()" class="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-2.5 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
                     </div>
                 </div>
 
                 <!-- Peso Paziente & Unità Dose -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-100">
-                    <div id="weightContainer" class="space-y-1 transition-opacity">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1.5 border-t border-slate-100">
+                    <div id="weightContainer" class="space-y-1.5 transition-opacity">
                         <div class="flex items-center justify-between">
                             <label class="text-[10px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-weight-scale text-hospital-600 mr-1"></i>Peso Paziente (kg)</label>
                             <div class="flex gap-1">
-                                <button type="button" onclick="setQuickWeight(60)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">60</button>
-                                <button type="button" onclick="setQuickWeight(70)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">70</button>
-                                <button type="button" onclick="setQuickWeight(80)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">80</button>
-                                <button type="button" onclick="setQuickWeight(90)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">90</button>
+                                <button type="button" onclick="setQuickWeight(60)" class="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">60</button>
+                                <button type="button" onclick="setQuickWeight(70)" class="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">70</button>
+                                <button type="button" onclick="setQuickWeight(80)" class="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">80</button>
+                                <button type="button" onclick="setQuickWeight(90)" class="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">90</button>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="adjustWeight(-5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-xs text-slate-700 border border-slate-200">-5</button>
-                            <input type="number" step="0.5" min="1" max="300" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="flex-1 h-8 bg-white border border-slate-300 rounded-lg text-center font-extrabold text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
-                            <button type="button" onclick="adjustWeight(5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-xs text-slate-700 border border-slate-200">+5</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="adjustWeight(-5)" class="w-10 h-10 rounded-xl bg-slate-100 active:bg-slate-200 font-extrabold text-xs text-slate-700 border border-slate-200">-5</button>
+                            <input type="number" step="0.5" min="1" max="300" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="flex-1 h-10 bg-white border border-slate-300 rounded-xl text-center font-extrabold text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <button type="button" onclick="adjustWeight(5)" class="w-10 h-10 rounded-xl bg-slate-100 active:bg-slate-200 font-extrabold text-xs text-slate-700 border border-slate-200">+5</button>
                         </div>
                     </div>
 
-                    <div class="space-y-1">
+                    <div class="space-y-1.5">
                         <label class="block text-[10px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-gauge-high text-hospital-600 mr-1"></i>Unità di Misura Dose</label>
-                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-hospital-950 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-2.5 text-sm font-extrabold text-hospital-950 focus:outline-none focus:ring-2 focus:ring-hospital-500">
                             <!-- Popolato da JS -->
                         </select>
                     </div>
@@ -539,56 +835,56 @@
             </div>
 
             <!-- Tabella Rapida Velocità Standard -->
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-1.5">
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-table-cells text-hospital-600 mr-1"></i>Corrispondenze Rapide ml/h → Dose</h3>
-                    <span id="refTableSubtitle" class="text-[10px] font-semibold text-slate-500">Peso 70 kg</span>
+                    <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-table-cells text-hospital-600 mr-1"></i>Corrispondenze Rapide ml/h → Dose</h3>
+                    <span id="refTableSubtitle" class="text-[11px] font-semibold text-slate-500">Peso 70 kg</span>
                 </div>
-                <div id="quickRefGrid" class="grid grid-cols-6 gap-1">
+                <div id="quickRefGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                     <!-- Popolato da JS -->
                 </div>
             </div>
         </section>
 
         <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE -->
-        <section id="view-antibiotici" class="hidden space-y-1.5">
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+        <section id="view-antibiotici" class="hidden space-y-2.5">
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
                 <div>
                     <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
-                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-xl px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-left">
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-1.5">
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-600">Antibiotico</span>
                                 <span id="selectedAbxCategory" class="text-[10px] text-indigo-700 font-medium truncate">Beta-lattamico / Inibitore beta-lattamasi</span>
                             </div>
-                            <div id="selectedAbxTitle" class="font-extrabold text-[13px] sm:text-sm text-indigo-950 truncate leading-tight">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
+                            <div id="selectedAbxTitle" class="font-extrabold text-sm text-indigo-950 truncate leading-tight mt-0.5">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-700 text-white flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
                 </div>
 
-                <div class="space-y-1.5 pt-1 border-t border-slate-100">
-                    <div class="flex items-center justify-between gap-1.5">
-                        <div class="flex items-center gap-1.5">
-                            <label class="text-[10px] font-bold text-slate-700 uppercase">Cl.Cr:</label>
-                            <div class="relative w-24">
-                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-8 bg-white border border-slate-300 rounded-lg pl-2 pr-9 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">ml/m</span>
+                <div class="space-y-2 pt-1.5 border-t border-slate-100">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-slate-700 uppercase">Cl.Cr:</label>
+                            <div class="relative w-28">
+                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-10 bg-white border border-slate-300 rounded-xl pl-2.5 pr-10 text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 pointer-events-none">ml/m</span>
                             </div>
                         </div>
-                        <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
+                        <span id="renalStatusBadge" class="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
                     </div>
 
                     <div class="grid grid-cols-7 gap-1">
-                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">&gt;80</button>
-                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">60</button>
-                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">50</button>
-                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">40</button>
-                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">30</button>
-                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">15</button>
-                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1 text-[10px] font-extrabold rounded-md border transition active:scale-95">≤10</button>
+                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">&gt;80</button>
+                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">60</button>
+                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">50</button>
+                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">40</button>
+                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">30</button>
+                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">15</button>
+                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-2 text-xs font-extrabold rounded-lg border transition active:scale-95">≤10</button>
                     </div>
                 </div>
 
@@ -1027,12 +1323,12 @@
                         <i class="fa-solid fa-staff-snake"></i>
                     </div>
                     <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 space-y-2">
-                        <p>Chiedi il tuo <strong>turno</strong> di qualsiasi giorno del mese, un reparto o un numero interno:</p>
+                        <p>Chiedi il tuo <strong>turno</strong>, la <strong>prossima notte</strong>, i <strong>colleghi di guardia</strong>, un reparto o un interno:</p>
                         <div class="flex flex-wrap gap-1">
-                            <button onclick="processAssistantQuery('Che turno ho il 18?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Turno il 18?</button>
-                            <button onclick="processAssistantQuery('Che turno ho domani?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Turno domani?</button>
-                            <button onclick="processAssistantQuery('Chi è di notte il 20?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Chi fa notte il 20?</button>
-                            <button onclick="processAssistantQuery('Dove si trova Oncologia Medica?')" class="bg-hospital-50 text-hospital-700 border border-hospital-100 px-2 py-1 rounded-md text-[11px] font-semibold active:scale-95">Oncologia?</button>
+                            <button onclick="processAssistantQuery('Qual è il mio prossimo turno?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Prossimo turno?</button>
+                            <button onclick="processAssistantQuery('Quando è la mia prossima notte?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Prossima notte?</button>
+                            <button onclick="processAssistantQuery('Con chi sono di turno il 20?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Con chi turno il 20?</button>
+                            <button onclick="processAssistantQuery('Quali sono le mie notti questo mese?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Notti del mese?</button>
                         </div>
                     </div>
                 </div>
@@ -1047,7 +1343,7 @@
                 </div>
 
                 <form onsubmit="handleTextAssistantSubmit(event)" class="flex items-center gap-1.5">
-                    <input type="text" id="assistantTextInput" placeholder="Es. Che turno ho il 24? / Chi c'è di notte..." class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-500">
+                    <input type="text" id="assistantTextInput" placeholder="Es. Quando è la mia prossima notte? / Con chi sono il 18?" class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-500">
                     <button type="submit" class="bg-hospital-700 active:bg-hospital-800 text-white py-2 px-3.5 rounded-lg text-xs font-bold shrink-0">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -1130,11 +1426,11 @@
             if (hasKey) {
                 btn.classList.remove('border-slate-200', 'bg-slate-100');
                 btn.classList.add('border-emerald-300', 'bg-emerald-50', 'text-emerald-900');
-                btn.innerHTML = `<i class="fa-solid fa-key text-emerald-600"></i><span>Chiave AI ✓</span>`;
+                btn.innerHTML = `<i class="fa-solid fa-key text-emerald-600"></i><span>Key ✓</span>`;
             } else {
                 btn.classList.add('border-slate-200', 'bg-slate-100');
                 btn.classList.remove('border-emerald-300', 'bg-emerald-50', 'text-emerald-900');
-                btn.innerHTML = `<i class="fa-solid fa-key text-amber-600"></i><span>Chiave AI</span>`;
+                btn.innerHTML = `<i class="fa-solid fa-key text-amber-600"></i><span>Key</span>`;
             }
         }
 
@@ -1455,15 +1751,15 @@
             const badge = document.getElementById('defaultDoctorBadge');
             const btn = document.getElementById('setDefaultDoctorBtn');
             if (badge) {
-                badge.innerHTML = `<i class="fa-solid fa-star text-[8px] mr-0.5 text-amber-500"></i>Tuo default: Dott. ${defaultShiftDoctor}`;
+                badge.textContent = `Default: ${defaultShiftDoctor}`;
             }
             if (btn) {
                 if (selectedShiftDoctor === defaultShiftDoctor) {
-                    btn.className = 'h-9 px-2.5 rounded-xl bg-emerald-600 text-white font-bold text-[10px] shrink-0 flex items-center gap-1 shadow-xs';
-                    btn.innerHTML = `<i class="fa-solid fa-check"></i><span>Default</span>`;
+                    btn.className = 'h-8 px-2 rounded-lg bg-emerald-600 text-white font-bold text-[10px] shrink-0 flex items-center gap-1 shadow-xs';
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
                 } else {
-                    btn.className = 'h-9 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1';
-                    btn.innerHTML = `<i class="fa-solid fa-star text-amber-500"></i><span>Imposta mio</span>`;
+                    btn.className = 'h-8 px-2 rounded-lg bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1';
+                    btn.innerHTML = `<i class="fa-solid fa-star text-amber-500"></i>`;
                 }
             }
         }
@@ -1623,21 +1919,21 @@
             });
 
             document.getElementById('shiftMonthlyStats').innerHTML = `
-                <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                    <div class="text-[9px] font-bold uppercase text-slate-400">Turni Attivi</div>
-                    <div class="text-sm font-extrabold text-hospital-800">${countActive}</div>
+                <div class="bg-white py-1 px-1.5 rounded-lg border border-slate-200 text-center">
+                    <div class="text-[8px] font-bold uppercase text-slate-400">Turni</div>
+                    <div class="text-xs font-extrabold text-hospital-800">${countActive}</div>
                 </div>
-                <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                    <div class="text-[9px] font-bold uppercase text-slate-400">Notti</div>
-                    <div class="text-sm font-extrabold text-indigo-700">${countNights}</div>
+                <div class="bg-white py-1 px-1.5 rounded-lg border border-slate-200 text-center">
+                    <div class="text-[8px] font-bold uppercase text-slate-400">Notti</div>
+                    <div class="text-xs font-extrabold text-indigo-700">${countNights}</div>
                 </div>
-                <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                    <div class="text-[9px] font-bold uppercase text-slate-400">Ferie / FS</div>
-                    <div class="text-sm font-extrabold text-emerald-700">${countFerie}</div>
+                <div class="bg-white py-1 px-1.5 rounded-lg border border-slate-200 text-center">
+                    <div class="text-[8px] font-bold uppercase text-slate-400">Ferie/FS</div>
+                    <div class="text-xs font-extrabold text-emerald-700">${countFerie}</div>
                 </div>
-                <div class="bg-white p-2 rounded-xl border border-red-200 text-center">
-                    <div class="text-[9px] font-bold uppercase text-red-500">Annullati</div>
-                    <div class="text-sm font-extrabold text-red-600">${countCircled}</div>
+                <div class="bg-white py-1 px-1.5 rounded-lg border border-red-200 text-center">
+                    <div class="text-[8px] font-bold uppercase text-red-500">Cambi</div>
+                    <div class="text-xs font-extrabold text-red-600">${countCircled}</div>
                 </div>
             `;
 
@@ -1645,7 +1941,7 @@
             let cellsHtml = '';
 
             for (let empty = 0; empty < monthObj.firstDayWeekday; empty++) {
-                cellsHtml += `<div class="h-12 rounded-lg bg-slate-50/50"></div>`;
+                cellsHtml += `<div class="h-11 rounded-lg bg-slate-50/50"></div>`;
             }
 
             for (let d = 1; d <= monthObj.daysCount; d++) {
@@ -1656,9 +1952,9 @@
                 const isWeekend = weekdayIdx === 5 || weekdayIdx === 6;
 
                 cellsHtml += `
-                    <button type="button" onclick="onCalendarDayTap(${d})" class="h-12 rounded-xl p-1 flex flex-col items-center justify-between transition active:scale-95 ${isSelected ? 'ring-2 ring-hospital-700 bg-sky-50/70' : 'bg-slate-50/70 hover:bg-slate-100'} border border-slate-200/80">
-                        <span class="text-[10px] font-extrabold leading-none ${isWeekend ? 'text-red-600' : 'text-slate-600'}">${d}</span>
-                        <span class="w-full py-0.5 rounded-md font-mono font-extrabold text-[11px] leading-tight text-center truncate ${badgeStyle}">
+                    <button type="button" onclick="onCalendarDayTap(${d})" class="h-11 rounded-lg p-0.5 flex flex-col items-center justify-between transition active:scale-95 ${isSelected ? 'ring-2 ring-hospital-700 bg-sky-50/90 shadow-xs' : 'bg-slate-50/70 hover:bg-slate-100'} border border-slate-200/80">
+                        <span class="text-[9px] font-extrabold leading-none ${isWeekend ? 'text-red-600' : 'text-slate-600'}">${d}</span>
+                        <span class="w-full py-0.5 rounded-md font-mono font-extrabold text-[10px] leading-tight text-center truncate ${badgeStyle}">
                             ${renderShiftCellHtml(cell)}
                         </span>
                     </button>
@@ -2193,21 +2489,21 @@ CORREZIONI A PENNA (TURNI TOLTI PER CAMBIO):
                 const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
                 const isFav = favContactIds.has(c.id);
                 return `
-                <div class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
+                <div class="bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-1">
-                            <button onclick="toggleContactFav(${c.id}, event)" class="shrink-0 p-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                            <button onclick="toggleContactFav(${c.id}, event)" class="shrink-0 p-0.5 -ml-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
                                 <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
                             </button>
                             <h4 class="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight truncate">${c.name}</h4>
                         </div>
-                        <div class="flex items-center gap-1.5 mt-0.5 pl-4 text-[10px] text-slate-500 truncate">
+                        <div class="flex items-center gap-1 mt-0.5 pl-4 text-[10px] text-slate-500 truncate">
                             <span class="font-semibold text-hospital-700 shrink-0">${c.location || 'Sede'}</span>
                             ${c.note ? `<span class="truncate">• ${c.note}</span>` : ''}
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <button onclick="copyText('${c.phone}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-xs px-2 py-1.5 rounded-lg transition max-w-[115px] truncate" title="Copia ${c.phone}">
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="copyText('${c.phone}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-[11px] px-2 py-1.5 rounded-lg transition max-w-[105px] truncate" title="Copia ${c.phone}">
                             ${c.phone}
                         </button>
                         <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
@@ -2994,9 +3290,9 @@ CORREZIONI A PENNA (TURNI TOLTI PER CAMBIO):
             grid.innerHTML = sampleRates.map(r => {
                 const d = mlHToDose(r, concInfo, weight, doseUnit);
                 return `
-                    <button type="button" onclick="applySampleRate(${r})" class="bg-slate-50 hover:bg-hospital-50 border border-slate-200 rounded-md py-1 px-0.5 text-center active:scale-95 transition">
-                        <div class="text-[10px] font-extrabold text-hospital-800 leading-tight">${r}ml</div>
-                        <div class="text-[10px] font-mono font-bold text-emerald-700 leading-tight mt-0.5">${formatSmart(d)}</div>
+                    <button type="button" onclick="applySampleRate(${r})" class="bg-slate-50 hover:bg-hospital-50 border border-slate-200 rounded-lg py-1 px-0.5 text-center active:scale-95 transition">
+                        <div class="text-[9px] font-extrabold text-hospital-800 leading-tight">${r} ml/h</div>
+                        <div class="text-[10px] font-mono font-bold text-emerald-700 leading-tight mt-0.5 truncate">${formatSmart(d)}</div>
                     </button>
                 `;
             }).join('');
@@ -3334,59 +3630,222 @@ CORREZIONI A PENNA (TURNI TOLTI PER CAMBIO):
 
         function processAssistantQuery(query) {
             addUserMessage(query);
-            const q = query.toLowerCase();
+            const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             let replyHtml = '';
             let speechText = '';
 
-            const isShiftQuery = q.includes('turno') || q.includes('turni') || q.includes('lavoro') || q.includes('notte') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('smonto') || q.includes('ferie') || q.includes('guardia');
+            const isShiftQuery = q.includes('turno') || q.includes('turni') || q.includes('lavoro') || q.includes('notte') || q.includes('notti') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('smonto') || q.includes('ferie') || q.includes('guardia') || q.includes('con chi') || q.includes('prossim') || q.includes('libero') || q.includes('riposo');
 
             if (isShiftQuery) {
                 const monthObj = shiftsDatabase[selectedShiftMonth];
+                const nonWorkingCodes = new Set(['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC']);
+                const weekdayShort = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
                 const now = new Date();
-                let targetDay = Math.min(monthObj.daysCount, now.getDate());
 
-                if (q.includes('domani')) {
-                    targetDay = Math.min(monthObj.daysCount, now.getDate() + 1);
-                } else {
-                    const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
-                    if (numMatch) {
-                        targetDay = Math.min(monthObj.daysCount, parseInt(numMatch[1], 10));
-                    }
-                }
+                // Determina il giorno di riferimento (se nel mese corrente usa oggi, altrimenti 1)
+                const isCurrentMonthYear = (now.getFullYear() === monthObj.year && (now.getMonth() + 1) === monthObj.month);
+                const todayDay = isCurrentMonthYear ? now.getDate() : 1;
 
+                // Riconoscimento eventuale collega nominato nella domanda
                 let targetDoctor = defaultShiftDoctor;
+                let mentionedDoctor = null;
                 for (const docName of Object.keys(monthObj.doctors)) {
-                    if (q.includes(docName.toLowerCase())) {
+                    const cleanDoc = docName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    if (q.includes(cleanDoc)) {
                         targetDoctor = docName;
+                        mentionedDoctor = docName;
                         break;
                     }
                 }
 
-                if (q.includes('chi') && (q.includes('notte') || q.includes('mattina') || q.includes('pomeriggio') || q.includes('guardia'))) {
-                    const whoList = [];
+                // Estrazione eventuale numero giorno specifico (es. "giorno 20", "il 18", "24")
+                let explicitDay = null;
+                if (q.includes('dopodomani')) {
+                    explicitDay = Math.min(monthObj.daysCount, todayDay + 2);
+                } else if (q.includes('domani')) {
+                    explicitDay = Math.min(monthObj.daysCount, todayDay + 1);
+                } else if (q.includes('oggi')) {
+                    explicitDay = todayDay;
+                } else {
+                    const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
+                    if (numMatch) {
+                        explicitDay = Math.min(monthObj.daysCount, parseInt(numMatch[1], 10));
+                    }
+                }
+
+                const docShifts = monthObj.doctors[targetDoctor] || [];
+
+                // CASO 1: "Quali sono le mie notti / i miei turni / le mie ferie questo mese?"
+                if ((q.includes('quali') || q.includes('tutte') || q.includes('tutti') || q.includes('elenco') || q.includes('quante') || q.includes('quanti') || q.includes('questo mese') || q.includes('nel mese')) && !explicitDay && !q.includes('prossim')) {
+                    const matchingDays = [];
+                    let filterLabel = 'turni attivi';
+
+                    for (let d = 1; d <= monthObj.daysCount; d++) {
+                        const c = parseShiftCell(docShifts[d - 1]);
+                        if (c.isFullCircled) continue;
+                        const u = c.activeCode.toUpperCase();
+                        const wName = weekdayShort[(monthObj.firstDayWeekday + (d - 1)) % 7];
+
+                        if (q.includes('nott')) {
+                            filterLabel = 'notti';
+                            if (u.startsWith('N')) matchingDays.push(`${wName} ${d} (${c.activeCode})`);
+                        } else if (q.includes('mattin')) {
+                            filterLabel = 'mattine';
+                            if (u.startsWith('M') && !u.startsWith('MP')) matchingDays.push(`${wName} ${d} (${c.activeCode})`);
+                        } else if (q.includes('pomerigg')) {
+                            filterLabel = 'pomeriggi';
+                            if (u.startsWith('P')) matchingDays.push(`${wName} ${d} (${c.activeCode})`);
+                        } else if (q.includes('12 ore') || q.includes('mp')) {
+                            filterLabel = 'turni da 12 ore (MP)';
+                            if (u.startsWith('MP')) matchingDays.push(`${wName} ${d} (${c.activeCode})`);
+                        } else if (q.includes('feri')) {
+                            filterLabel = 'giorni di ferie/FS';
+                            if (u === 'F' || u === 'FS') matchingDays.push(`${wName} ${d} (${c.activeCode})`);
+                        } else {
+                            filterLabel = 'turni lavorativi';
+                            if (!nonWorkingCodes.has(u)) matchingDays.push(`${wName} ${d}: ${c.activeCode}`);
+                        }
+                    }
+
+                    if (matchingDays.length > 0) {
+                        replyHtml = `<strong>Dott. ${targetDoctor}</strong> — <strong>${matchingDays.length} ${filterLabel}</strong> a ${monthObj.label}:<div class="mt-1.5 flex flex-wrap gap-1">${matchingDays.map(item => `<span class="bg-hospital-50 border border-hospital-200 text-hospital-900 px-1.5 py-0.5 rounded font-mono text-[11px] font-bold">${item}</span>`).join('')}</div>`;
+                        speechText = `Dottor ${targetDoctor}, a ${monthObj.label} hai ${matchingDays.length} ${filterLabel}: ${matchingDays.join(', ')}.`;
+                    } else {
+                        replyHtml = `<strong>Dott. ${targetDoctor}</strong>: nessun risultato trovato per <strong>${filterLabel}</strong> a ${monthObj.label}.`;
+                        speechText = `Dottor ${targetDoctor}, non risultano ${filterLabel} a ${monthObj.label}.`;
+                    }
+                }
+                // CASO 2: "Quando è la mia prossima notte / il mio prossimo turno / prossima mattina / prossimo libero?"
+                else if (q.includes('prossim')) {
+                    let searchType = 'any_work';
+                    let searchLabel = 'prossimo turno';
+                    if (q.includes('nott')) {
+                        searchType = 'night';
+                        searchLabel = 'prossima notte';
+                    } else if (q.includes('mattin')) {
+                        searchType = 'morning';
+                        searchLabel = 'prossima mattina';
+                    } else if (q.includes('pomerigg')) {
+                        searchType = 'afternoon';
+                        searchLabel = 'prossimo pomeriggio';
+                    } else if (q.includes('12 ore') || q.includes('mp')) {
+                        searchType = 'mp';
+                        searchLabel = 'prossimo turno da 12 ore';
+                    } else if (q.includes('liber') || q.includes('ripos')) {
+                        searchType = 'free';
+                        searchLabel = 'prossimo giorno libero';
+                    } else if (q.includes('feri')) {
+                        searchType = 'ferie';
+                        searchLabel = 'prossimo giorno di ferie';
+                    }
+
+                    const startSearchDay = explicitDay || todayDay;
+                    let foundDay = null;
+                    let foundCell = null;
+
+                    for (let d = startSearchDay; d <= monthObj.daysCount; d++) {
+                        const c = parseShiftCell(docShifts[d - 1]);
+                        if (c.isFullCircled) continue;
+                        const u = c.activeCode.toUpperCase();
+
+                        let match = false;
+                        if (searchType === 'night') match = u.startsWith('N');
+                        else if (searchType === 'morning') match = u.startsWith('M');
+                        else if (searchType === 'afternoon') match = u.startsWith('P') || u.startsWith('MP');
+                        else if (searchType === 'mp') match = u.startsWith('MP');
+                        else if (searchType === 'free') match = (u === '/' || u === '-' || u === 'RB');
+                        else if (searchType === 'ferie') match = (u === 'F' || u === 'FS');
+                        else match = !nonWorkingCodes.has(u);
+
+                        if (match) {
+                            foundDay = d;
+                            foundCell = c;
+                            break;
+                        }
+                    }
+
+                    if (foundDay && foundCell) {
+                        const wName = weekdayShort[(monthObj.firstDayWeekday + (foundDay - 1)) % 7];
+                        const desc = describeParsedCell(foundCell);
+                        // Trova anche chi è in servizio quel giorno
+                        const peers = [];
+                        Object.entries(monthObj.doctors).forEach(([docName, shifts]) => {
+                            if (docName === targetDoctor) return;
+                            const pc = parseShiftCell(shifts[foundDay - 1]);
+                            if (!pc.isFullCircled && !nonWorkingCodes.has(pc.activeCode.toUpperCase())) {
+                                peers.push(`${docName} (${pc.activeCode})`);
+                            }
+                        });
+
+                        replyHtml = `<strong>Dott. ${targetDoctor}</strong> — Il tuo <strong>${searchLabel}</strong> è:<br><span class="inline-block mt-1 px-2 py-0.5 rounded bg-hospital-100 text-hospital-900 font-mono font-extrabold">${wName} ${foundDay} ${monthObj.label}: ${foundCell.activeCode}</span> (${desc})`;
+                        if (peers.length > 0) {
+                            replyHtml += `<div class="mt-1.5 pt-1 border-t border-slate-100 text-[11px] text-slate-600"><i class="fa-solid fa-user-group text-hospital-600 mr-1"></i>In servizio quel giorno: <strong>${peers.join(', ')}</strong></div>`;
+                        }
+                        speechText = `Dottor ${targetDoctor}, il tuo ${searchLabel} è ${wName} ${foundDay} ${monthObj.label}, turno ${desc}.`;
+                    } else {
+                        replyHtml = `<strong>Dott. ${targetDoctor}</strong>: non ho trovato alcun <strong>${searchLabel}</strong> dal giorno ${startSearchDay} alla fine di ${monthObj.label}.`;
+                        speechText = `Non ho trovato nessun ${searchLabel} fino a fine mese.`;
+                    }
+                }
+                // CASO 3: "Con chi sono di turno il giorno X?" / "Chi è di guardia/notte/mattina il giorno X?"
+                else if (q.includes('con chi') || q.includes('chi e') || q.includes('chi c e') || q.includes('chi fa') || q.includes('chi lavora') || q.includes('collegh')) {
+                    const targetDay = explicitDay || todayDay;
+                    const wName = weekdayShort[(monthObj.firstDayWeekday + (targetDay - 1)) % 7];
+                    const myCell = parseShiftCell(docShifts[targetDay - 1]);
+                    const myActiveU = myCell.activeCode.toUpperCase();
+
+                    const colleaguesList = [];
                     Object.entries(monthObj.doctors).forEach(([docName, shifts]) => {
+                        if (docName === targetDoctor && q.includes('con chi')) return;
                         const c = parseShiftCell(shifts[targetDay - 1]);
                         if (c.isFullCircled) return;
                         const u = c.activeCode.toUpperCase();
-                        if (q.includes('notte') && u.startsWith('N')) whoList.push(`Dott. ${docName} (${c.activeCode})`);
-                        else if (q.includes('mattina') && u.startsWith('M')) whoList.push(`Dott. ${docName} (${c.activeCode})`);
-                        else if (q.includes('pomeriggio') && (u.startsWith('P') || u.startsWith('MP'))) whoList.push(`Dott. ${docName} (${c.activeCode})`);
-                        else if (q.includes('guardia') && !['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC'].includes(u)) whoList.push(`Dott. ${docName} (${c.activeCode})`);
+
+                        if (q.includes('nott')) {
+                            if (u.startsWith('N')) colleaguesList.push(`Dott. ${docName} (${c.activeCode})`);
+                        } else if (q.includes('mattin')) {
+                            if (u.startsWith('M')) colleaguesList.push(`Dott. ${docName} (${c.activeCode})`);
+                        } else if (q.includes('pomerigg')) {
+                            if (u.startsWith('P') || u.startsWith('MP')) colleaguesList.push(`Dott. ${docName} (${c.activeCode})`);
+                        } else {
+                            if (!nonWorkingCodes.has(u)) colleaguesList.push(`Dott. ${docName} (${c.activeCode})`);
+                        }
                     });
 
-                    if (whoList.length > 0) {
-                        replyHtml = `Il giorno <strong>${targetDay} ${monthObj.label}</strong> risultano in servizio: <strong>${whoList.join(', ')}</strong>.`;
-                        speechText = `Il giorno ${targetDay} risultano in servizio: ${whoList.join(', ')}.`;
+                    let headerInfo = '';
+                    if (q.includes('con chi')) {
+                        headerInfo = `Il tuo turno il <strong>${wName} ${targetDay} ${monthObj.label}</strong> è <strong>${myCell.activeCode}</strong> (${describeParsedCell(myCell)}).<br>`;
+                    }
+
+                    if (colleaguesList.length > 0) {
+                        replyHtml = `${headerInfo}In servizio il <strong>${wName} ${targetDay} ${monthObj.label}</strong>: <strong>${colleaguesList.join(', ')}</strong>.`;
+                        speechText = `${q.includes('con chi') ? `Il ${targetDay} hai turno ${describeParsedCell(myCell)}. ` : ''}In servizio il ${targetDay} ${monthObj.label} ci sono: ${colleaguesList.join(', ')}.`;
                     } else {
-                        replyHtml = `Nessun collega trovato con quel turno il giorno <strong>${targetDay} ${monthObj.label}</strong>.`;
+                        replyHtml = `${headerInfo}Nessun collega risulta con quel turno il giorno <strong>${wName} ${targetDay} ${monthObj.label}</strong>.`;
                         speechText = `Nessun collega trovato per il giorno ${targetDay}.`;
                     }
-                } else {
-                    const rawArr = monthObj.doctors[targetDoctor] || [];
-                    const cell = parseShiftCell(rawArr[targetDay - 1]);
+                }
+                // CASO 4: "Che turno ho oggi / domani / il giorno X?"
+                else {
+                    const targetDay = explicitDay || todayDay;
+                    const wName = weekdayShort[(monthObj.firstDayWeekday + (targetDay - 1)) % 7];
+                    const cell = parseShiftCell(docShifts[targetDay - 1]);
                     const desc = describeParsedCell(cell);
-                    replyHtml = `<strong>Dott. ${targetDoctor}</strong> — Giorno <strong>${targetDay} ${monthObj.label}</strong>:<br><span class="inline-block mt-1 px-2 py-0.5 rounded bg-hospital-100 text-hospital-900 font-mono font-extrabold">${cell.activeCode}</span> <strong>${desc}</strong>`;
-                    speechText = `Dottor ${targetDoctor}, il giorno ${targetDay} ${monthObj.label} hai: ${desc}.`;
+
+                    const peers = [];
+                    Object.entries(monthObj.doctors).forEach(([docName, shifts]) => {
+                        if (docName === targetDoctor) return;
+                        const pc = parseShiftCell(shifts[targetDay - 1]);
+                        if (!pc.isFullCircled && !nonWorkingCodes.has(pc.activeCode.toUpperCase())) {
+                            peers.push(`${docName} (${pc.activeCode})`);
+                        }
+                    });
+
+                    replyHtml = `<strong>Dott. ${targetDoctor}</strong> — <strong>${wName} ${targetDay} ${monthObj.label}</strong>:<br><span class="inline-block mt-1 px-2 py-0.5 rounded bg-hospital-100 text-hospital-900 font-mono font-extrabold">${cell.activeCode}</span> <strong>${desc}</strong>`;
+                    if (peers.length > 0) {
+                        replyHtml += `<div class="mt-1.5 pt-1 border-t border-slate-100 text-[11px] text-slate-600"><i class="fa-solid fa-user-group text-hospital-600 mr-1"></i>In servizio con te: <strong>${peers.join(', ')}</strong></div>`;
+                    }
+                    speechText = `Dottor ${targetDoctor}, ${wName} ${targetDay} ${monthObj.label} hai: ${desc}.`;
                 }
             } else {
                 const matchedDepts = departmentsData.filter(d => {
