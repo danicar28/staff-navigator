@@ -190,52 +190,52 @@
     <!-- Contenuto Principale Compatto -->
     <main class="max-w-lg md:max-w-4xl mx-auto px-1.5 pt-1.5 space-y-1">
 
-        <!-- SEZIONE 1: RUBRICA INTERNA -->
+        <!-- SEZIONE 1: RUBRICA INTERNA (ULTRA-COMPATTA) -->
         <section id="view-rubrica" class="space-y-1">
             <!-- Controlli Rapidi & Filtri Sede su singola barra scorrevole -->
-            <div class="flex items-center justify-between gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between gap-1 bg-white px-1.5 py-1 rounded-lg border border-slate-200 shadow-xs">
                 <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
-                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2 py-1 rounded-md text-[11px] font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
-                        <i class="fa-solid fa-star text-amber-400"></i>
+                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-1.5 py-0.5 rounded text-[11px] font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
+                        <i class="fa-solid fa-star text-amber-400 text-[10px]"></i>
                         <span>Pref.</span>
                     </button>
-                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
+                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
                         Tutti
                     </button>
-                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
+                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
                         F2
                     </button>
-                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
+                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
                         F3
                     </button>
-                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
+                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
                         Ed. E
                     </button>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
-                    <span id="contactsCountLabel" class="hidden">Contatti</span>
-                    <button onclick="askResetRubrica()" class="p-1 rounded-md text-xs text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition" title="Ripristina rubrica predefinita">
+                    <span id="contactsCountLabel" class="text-[10px] font-bold text-slate-500 px-1">0</span>
+                    <button onclick="askResetRubrica()" class="w-6 h-6 rounded text-[11px] text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition flex items-center justify-center" title="Ripristina rubrica predefinita">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
-                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2 py-1 rounded-md text-[11px] shadow-xs transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i>
+                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2 py-0.5 rounded text-[11px] shadow-xs transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
                         <span>Nuovo</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Barra Stato Sincronizzazione Cloud Condivisa -->
-            <div class="flex items-center justify-between px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200/80 text-[10px]">
-                <div id="cloudSyncStatus" class="flex items-center gap-1 font-bold text-hospital-800">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block"></span>
-                    <span>Connessione al database cloud...</span>
-                </div>
-                <span class="text-slate-500 font-medium hidden sm:inline">Sincronizzato</span>
-            </div>
-
-            <!-- Lista Contatti Compatta -->
+            <!-- Lista Contatti Ad Alta Densità (Righe Compatte) -->
             <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1">
                 <!-- Popolato da JS -->
+            </div>
+
+            <!-- Indicatore discreto sincronizzazione Cloud -->
+            <div class="flex items-center justify-between px-2 py-0.5 text-[10px] text-slate-500">
+                <div id="cloudSyncStatus" class="flex items-center gap-1 font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block"></span>
+                    <span>Connessione cloud...</span>
+                </div>
+                <span class="text-[9px]">Tocca il numero per copiare</span>
             </div>
 
             <div id="emptyContacts" class="hidden text-center py-6 px-4 bg-white rounded-lg border border-slate-200">
@@ -1059,6 +1059,47 @@
     </div>
 
     <!-- MODAL: ASSISTENTE VOCALE & CHAT AI -->
+    <div id="assistantModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] pb-safe">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-microphone-lines text-sky-400"></i>
+                    <h3 class="font-bold text-sm">Assistente Vocale Cannizzaro</h3>
+                </div>
+                <button onclick="toggleAssistantModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div id="chatMessages" class="p-3 overflow-y-auto space-y-2.5 flex-1 bg-slate-50 min-h-[200px]">
+                <div class="flex items-start gap-2">
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        <i class="fa-solid fa-staff-snake"></i>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed">
+                        Chiedi a voce o scrivi: es. <em>"Qual è il mio turno domani?"</em>, <em>"Dov'è Neurologia?"</em> oppure <em>"Interno UTIC"</em>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border-t border-slate-200 p-3 space-y-2">
+                <div class="flex flex-col items-center">
+                    <button id="micBtn" onclick="toggleVoiceRecognition()" class="w-12 h-12 rounded-full bg-hospital-600 hover:bg-hospital-500 active:scale-95 text-white flex items-center justify-center shadow-md transition">
+                        <i class="fa-solid fa-microphone text-lg"></i>
+                    </button>
+                    <span id="micStatus" class="text-[11px] font-semibold text-slate-500 mt-1">Tocca il microfono per parlare</span>
+                </div>
+
+                <form onsubmit="handleTextAssistantSubmit(event)" class="flex gap-1.5">
+                    <input type="text" id="assistantTextInput" placeholder="Scrivi domanda o reparto..." class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                    <button type="submit" class="bg-hospital-700 text-white px-3.5 py-2 rounded-lg font-bold text-xs active:scale-95 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: AGGIUNGI / MODIFICA CONTATTO IN RUBRICA CONDIVISA -->
     <div id="addContactModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden pb-safe">
@@ -1139,11 +1180,11 @@
             const el = document.getElementById('cloudSyncStatus');
             if (!el) return;
             if (state === 'online') {
-                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span><span class="text-emerald-900">${text}</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span><span class="text-emerald-800">${text}</span>`;
             } else if (state === 'syncing') {
-                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-sky-500 animate-ping inline-block"></span><span class="text-hospital-800">${text}</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping inline-block"></span><span class="text-hospital-700">${text}</span>`;
             } else {
-                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span><span class="text-amber-900">${text}</span>`;
+                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span><span class="text-amber-800">${text}</span>`;
             }
         }
 
@@ -1226,7 +1267,7 @@
                     if (typeof window.renderContacts === 'function') {
                         window.renderContacts();
                     }
-                    updateSyncBanner('online', `Database online sincronizzato (${cloudList.length} interni)`);
+                    updateSyncBanner('online', `Cloud attivo • ${cloudList.length} interni`);
                 }, (error) => {
                     console.error('Errore sincronizzazione Firestore:', error);
                     updateSyncBanner('offline', 'Errore sincronizzazione database online');
@@ -2419,7 +2460,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 return bFav - aFav;
             });
 
-            countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'contatto' : 'contatti'}`;
+            countLabel.textContent = `${filtered.length}`;
 
             if (filtered.length === 0) {
                 list.innerHTML = '';
@@ -2434,30 +2475,28 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 const isFav = isContactFav(c.id);
                 const safeDocId = (c.docId || '').replace(/'/g, "\\'");
                 const safeId = String(c.id).replace(/'/g, "\\'");
+                const metaParts = [c.location, c.note].filter(Boolean).join(' • ');
                 return `
-                <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between gap-2">
-                    <div class="flex items-start gap-1.5">
-                        <button onclick="toggleContactFav('${safeId}', event)" class="shrink-0 p-0.5 mt-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
-                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
+                <div class="bg-white px-2 py-1.5 rounded-lg border border-slate-200/90 shadow-2xs flex items-center justify-between gap-2">
+                    <div class="flex items-start gap-1.5 min-w-0 flex-1">
+                        <button onclick="toggleContactFav('${safeId}', event)" class="shrink-0 pt-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-[11px]"></i>
                         </button>
-                        <h4 class="font-bold text-slate-900 text-[13px] sm:text-sm leading-snug break-words flex-1">${c.name}</h4>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-slate-900 text-xs leading-tight break-words">${c.name}</h4>
+                            ${metaParts ? `<p class="text-[10px] text-slate-500 leading-tight mt-0.5 break-words"><span class="font-semibold text-hospital-700">${c.location || ''}</span>${c.note ? ` • ${c.note}` : ''}</p>` : ''}
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between gap-2 pl-5 pt-1 border-t border-slate-100">
-                        <div class="min-w-0 flex-1 text-[11px] leading-tight">
-                            <div class="font-semibold text-hospital-700 break-words">${c.location || 'Sede'}</div>
-                            ${c.note ? `<div class="text-slate-500 text-[10px] mt-0.5 break-words">${c.note}</div>` : ''}
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button onclick="copyText('${c.phone.replace(/'/g, "\\'")}')" class="bg-slate-100 active:bg-slate-200 text-slate-900 font-mono font-extrabold text-xs px-2.5 py-1.5 rounded-lg transition max-w-[125px] truncate border border-slate-200" title="Copia ${c.phone}">
-                                ${c.phone}
-                            </button>
-                            <button onclick="openEditContactModal('${safeDocId}', '${safeId}')" class="w-8 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 active:scale-95 text-hospital-800 border border-sky-200 flex items-center justify-center transition shrink-0" title="Modifica numero o collocazione per tutti">
-                                <i class="fa-solid fa-pen text-[11px]"></i>
-                            </button>
-                            <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
-                                <i class="fa-solid fa-phone text-xs"></i>
-                            </a>
-                        </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="copyText('${c.phone.replace(/'/g, "\\'")}')" class="bg-slate-100 active:bg-slate-200 text-slate-900 font-mono font-extrabold text-[11px] px-2 py-1 rounded-md transition max-w-[105px] truncate border border-slate-200" title="Copia ${c.phone}">
+                            ${c.phone}
+                        </button>
+                        <button onclick="openEditContactModal('${safeDocId}', '${safeId}')" class="w-7 h-7 rounded-md bg-slate-50 hover:bg-sky-50 active:scale-95 text-slate-600 border border-slate-200 flex items-center justify-center transition shrink-0" title="Modifica">
+                            <i class="fa-solid fa-pen text-[10px]"></i>
+                        </button>
+                        <a href="tel:${fullNum}" class="w-7 h-7 rounded-md bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-2xs transition shrink-0" title="Chiama ${fullNum}">
+                            <i class="fa-solid fa-phone text-[10px]"></i>
+                        </a>
                     </div>
                 </div>
             `}).join('');
@@ -3276,38 +3315,30 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             { id: 'cefotaxime', name: 'CEFOTAXIME', category: 'Cefalosporina III gen.', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2 g / 50 ml S.F. in 1 ora × 3/die' }, { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 2–3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 1/die' } ] },
             { id: 'clindamicina', name: 'CLINDAMICINA', category: 'Lincosamide', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 100 ml S.F. in 1 ora × 3/die' } ] },
             { id: 'colistina', name: 'COLISTINA', category: 'Polimixina', loadingDose: 'd.c. 9 Milioni UI in 100 ml S.F. in 1 ora', note: 'Dose di carico da 9 M UI sempre raccomandata indipendentemente dalla funzione renale.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 M UI in 50 ml S.F. in 1 ora × 2/die' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 M UI in 50 ml S.F. in 1 ora × 3/die' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '1,5 M UI in 50 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 M UI in 50 ml S.F. in 1 ora × 3/die' } ] },
-            { id: 'cefiderocol', name: 'CEFIDEROCOL (FETCROJA)', category: 'Cefalosporina siderofora', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '1,5 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '0,75 g / 100 ml S.F. — infusione 35 ml/h × 2/die' } ] },
-            { id: 'ceftarolina', name: 'CEFTAROLINA (ZINFORO)', category: 'Cefalosporina V gen. (anti-MRSA)', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '600 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '400 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '300 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '200 mg / 100 ml S.F. in 1 ora × 3/die' } ] },
-            { id: 'ceftolozano_tazobactam', name: 'CEFTOLOZANO / TAZOBACTAM (ZERBAXA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'Cl.Cr > 15: d.c. 3 g / 50 ml in 1h | Cl.Cr ≤ 15: d.c. 0,75 g / 50 ml in 1h', note: 'Mantenimento in infusione continua: 4,5 g in 50 ml S.F.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 0,5 ml/h' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: 'd.c. 0,75 g / 50 ml in 1h, poi 4,5 g / 50 ml S.F. — infusione a 0,2 ml/h' } ] },
-            { id: 'ceftazidime_avibactam', name: 'CEFTAZIDIME / AVIBACTAM (ZAVICEFTA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'd.c. 2,5 g / 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 2,5 g in 50 ml S.F.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 3 ml/h' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 11, max: 15, label: 'Cl.Cr 11 – 15 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2,5 g / 50 ml S.F. — infusione a 0,5 ml/h' } ] },
-            { id: 'claritromicina', name: 'CLARITROMICINA', category: 'Macrolide', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 2/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora × 2/die' } ] },
-            { id: 'daptomicina', name: 'DAPTOMICINA (CUBICIN)', category: 'Lipopeptide ciclico', loadingDose: 'Nessuna dose di carico specifica', note: 'Il dosaggio (4 / 6 / 8 mg/kg) varia in base alla sede d’infezione.', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '4 – 8 mg/kg in 100 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '4 – 8 mg/kg in 100 ml S.F. in 30 min ogni 48 ore' } ] },
-            { id: 'fosfomicina', name: 'FOSFOMICINA', category: 'Derivato acido fosfonico', loadingDose: 'd.c. 6 g / 100 ml G5% in 1 ora', note: 'Mantenimento in infusione continua: 16 g in 250 ml Glucosata 5%.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '16 g / 250 ml G5% — infusione a 10 ml/h' }, { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '16 g / 250 ml G5% — infusione a 7 ml/h' }, { min: 21, max: 30, label: 'Cl.Cr 21 – 30 ml/min', dose: '16 g / 250 ml G5% — infusione a 6 ml/h' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '16 g / 250 ml G5% — infusione a 4 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '16 g / 250 ml G5% — infusione a 2 ml/h' } ] },
-            { id: 'gentamicina', name: 'GENTAMICINA', category: 'Aminoglicoside', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '3 mg/kg in 100 ml S.F. in 1 ora × 1/die' }, { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '2 mg/kg in 100 ml S.F. in 1 ora × 1/die' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '1,5 mg/kg in 100 ml S.F. in 1 ora × 1/die' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '1 mg/kg in 100 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'levofloxacina', name: 'LEVOFLOXACINA (TAVANIC)', category: 'Fluorochinolone', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 1–2/die' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '1° giorno 500 mg × 1–2/die; dal 2° giorno 250 mg × 1–2/die' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '1° giorno 500 mg × 1/die; dal 2° giorno 125 mg × 1/die' } ] },
-            { id: 'linezolid', name: 'LINEZOLID (ZYVOXID)', category: 'Oxazolidinone', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg in 1 ora × 2/die' } ] },
-            { id: 'meropenem', name: 'MEROPENEM', category: 'Carbapenemico', loadingDose: 'd.c. 1 – 2 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: 2 g in 50 ml S.F. (stabilità soluzione ~6-8h).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 6,5 ml/h (o 1 g ogni 8h in 3h)' }, { min: 26, max: 50, label: 'Cl.Cr 26 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 3 ml/h' }, { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' } ] },
-            { id: 'meropenem_vaborbactam', name: 'MEROPENEM / VABORBACTAM (VABOREM)', category: 'Carbapenemico / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata in 3 ore (250 ml S.F. a 83 ml/h).', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '2 g / 2 g in 250 ml S.F. in 3 ore × 3/die' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '1 g / 1 g in 250 ml S.F. in 3 ore × 3/die' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '1 g / 1 g in 250 ml S.F. in 3 ore × 2/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '0,5 g / 0,5 g in 250 ml S.F. in 3 ore × 2/die' } ] },
-            { id: 'metronidazolo', name: 'METRONIDAZOLO', category: 'Nitroimidazolo', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '500 mg in 1 ora × 3/die' } ] },
-            { id: 'imipenem_cilastatina', name: 'IMIPENEM / CILASTATINA (TIENAM)', category: 'Carbapenemico', loadingDose: 'Nessuna dose di carico specifica', note: 'Schema per dosaggio standard 500 mg e 1000 mg.', bands: [ { min: 71, max: 999, label: 'Cl.Cr > 70 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 4/die (oppure 1 g × 3/die)' }, { min: 41, max: 70, label: 'Cl.Cr 41 – 70 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 3/die (oppure 750 mg × 3/die)' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora × 4/die (oppure 500 mg × 3/die)' }, { min: 6, max: 20, label: 'Cl.Cr 6 – 20 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora × 2/die (oppure 500 mg × 2/die)' }, { min: 0, max: 5, label: 'Cl.Cr ≤ 5 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora × 2/die (solo in dialisi)' } ] },
-            { id: 'imipenem_relebactam', name: 'IMIPENEM / RELEBACTAM (RECARBRIO)', category: 'Carbapenemico / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione in 30 minuti in 100 ml S.F.', bands: [ { min: 90, max: 999, label: 'Cl.Cr ≥ 90 ml/min', dose: '500 mg / 250 mg in 100 ml S.F. in 30 min × 4/die' }, { min: 60, max: 89, label: 'Cl.Cr 60 – 89 ml/min', dose: '400 mg / 200 mg in 100 ml S.F. in 30 min × 4/die' }, { min: 30, max: 59, label: 'Cl.Cr 30 – 59 ml/min', dose: '300 mg / 150 mg in 100 ml S.F. in 30 min × 4/die' }, { min: 15, max: 29, label: 'Cl.Cr 15 – 29 ml/min', dose: '200 mg / 100 mg in 100 ml S.F. in 30 min × 4/die' }, { min: 0, max: 14, label: 'Cl.Cr < 15 ml/min (ESRD)', dose: '200 mg / 100 mg in 100 ml S.F. in 30 min × 4/die (post-dialisi)' } ] },
-            { id: 'oxacillina', name: 'OXACILLINA', category: 'Penicillina anti-stafilococcica', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '2 g / 50 ml S.F. in 30 min × 6/die (oppure 12 g/24h in infusione continua)' } ] },
-            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Beta-lattamico / Inibitore beta-lattamasi', loadingDose: 'd.c. 4,5 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: 13,5 g (3 flaconi da 4,5 g) in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 2,5 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 1,5 ml/h' } ] },
-            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOCID)', category: 'Glicopeptide', loadingDose: 'd.c. 12 mg/kg / 50 ml S.F. in 30 min × 2/die per 36 ore', note: 'Carico iniziale 12 mg/kg ogni 12h per 3 somministrazioni (36h), poi mantenimento 12 mg/kg/die.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min × 1/die' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min ogni 48 ore' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min ogni 72 ore' } ] },
-            { id: 'tigeciclina', name: 'TIGECICLINA (TYGACIL)', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora (oppure 200 mg nelle infezioni gravi)', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 100 ml S.F. in 1 ora × 2/die (100 mg × 2/die se dose alta)' } ] },
-            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 30 mg/kg in 250 ml S.F. in 2 ore', note: 'Mantenimento in infusione continua: 2 g in 50 ml S.F. Monitorare vancocinemia (target 20–25 mg/L).', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h (2 g/24h)' }, { min: 51, max: 80, label: 'Cl.Cr 51 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h (1,5 g/24h)' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h (1 g/24h)' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h (500 mg/24h)' } ] },
-            { id: 'fluconazolo', name: 'FLUCONAZOLO (DIFLUCAN)', category: 'Antimicotico Triazolico', loadingDose: '1° giorno: 800 mg in 1 ora', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '400 mg in 1 ora × 1/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: '200 mg in 1 ora × 1/die' } ] },
-            { id: 'caspofungin', name: 'CASPOFUNGIN (CANCIDAS)', category: 'Antimicotico Echinocandina', loadingDose: '1° giorno: 70 mg in 100 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg in 100 ml S.F. in 1 ora × 1/die (70 mg/die se peso > 80 kg)' } ] },
-            { id: 'anidulafungina', name: 'ANIDULAFUNGINA (ECALTA)', category: 'Antimicotico Echinocandina', loadingDose: '1° giorno: 200 mg in 200 ml S.F. in 3 ore', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '100 mg in 100 ml S.F. in 1,5 ore × 1/die' } ] },
-            { id: 'voriconazolo', name: 'VORICONAZOLO (VFEND)', category: 'Antimicotico Triazolico', loadingDose: '1° giorno: 6 mg/kg in 100 ml S.F. in 2 ore × 2/die', note: 'Monitorare funzionalità renale ed epatica.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4 mg/kg in 100 ml S.F. in 2 ore × 2/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: 'Valutare somministrazione orale per accumulo eccipiente SBECD (se EV necessario: 4 mg/kg × 2/die)' } ] },
-            { id: 'amfotericina_b_liposomiale', name: 'AMFOTERICINA B LIPOSOMIALE (AMBISOME)', category: 'Antimicotico Polienico', loadingDose: 'Nessuna dose di carico specifica', note: 'Ricostituire con acqua p.p.i. e diluire esclusivamente in Glucosata 5%. Nessun aggiustamento per Cl.Cr.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '3 – 5 mg/kg in 250 ml G5% in 2 ore × 1/die' } ] },
-            { id: 'acyclovir', name: 'ACYCLOVIR (ZOVIRAX)', category: 'Antivirale', loadingDose: 'Nessuna dose di carico specifica', note: 'Il dosaggio (5 o 10 mg/kg) dipende dall’indicazione (es. encefalite erpetica 10 mg/kg).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '5 – 10 mg/kg in 100 ml S.F. in 1 ora × 3/die' }, { min: 26, max: 50, label: 'Cl.Cr 26 – 50 ml/min', dose: '5 – 10 mg/kg in 100 ml S.F. in 1 ora × 2/die' }, { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '5 – 10 mg/kg in 100 ml S.F. in 1 ora × 1/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2,5 – 5 mg/kg in 100 ml S.F. in 1 ora × 1/die' } ] }
+            { id: 'cefiderocol', name: 'CEFIDEROCOL (FETCROJA)', category: 'Cefalosporina siderofora', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '1,5 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '0,75 g / 100 ml S.F. — infusione 35 ml/h × 3/die' } ] },
+            { id: 'ceftazidime_avibactam', name: 'CEFTAZIDIME / AVIBACTAM (ZAVICEFTA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 25 ml/h (50 ml in 2 ore).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione 25 ml/h × 3/die' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1,25 g / 50 ml S.F. — infusione 25 ml/h × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h × 2/die' }, { min: 6, max: 15, label: 'Cl.Cr 6 – 15 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h × 1/die' }, { min: 0, max: 5, label: 'Cl.Cr ≤ 5 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h ogni 48h' } ] },
+            { id: 'ceftolozano_tazobactam', name: 'CEFTOLOZANO / TAZOBACTAM (ZERBAXA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'In polmonite nosocomiale/VAP considerare raddoppio posologico se indicato dal clinico.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1,5 g / 100 ml S.F. in 1 ora × 3/die' }, { min: 30, max: 50, label: 'Cl.Cr 30 – 50 ml/min', dose: '750 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 15, max: 29, label: 'Cl.Cr 15 – 29 ml/min', dose: '375 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 14, label: 'Cl.Cr < 15 ml/min', dose: '750 mg carico, poi 150 mg / 100 ml S.F. in 1h × 3/die' } ] },
+            { id: 'daptomicina', name: 'DAPTOMICINA', category: 'Lipopeptide ciclico', loadingDose: '8 – 10 mg/kg in 50 ml S.F. in 30 min', note: 'Non usare in polmonite (inattivata dal surfattante polmonare).', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '8 – 10 mg/kg in 50 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '8 – 10 mg/kg in 50 ml S.F. in 30 min ogni 48h' } ] },
+            { id: 'doxiciclina', name: 'DOXICICLINA', category: 'Tetraciclina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '100 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
+            { id: 'ertapenem', name: 'ERTAPENEM', category: 'Carbapeneme', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '1 g / 50 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '500 mg / 50 ml S.F. in 30 min × 1/die' } ] },
+            { id: 'eritromicina', name: 'ERITROMICINA', category: 'Macrolide', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 11, max: 999, label: 'Cl.Cr > 10 ml/min', dose: '1 g / 250 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 250 ml S.F. in 1 ora × 3/die' } ] },
+            { id: 'fluconazolo', name: 'FLUCONAZOLO', category: 'Antimicotico triazolico', loadingDose: 'd.c. 800 mg / 400 ml in 2 ore', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '400 mg / 200 ml in 1 ora × 1/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: '200 mg / 100 ml in 1 ora × 1/die' } ] },
+            { id: 'fosfomicina', name: 'FOSFOMICINA (INFECTOFOS)', category: 'Epossido / Battericida', loadingDose: 'Nessuna dose di carico specifica', note: 'Elevato contenuto di sodio (14,4 mEq Na+ per grammo di fosfomicina).', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '6 g / 250 ml in 1 ora × 3/die (o 8 g × 3/die)' }, { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '70% della dose divisa in 2–3 somministrazioni' }, { min: 21, max: 30, label: 'Cl.Cr 21 – 30 ml/min', dose: '60% della dose divisa in 2–3 somministrazioni' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '40% della dose divisa in 2–3 somministrazioni' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '20% della dose divisa in 1–2 somministrazioni' } ] },
+            { id: 'gentamicina', name: 'GENTAMICINA', category: 'Aminoglicoside', loadingDose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora', note: 'Monitorare livelli plasmatici (picco/valle) e funzione renale.', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 24h' }, { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 36h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 48h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 72h' } ] },
+            { id: 'imipenem', name: 'IMIPENEM / CILASTATINA', category: 'Carbapeneme', loadingDose: 'Nessuna dose di carico specifica', note: 'Attenzione al rischio convulsivo in insufficienza renale severa.', bands: [ { min: 71, max: 999, label: 'Cl.Cr > 70 ml/min', dose: '500 mg / 100 ml S.F. in 30 min × 4/die' }, { min: 41, max: 70, label: 'Cl.Cr 41 – 70 ml/min', dose: '500 mg / 100 ml S.F. in 30 min × 3/die' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '250 mg / 100 ml S.F. in 30 min × 3/die' }, { min: 6, max: 20, label: 'Cl.Cr 6 – 20 ml/min', dose: '250 mg / 100 ml S.F. in 30 min × 2/die' }, { min: 0, max: 5, label: 'Cl.Cr ≤ 5 ml/min', dose: '250 mg / 100 ml S.F. solo dopo dialisi' } ] },
+            { id: 'levofloxacina', name: 'LEVOFLOXACINA', category: 'Fluorochinolone', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 2/die' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 1/die' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora ogni 48h' } ] },
+            { id: 'linezolid', name: 'LINEZOLID (ZYVOXID)', category: 'Ossazolidinone', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale (monitorare emocromo/piastrine > 10–14 gg).', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 300 ml in 1 ora × 2/die' } ] },
+            { id: 'meropenem', name: 'MEROPENEM', category: 'Carbapeneme', loadingDose: 'd.c. 1 – 2 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: preparare 1 g in 50 ml S.F. (stabilità soluzione ~6–8h).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 4,5 ml/h' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '1 g / 50 ml S.F. — infusione a 3 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g / 50 ml S.F. — infusione a 2 ml/h' } ] },
+            { id: 'meropenem_vaborbactam', name: 'MEROPENEM / VABORBACTAM (VABOREM)', category: 'Carbapeneme / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).', bands: [ { min: 40, max: 999, label: 'Cl.Cr ≥ 40 ml/min', dose: '4 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 20, max: 39, label: 'Cl.Cr 20 – 39 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 10, max: 19, label: 'Cl.Cr 10 – 19 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 2/die' }, { min: 0, max: 9, label: 'Cl.Cr < 10 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 2/die' } ] },
+            { id: 'metronidazolo', name: 'METRONIDAZOLO', category: 'Nitroimidazolo', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '500 mg / 100 ml in 30 min × 3/die' } ] },
+            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Beta-lattamico / Inibitore beta-lattamasi', loadingDose: 'd.c. 4,5 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: 13,5 g (3 fl) in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 1 ml/h' } ] },
+            { id: 'rifampicina', name: 'RIFAMPICINA', category: 'Rifamicina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 250 ml S.F. in 1 ora × 1/die' } ] },
+            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOSID)', category: 'Glicopeptide', loadingDose: 'd.c. 6 – 12 mg/kg ogni 12 ore per 3 dosi (in 50 ml S.F. in 30 min)', note: 'Mantenimento: 6 – 12 mg/kg in 50 ml S.F. in 30 min.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min × 1/die' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min ogni 48h' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min ogni 72h' } ] },
+            { id: 'tigeciclina', name: 'TIGECICLINA', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
+            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 25 – 30 mg/kg in 250 ml S.F. in 2 ore', note: 'Mantenimento in infusione continua (target sierico 20–25 mg/L). Preparare 2 g in 50 ml S.F.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h (o 3 g / 50 ml)' }, { min: 51, max: 80, label: 'Cl.Cr 51 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora ogni 48–72h (su TDM)' } ] }
         ];
 
-        function initAntibioticsSection() {
-            const select = document.getElementById('abxSelect');
-            if (!select) return;
-            select.value = 'piperacillina_tazobactam';
+        function initAntibioticGuide() {
             renderAbxPickerList();
             onAbxChange();
         }
@@ -3328,11 +3359,11 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         function renderAbxPickerList() {
             const container = document.getElementById('abxPickerList');
             if (!container) return;
-            const currentId = document.getElementById('abxSelect')?.value || 'piperacillina_tazobactam';
+            const abxSelectEl = document.getElementById('abxSelect');
+            const currentId = abxSelectEl ? abxSelectEl.value : 'piperacillina_tazobactam';
             const q = (document.getElementById('abxSearchInput')?.value || '').toLowerCase().trim();
 
-            const sorted = [...antibioticsDatabase].sort((a, b) => a.name.localeCompare(b.name));
-            const filtered = sorted.filter(a => {
+            const filtered = antibioticsDatabase.filter(a => {
                 if (!q) return true;
                 return a.name.toLowerCase().includes(q) || a.category.toLowerCase().includes(q);
             });
@@ -3350,171 +3381,160 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                             <div class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${a.name}</div>
                             <div class="text-[10px] text-slate-500 truncate">${a.category}</div>
                         </div>
-                        <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-100 text-slate-600'}">
-                            ${a.bands.length} ${a.bands.length === 1 ? 'fascia' : 'fasce'}
-                        </span>
+                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-indigo-700' : 'fa-chevron-right text-slate-300'} text-xs shrink-0"></i>
                     </button>
                 `;
             }).join('');
         }
 
         function selectAbxFromModal(abxId) {
-            const select = document.getElementById('abxSelect');
-            if (select) select.value = abxId;
+            const abxSelectEl = document.getElementById('abxSelect');
+            if (abxSelectEl) abxSelectEl.value = abxId;
             closeAbxPickerModal();
             onAbxChange();
         }
 
         function setQuickCrCl(val) {
-            const input = document.getElementById('crclInput');
-            if (input) input.value = val;
+            document.getElementById('crclInput').value = val;
             onCrClChange();
-        }
-
-        function onAbxChange() {
-            const abxId = document.getElementById('abxSelect').value;
-            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
-            const catEl = document.getElementById('selectedAbxCategory');
-            if (catEl) catEl.textContent = abx.category;
-            const titleEl = document.getElementById('selectedAbxTitle');
-            if (titleEl) titleEl.textContent = abx.name;
-
-            const amikBox = document.getElementById('amikacinaCalcBox');
-            if (amikBox) {
-                if (abx.specialAmikacina) {
-                    amikBox.classList.remove('hidden');
-                    updateAmikacinaInterval();
-                } else {
-                    amikBox.classList.add('hidden');
-                }
-            }
-            onCrClChange();
-        }
-
-        function updateAmikacinaInterval() {
-            const creat = parseFloat(document.getElementById('amikacinaCreatInput')?.value) || 0;
-            const resEl = document.getElementById('amikacinaResultBadge');
-            if (!resEl) return;
-            if (creat <= 0) {
-                resEl.textContent = 'Inserisci creatininemia';
-                return;
-            }
-            const hours = Math.round(creat * 9 * 10) / 10;
-            resEl.textContent = `${creat} × 9 = ogni ${hours} ore`;
         }
 
         function onCrClChange() {
-            const abxId = document.getElementById('abxSelect')?.value;
-            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
-            const rawVal = parseFloat(document.getElementById('crclInput')?.value);
-            const crcl = isNaN(rawVal) ? 90 : Math.max(0, rawVal);
+            onAbxChange();
+        }
 
-            const statusBadge = document.getElementById('renalStatusBadge');
-            if (statusBadge) {
-                if (crcl > 80) {
-                    statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate';
-                    statusBadge.textContent = 'Normofunzione (> 80)';
-                } else if (crcl > 50) {
-                    statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 truncate';
-                    statusBadge.textContent = 'IR Lieve (51–80)';
-                } else if (crcl > 30) {
-                    statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 truncate';
-                    statusBadge.textContent = 'IR Moderata (31–50)';
-                } else if (crcl > 15) {
-                    statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-100 text-orange-900 truncate';
-                    statusBadge.textContent = 'IR Severa (16–30)';
-                } else {
-                    statusBadge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-900 truncate';
-                    statusBadge.textContent = 'IR Terminale (≤ 15)';
-                }
+        function updateAmikacinaInterval() {
+            const creat = parseFloat(document.getElementById('amikacinaCreatInput').value);
+            const badge = document.getElementById('amikacinaResultBadge');
+            if (!badge) return;
+            if (!isNaN(creat) && creat > 0) {
+                const hours = Math.round(creat * 9 * 10) / 10;
+                badge.textContent = `Intervallo: ogni ${hours} ore (${creat} × 9)`;
+            } else {
+                badge.textContent = 'Inserisci creatininemia';
             }
+        }
+
+        function onAbxChange() {
+            const selectEl = document.getElementById('abxSelect');
+            if (!selectEl) return;
+            const abxId = selectEl.value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+
+            const titleEl = document.getElementById('selectedAbxTitle');
+            if (titleEl) titleEl.textContent = abx.name;
+            const catEl = document.getElementById('selectedAbxCategory');
+            if (catEl) catEl.textContent = abx.category;
+
+            const rawCrCl = parseFloat(document.getElementById('crclInput').value);
+            const crcl = isNaN(rawCrCl) ? 90 : Math.max(0, rawCrCl);
 
             document.querySelectorAll('.crcl-chip').forEach(btn => {
-                const chipVal = parseInt(btn.dataset.crcl, 10);
-                const isActive = (chipVal === 90 && crcl > 80) ||
-                                 (chipVal === 60 && crcl >= 55 && crcl <= 80) ||
-                                 (chipVal === 50 && crcl >= 45 && crcl < 55) ||
-                                 (chipVal === 40 && crcl >= 35 && crcl < 45) ||
-                                 (chipVal === 30 && crcl >= 21 && crcl < 35) ||
-                                 (chipVal === 15 && crcl >= 11 && crcl <= 20) ||
-                                 (chipVal === 10 && crcl <= 10);
-                if (isActive) {
-                    btn.className = 'crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border bg-indigo-700 text-white border-indigo-700 transition active:scale-95';
+                const chipVal = parseInt(btn.dataset.crcl);
+                if (chipVal === crcl) {
+                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95 bg-indigo-700 text-white border-indigo-700 shadow-xs';
                 } else {
-                    btn.className = 'crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition active:scale-95';
+                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95 bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
                 }
             });
 
-            let matchedBand = abx.bands.find(b => crcl >= b.min && crcl <= b.max);
-            if (!matchedBand) matchedBand = abx.bands[abx.bands.length - 1];
+            const statusBadge = document.getElementById('renalStatusBadge');
+            if (crcl > 80) {
+                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 truncate';
+                statusBadge.textContent = 'Normofunzione (> 80)';
+            } else if (crcl > 50) {
+                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 truncate';
+                statusBadge.textContent = 'Lieve riduzione (51–80)';
+            } else if (crcl > 30) {
+                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 truncate';
+                statusBadge.textContent = 'Moderata (31–50)';
+            } else if (crcl > 10) {
+                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-orange-100 text-orange-900 truncate';
+                statusBadge.textContent = 'Severa (11–30)';
+            } else {
+                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-red-100 text-red-900 truncate';
+                statusBadge.textContent = 'Terminale / Dialisi (≤ 10)';
+            }
+
+            const amikBox = document.getElementById('amikacinaCalcBox');
+            if (abx.specialAmikacina) {
+                amikBox.classList.remove('hidden');
+                updateAmikacinaInterval();
+            } else {
+                amikBox.classList.add('hidden');
+            }
+
+            let activeBandIndex = abx.bands.findIndex(b => crcl >= b.min && crcl <= b.max);
+            if (activeBandIndex === -1) activeBandIndex = 0;
+            const activeBand = abx.bands[activeBandIndex];
 
             document.getElementById('abxResultDrugName').textContent = abx.name;
-            document.getElementById('abxResultBandLabel').textContent = matchedBand.label;
-
-            const loadBox = document.getElementById('abxLoadingDoseBox');
-            const loadText = document.getElementById('abxLoadingDoseText');
-            if (abx.loadingDose && !abx.loadingDose.toLowerCase().includes('nessuna')) {
-                loadBox.classList.remove('hidden');
-                loadText.textContent = abx.loadingDose;
-            } else {
-                loadBox.classList.add('hidden');
-            }
+            document.getElementById('abxResultBandLabel').textContent = activeBand.label;
+            document.getElementById('abxLoadingDoseText').textContent = abx.loadingDose;
 
             const maintBox = document.getElementById('abxMaintenanceBox');
             const maintText = document.getElementById('abxMaintenanceText');
-            if (matchedBand.contraindicated) {
-                maintBox.className = 'bg-red-600/30 border border-red-400 rounded-lg p-2 flex items-start gap-2';
-                maintText.innerHTML = `<span class="text-red-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${matchedBand.dose}</span>`;
+            maintText.textContent = activeBand.dose;
+            if (activeBand.contraindicated) {
+                maintBox.className = 'bg-red-600/35 border border-red-400 rounded-md p-1.5 flex items-start gap-1.5';
             } else {
-                maintBox.className = 'bg-white/10 border border-white/15 rounded-lg p-2 flex items-start gap-2';
-                maintText.textContent = matchedBand.dose;
+                maintBox.className = 'bg-white/10 border border-white/15 rounded-md p-1.5 flex items-start gap-1.5';
             }
 
             const noteBox = document.getElementById('abxClinicalNoteBox');
             const noteText = document.getElementById('abxClinicalNoteText');
             if (abx.note) {
-                noteBox.classList.remove('hidden');
                 noteText.textContent = abx.note;
+                noteBox.classList.remove('hidden');
             } else {
                 noteBox.classList.add('hidden');
             }
 
-            const bandsList = document.getElementById('abxBandsList');
-            bandsList.innerHTML = abx.bands.map(b => {
-                const isCurrent = b === matchedBand;
-                const targetCrCl = b.max >= 999 ? Math.max(90, b.min + 10) : Math.round((b.min + b.max) / 2);
+            const bandsContainer = document.getElementById('abxBandsList');
+            bandsContainer.innerHTML = abx.bands.map((b, idx) => {
+                const isCurrent = idx === activeBandIndex;
+                const sampleCrCl = b.max >= 999 ? Math.max(b.min + 10, 90) : Math.round((b.min + b.max) / 2);
                 return `
-                    <button type="button" onclick="setQuickCrCl(${targetCrCl})" class="w-full text-left p-2 rounded-lg border transition active:scale-[0.99] flex flex-col sm:flex-row sm:items-center justify-between gap-1 ${isCurrent ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
-                        <span class="text-[11px] font-extrabold ${isCurrent ? 'text-indigo-900' : 'text-slate-600'} shrink-0">${b.label}</span>
-                        <span class="text-xs font-bold ${b.contraindicated ? 'text-red-700' : (isCurrent ? 'text-indigo-950' : 'text-slate-800')}">${b.dose}</span>
+                    <button type="button" onclick="setQuickCrCl(${sampleCrCl})" class="w-full text-left p-1.5 rounded-md border transition flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 ${isCurrent ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
+                        <span class="text-[10px] font-extrabold ${isCurrent ? 'text-indigo-900' : 'text-slate-700'} shrink-0">
+                            ${isCurrent ? '<i class="fa-solid fa-circle-check text-indigo-600 mr-1"></i>' : ''}${b.label}
+                        </span>
+                        <span class="text-[11px] font-bold ${b.contraindicated ? 'text-red-700' : (isCurrent ? 'text-slate-950' : 'text-slate-700')}">
+                            ${b.dose}
+                        </span>
                     </button>
                 `;
             }).join('');
         }
 
         // ==========================================
-        // ASSISTENTE VOCALE (CON SUPPORT PER TURNI MENSILI)
+        // ASSISTENTE VOCALE & CHAT INTELLIGENTE
         // ==========================================
         let recognition = null;
-        let isRecording = false;
-        let synth = window.speechSynthesis;
+        let isListening = false;
+
+        function toggleAssistantModal(prefillQuery = '') {
+            const modal = document.getElementById('assistantModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden') && prefillQuery) {
+                processAssistantQuery(prefillQuery);
+            }
+        }
 
         function initSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return null;
-
             const rec = new SpeechRecognition();
             rec.lang = 'it-IT';
-            rec.continuous = false;
             rec.interimResults = false;
+            rec.maxAlternatives = 1;
 
             rec.onstart = () => {
-                isRecording = true;
+                isListening = true;
                 const btn = document.getElementById('micBtn');
                 btn.classList.remove('bg-hospital-600');
                 btn.classList.add('bg-red-600', 'pulse-ring');
                 document.getElementById('micStatus').textContent = 'In ascolto... parla ora';
-                document.getElementById('micStatus').classList.add('text-red-600');
             };
 
             rec.onresult = (event) => {
@@ -3523,50 +3543,39 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             };
 
             rec.onerror = () => {
-                stopRecordingUI();
-                document.getElementById('micStatus').textContent = 'Microfono non disponibile, scrivi sotto';
+                stopVoiceUI();
+                document.getElementById('micStatus').textContent = 'Microfono non disponibile. Usa la tastiera.';
             };
 
             rec.onend = () => {
-                stopRecordingUI();
+                stopVoiceUI();
             };
 
             return rec;
         }
 
-        function stopRecordingUI() {
-            isRecording = false;
+        function stopVoiceUI() {
+            isListening = false;
             const btn = document.getElementById('micBtn');
             btn.classList.add('bg-hospital-600');
             btn.classList.remove('bg-red-600', 'pulse-ring');
             document.getElementById('micStatus').textContent = 'Tocca il microfono per parlare';
-            document.getElementById('micStatus').classList.remove('text-red-600');
         }
 
         function toggleVoiceRecognition() {
-            if (!recognition) recognition = initSpeechRecognition();
             if (!recognition) {
-                showToast('Usa la barra di testo in basso.');
+                recognition = initSpeechRecognition();
+            }
+            if (!recognition) {
+                showToast('Riconoscimento vocale non supportato');
                 return;
             }
-            if (isRecording) recognition.stop();
-            else {
-                if (synth) synth.cancel();
-                recognition.start();
-            }
-        }
-
-        function toggleAssistantModal(prefillQuery = '') {
-            const modal = document.getElementById('assistantModal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                if (prefillQuery) {
-                    processAssistantQuery(prefillQuery);
-                } else {
-                    setTimeout(() => document.getElementById('assistantTextInput').focus(), 100);
-                }
-            } else if (synth) {
-                synth.cancel();
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {}
             }
         }
 
@@ -3579,249 +3588,141 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             processAssistantQuery(text);
         }
 
-        function speakText(text) {
-            if (!synth) return;
-            synth.cancel();
-            const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/&bull;/g, ',');
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'it-IT';
-            utterance.rate = 1.08;
-            synth.speak(utterance);
-        }
+        function processAssistantQuery(query) {
+            appendChatMessage(query, 'user');
+            const q = query.toLowerCase();
+            let replyHtml = '';
+            let speechText = '';
 
-        function normalizeVoiceText(str) {
-            return str.toLowerCase()
-                .replace(/\bu\.?\s*t\.?\s*i\.?\s*n\.?\b/g, 'utin')
-                .replace(/\bu\.?\s*t\.?\s*i\.?\s*c\.?\b/g, 'utic')
-                .replace(/\bu\.?\s*t\.?\s*i\.?\s*r\.?\b/g, 'utir')
-                .replace(/\bu\.?\s*s\.?\s*u\.?\b/g, 'usu')
-                .replace(/\bc\.?\s*g\.?\s*u\.?\b/g, 'cgu')
-                .replace(/\bn\.?\s*c\.?\s*h\.?\b/g, 'nch')
-                .replace(/\bo\.?\s*r\.?\s*l\.?\b/g, 'orl')
-                .replace(/\bm\.?\s*c\.?\s*a\.?\s*u\.?\b/g, 'mcau')
-                .replace(/\bp\.?\s*m\.?\s*a\.?\b/g, 'pma')
-                .replace(/\bs\.?\s*i\.?\s*t\.?\b/g, 'sit')
-                .replace(/\bs\.?\s*i\.?\s*m\.?\s*t\.?\b/g, 'sit')
-                .replace(/\bt\.?\s*i\.?\s*p\.?\s*o\.?\b/g, 'tipo')
-                .replace(/\br\.?\s*m\.?\s*n\.?\b/g, 'risonanza')
-                .replace(/\bt\.?\s*a\.?\s*c\.?\b/g, 'tac');
-        }
+            const isShiftQuery = ['turno', 'turni', 'lavoro', 'smonto', 'montante', 'notte', 'mattina', 'pomeriggio', 'ferie', 'riposo', 'chi è di guardia'].some(k => q.includes(k));
 
-        function queryShiftsAssistant(qRaw) {
-            const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
-            if (monthKeys.length === 0) {
-                return {
-                    html: `Non hai ancora caricato alcun foglio turni. Vai nella scheda <strong>Turni</strong> e tocca <strong>Carica Foto Turni AI</strong> per generare il calendario!`,
-                    speech: `Non hai ancora caricato alcun foglio turni. Vai nella scheda Turni e carica una foto per generare il calendario.`
-                };
-            }
+            if (isShiftQuery) {
+                const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
+                if (monthKeys.length === 0) {
+                    speechText = `Non hai ancora caricato nessun foglio turni. Vai nella scheda Turni e tocca Carica Foto Turni AI.`;
+                    replyHtml = `Non hai ancora caricato nessun foglio turni.<br><button onclick="toggleAssistantModal(); switchTab('turni');" class="mt-2 bg-hospital-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">Vai a Turni AI</button>`;
+                } else {
+                    const monthObj = shiftsDatabase[selectedShiftMonth] || shiftsDatabase[monthKeys[0]];
+                    let targetDoc = defaultShiftDoctor || selectedShiftDoctor;
+                    Object.keys(monthObj.doctors).forEach(d => {
+                        if (q.includes(d.toLowerCase())) targetDoc = d;
+                    });
 
-            const monthObj = shiftsDatabase[selectedShiftMonth];
-            if (!monthObj) return null;
-
-            const q = qRaw.toLowerCase();
-            const isShiftIntent = /\b(turno|turni|notte|notti|mattina|pomeriggio|guardia|ferie|riposo|smonto|libero|lavoro|lavora|chi c'?è|con chi|prossim[oa])\b/i.test(q);
-            const allDocs = Object.keys(monthObj.doctors);
-
-            let targetDoc = selectedShiftDoctor || defaultShiftDoctor || allDocs[0];
-            for (const docName of allDocs) {
-                if (q.includes(docName.toLowerCase())) {
-                    targetDoc = docName;
-                    break;
-                }
-            }
-
-            if (!isShiftIntent && !allDocs.some(d => q.includes(d.toLowerCase()))) {
-                return null;
-            }
-
-            const now = new Date();
-            const todayNum = Math.min(monthObj.daysCount, Math.max(1, now.getDate()));
-            const shiftsArr = monthObj.doctors[targetDoc] || [];
-            const nonWorking = new Set(['/', '-', 'F', 'FS', 'CS', 'H', '104', 'RB', 'RF', 'RC']);
-
-            if (q.includes('prossima notte')) {
-                for (let d = todayNum; d <= monthObj.daysCount; d++) {
-                    const c = parseShiftCell(shiftsArr[d - 1]);
-                    if (!c.isFullCircled && c.activeCode.toUpperCase().startsWith('N')) {
-                        return {
-                            html: `La prossima notte del <strong>Dott. ${targetDoc}</strong> (${monthObj.label}) è il <strong>giorno ${d}</strong> (${c.activeCode}).`,
-                            speech: `La prossima notte del Dottor ${targetDoc} è il giorno ${d}.`
-                        };
+                    const now = new Date();
+                    let targetDay = now.getDate();
+                    if (q.includes('domani')) {
+                        targetDay = now.getDate() + 1;
+                    } else if (q.includes('dopodomani')) {
+                        targetDay = now.getDate() + 2;
+                    } else {
+                        const dayMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
+                        if (dayMatch) targetDay = parseInt(dayMatch[1]);
                     }
-                }
-                return {
-                    html: `Nessuna notte trovata dal giorno ${todayNum} a fine mese per <strong>Dott. ${targetDoc}</strong>.`,
-                    speech: `Nessuna notte trovata dal giorno ${todayNum} a fine mese per il Dottor ${targetDoc}.`
-                };
-            }
+                    targetDay = Math.max(1, Math.min(monthObj.daysCount, targetDay));
 
-            if (q.includes('prossimo turno') || q.includes('quando lavoro')) {
-                for (let d = todayNum; d <= monthObj.daysCount; d++) {
-                    const c = parseShiftCell(shiftsArr[d - 1]);
-                    const u = c.activeCode.toUpperCase();
-                    if (!c.isFullCircled && !nonWorking.has(u)) {
-                        return {
-                            html: `Il prossimo turno attivo del <strong>Dott. ${targetDoc}</strong> è il <strong>giorno ${d} ${monthObj.label}</strong>: <strong>${describeParsedCell(c)}</strong> (${c.activeCode}).`,
-                            speech: `Il prossimo turno del Dottor ${targetDoc} è il giorno ${d}: ${describeParsedCell(c)}.`
-                        };
-                    }
-                }
-            }
+                    const cell = parseShiftCell((monthObj.doctors[targetDoc] || [])[targetDay - 1]);
+                    const desc = describeParsedCell(cell);
 
-            if (q.includes('notti') || q.includes('tutte le notti')) {
-                const nightDays = [];
-                for (let d = 1; d <= monthObj.daysCount; d++) {
-                    const c = parseShiftCell(shiftsArr[d - 1]);
-                    if (!c.isFullCircled && c.activeCode.toUpperCase().startsWith('N')) {
-                        nightDays.push(`${d} (${c.activeCode})`);
-                    }
-                }
-                return {
-                    html: nightDays.length > 0
-                        ? `Notti di <strong>Dott. ${targetDoc}</strong> in ${monthObj.label}: <strong>${nightDays.join(', ')}</strong>.`
-                        : `Nessuna notte in ${monthObj.label} per <strong>Dott. ${targetDoc}</strong>.`,
-                    speech: nightDays.length > 0
-                        ? `Le notti del Dottor ${targetDoc} in ${monthObj.label} sono i giorni ${nightDays.join(', ')}.`
-                        : `Nessuna notte trovata per il Dottor ${targetDoc}.`
-                };
-            }
-
-            let targetDay = null;
-            if (q.includes('oggi')) targetDay = todayNum;
-            else if (q.includes('domani')) targetDay = Math.min(monthObj.daysCount, todayNum + 1);
-            else if (q.includes('dopodomani')) targetDay = Math.min(monthObj.daysCount, todayNum + 2);
-            else {
-                const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
-                if (numMatch) targetDay = Math.min(monthObj.daysCount, parseInt(numMatch[1], 10));
-            }
-
-            if (targetDay !== null) {
-                const c = parseShiftCell(shiftsArr[targetDay - 1]);
-                const desc = describeParsedCell(c);
-
-                const colleagues = [];
-                Object.entries(monthObj.doctors).forEach(([docName, arr]) => {
-                    if (docName === targetDoc) return;
-                    const cc = parseShiftCell(arr[targetDay - 1]);
-                    if (!cc.isFullCircled && !nonWorking.has(cc.activeCode.toUpperCase())) {
-                        colleagues.push(`${docName} (${cc.activeCode})`);
-                    }
-                });
-
-                const collText = colleagues.length > 0
-                    ? `<br><span class="text-[11px] text-slate-600">In servizio lo stesso giorno: <strong>${colleagues.join(', ')}</strong></span>`
-                    : '';
-
-                return {
-                    html: `<strong>Giorno ${targetDay} ${monthObj.label}</strong> — Dott. <strong>${targetDoc}</strong>:<br>Turno: <strong>${desc}</strong> [${renderShiftCellHtml(c)}]${collText}`,
-                    speech: `Giorno ${targetDay} ${monthObj.label}, Dottor ${targetDoc}: ${desc}. ${colleagues.length > 0 ? 'In servizio anche ' + colleagues.join(', ') : ''}`
-                };
-            }
-
-            return null;
-        }
-
-        function processAssistantQuery(rawQuery) {
-            const chat = document.getElementById('chatMessages');
-            chat.innerHTML += `
-                <div class="flex justify-end">
-                    <div class="bg-hospital-700 text-white px-3 py-2 rounded-xl rounded-tr-none text-xs font-medium max-w-[85%] shadow-xs">
-                        ${rawQuery}
-                    </div>
-                </div>
-            `;
-
-            const shiftAnswer = queryShiftsAssistant(rawQuery);
-            if (shiftAnswer) {
-                chat.innerHTML += `
-                    <div class="flex items-start gap-2">
-                        <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                            <i class="fa-solid fa-calendar-days"></i>
-                        </div>
-                        <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-800 max-w-[90%] leading-relaxed">
-                            ${shiftAnswer.html}
-                        </div>
-                    </div>
-                `;
-                chat.scrollTop = chat.scrollHeight;
-                speakText(shiftAnswer.speech);
-                return;
-            }
-
-            const q = normalizeVoiceText(rawQuery);
-            let responseHTML = '';
-            let speechResponse = '';
-
-            const matchedDepts = departmentsData.filter(d => {
-                const nameMatch = d.name.toLowerCase().includes(q) || q.includes(d.name.toLowerCase().split(' ')[0]);
-                const tagMatch = d.matchTags.some(tag => q.includes(tag));
-                const kwMatch = d.keywords.split(' ').some(w => w.length > 3 && q.includes(w));
-                return nameMatch || tagMatch || kwMatch;
-            });
-
-            const matchedContacts = (window.contactsData || []).filter(c => {
-                const words = q.replace(/interno|numero|telefono|chiama|dove|trova|piano|edificio|reparto/g, '').trim().split(/\s+/);
-                return words.some(w => w.length > 2 && `${c.name} ${c.note}`.toLowerCase().includes(w));
-            });
-
-            if (q.includes('uscita') || q.includes('uscire') || q.includes('entrata') || q.includes('ingresso')) {
-                responseHTML = `<strong>Ingresso Principale / Uscita:</strong> Edificio F2 Piano 0 (Portineria) oppure Edificio F3 Piano 0. Collegati internamente.`;
-                speechResponse = `L'uscita principale si trova al Piano 0 dell'Edificio F2 oppure al Piano 0 dell'Edificio F3.`;
-            } else if (matchedDepts.length > 0 || matchedContacts.length > 0) {
-                const topDept = matchedDepts[0];
-                const topContacts = matchedContacts.slice(0, 3);
-
-                if (topDept) {
-                    responseHTML += `
-                        <div class="mb-1.5">
-                            <div class="font-bold text-hospital-800">${topDept.name}</div>
-                            <div class="text-xs font-extrabold text-slate-900 mt-0.5">Edificio ${topDept.building} &bull; ${topDept.floor}</div>
-                            <div class="text-[11px] text-slate-600 mt-0.5">${topDept.accessNote}</div>
+                    speechText = `Il ${targetDay} ${monthObj.label}, il dottor ${targetDoc} ha: ${desc}.`;
+                    replyHtml = `
+                        <div class="space-y-1.5">
+                            <div class="font-bold text-hospital-900">Dott. ${targetDoc} — Giorno ${targetDay} (${monthObj.label}):</div>
+                            <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
+                                <span class="font-mono font-extrabold text-sm text-hospital-900 mr-1.5">[${renderShiftCellHtml(cell)}]</span>
+                                <span class="font-bold text-slate-800">${desc}</span>
+                            </div>
+                            <button onclick="toggleAssistantModal(); switchTab('turni'); document.getElementById('shiftDoctorSelect').value='${targetDoc}'; onShiftDoctorChange(); document.getElementById('shiftQueryDayInput').value=${targetDay}; renderShiftCalendarAndStats();" class="bg-hospital-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">
+                                Apri in Turni Mensili
+                            </button>
                         </div>
                     `;
-                    speechResponse += `${topDept.name} si trova nell'Edificio ${topDept.building}, ${topDept.floor}. `;
-                }
-
-                if (topContacts.length > 0) {
-                    responseHTML += `<div class="border-t border-slate-100 pt-1.5 mt-1 space-y-1">`;
-                    topContacts.forEach(c => {
-                        const rawNum = c.phone.split('/')[0].trim();
-                        const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
-                        responseHTML += `
-                            <div class="flex items-center justify-between gap-2 bg-slate-50 px-2 py-1.5 rounded-lg">
-                                <span class="font-semibold text-slate-800 text-[11px] truncate">${c.name}</span>
-                                <a href="tel:${fullNum}" class="bg-emerald-600 text-white font-mono font-bold text-[11px] px-2 py-1 rounded shrink-0">
-                                    <i class="fa-solid fa-phone mr-1"></i>${c.phone}
-                                </a>
-                            </div>
-                        `;
-                    });
-                    responseHTML += `</div>`;
-                    speechResponse += `Interno ${topContacts[0].name}: ${topContacts[0].phone.split('/')[0]}.`;
                 }
             } else {
-                responseHTML = `Non ho trovato corrispondenze per "<strong>${rawQuery}</strong>". Prova a chiedere un turno, un reparto o un interno.`;
-                speechResponse = `Non ho trovato corrispondenze. Prova a ripetere il nome del reparto o del giorno.`;
+                const matchedDepts = departmentsData.filter(d =>
+                    d.name.toLowerCase().includes(q) ||
+                    d.keywords.toLowerCase().includes(q) ||
+                    q.split(' ').some(word => word.length > 3 && (d.name.toLowerCase().includes(word) || d.keywords.toLowerCase().includes(word)))
+                );
+
+                const matchedContacts = (window.contactsData || []).filter(c =>
+                    c.name.toLowerCase().includes(q) ||
+                    q.split(' ').some(word => word.length > 3 && c.name.toLowerCase().includes(word))
+                );
+
+                if (matchedDepts.length > 0 || matchedContacts.length > 0) {
+                    const topDept = matchedDepts[0];
+                    const topContacts = matchedContacts.slice(0, 3);
+
+                    if (topDept) {
+                        const edLabel = topDept.building === 'F2' || topDept.building === 'F3' ? `Edificio ${topDept.building}` : `Padiglione ${topDept.building}`;
+                        speechText = `${topDept.name} si trova in ${edLabel}, ${topDept.floor}. `;
+                        replyHtml += `
+                            <div class="mb-2">
+                                <div class="font-bold text-hospital-900">${topDept.name}</div>
+                                <div class="text-xs font-semibold text-hospital-700">${edLabel} • ${topDept.floor}</div>
+                                <div class="text-[11px] text-slate-600 mt-0.5">${topDept.accessNote}</div>
+                            </div>
+                        `;
+                    }
+
+                    if (topContacts.length > 0) {
+                        speechText += `Interno telefonico: ${topContacts[0].phone}.`;
+                        replyHtml += `<div class="space-y-1 border-t border-slate-100 pt-1.5">`;
+                        topContacts.forEach(c => {
+                            const rawNum = c.phone.split('/')[0].trim();
+                            const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
+                            replyHtml += `
+                                <div class="flex items-center justify-between bg-slate-50 px-2 py-1 rounded border border-slate-200 text-xs">
+                                    <span class="font-medium truncate pr-2">${c.name}</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <span class="font-mono font-bold text-hospital-800">${c.phone}</span>
+                                        <a href="tel:${fullNum}" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">Chiama</a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        replyHtml += `</div>`;
+                    }
+                } else {
+                    speechText = "Non ho trovato corrispondenze esatte. Prova a cercare con il nome del reparto o la sigla del turno.";
+                    replyHtml = `Non ho trovato corrispondenze esatte per <strong>"${query}"</strong>. Prova a chiedere: <em>"Qual è il mio turno domani?"</em>, <em>"Dov'è Neurologia?"</em> oppure <em>"Numero UTIC"</em>.`;
+                }
             }
 
-            chat.innerHTML += `
-                <div class="flex items-start gap-2">
+            appendChatMessage(replyHtml, 'bot');
+            speakText(speechText);
+        }
+
+        function appendChatMessage(content, sender) {
+            const container = document.getElementById('chatMessages');
+            const wrapper = document.createElement('div');
+            wrapper.className = sender === 'user' ? 'flex justify-end' : 'flex items-start gap-2';
+
+            if (sender === 'user') {
+                wrapper.innerHTML = `<div class="bg-hospital-700 text-white px-3 py-2 rounded-xl rounded-tr-none text-xs font-medium max-w-[82%] shadow-xs">${content}</div>`;
+            } else {
+                wrapper.innerHTML = `
                     <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
                         <i class="fa-solid fa-staff-snake"></i>
                     </div>
-                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-800 max-w-[90%]">
-                        ${responseHTML}
-                    </div>
-                </div>
-            `;
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-800 max-w-[88%]">${content}</div>
+                `;
+            }
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
 
-            chat.scrollTop = chat.scrollHeight;
-            speakText(speechResponse);
+        function speakText(text) {
+            if (!('speechSynthesis' in window) || !text) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'it-IT';
+            utterance.rate = 1.05;
+            window.speechSynthesis.speak(utterance);
         }
 
         // ==========================================
-        // MODALI RUBRICA CONDIVISA (AGGIUNTA, MODIFICA, ELIMINAZIONE)
+        // MODALI RUBRICA CONDIVISA & UTILITÀ
         // ==========================================
         function openAddContactModal() {
             document.getElementById('editContactDocId').value = '';
@@ -3832,27 +3733,83 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             document.getElementById('newContactNote').value = '';
             document.getElementById('newContactEmergency').checked = false;
             document.getElementById('deleteContactBtn').classList.add('hidden');
+            document.getElementById('saveContactSubmitBtn').textContent = 'Salva nel Cloud';
             document.getElementById('addContactModal').classList.remove('hidden');
         }
 
-        function openEditContactModal(docId, fallbackId) {
+        function openEditContactModal(docId, contactId) {
             const list = window.contactsData || [];
-            const contact = list.find(c => (docId && c.docId === docId) || String(c.id) === String(fallbackId));
+            const contact = list.find(c => (docId && c.docId === docId) || String(c.id) === String(contactId));
             if (!contact) return;
 
-            document.getElementById('editContactDocId').value = contact.docId || '';
-            document.getElementById('contactModalTitle').textContent = 'Modifica Interno / Collocazione';
+            document.getElementById('editContactDocId').value = contact.docId || `default_${contact.id}`;
+            document.getElementById('contactModalTitle').textContent = 'Modifica Interno (Condiviso)';
             document.getElementById('newContactName').value = contact.name || '';
             document.getElementById('newContactPhone').value = contact.phone || '';
             document.getElementById('newContactLoc').value = contact.location || '';
             document.getElementById('newContactNote').value = contact.note || '';
             document.getElementById('newContactEmergency').checked = Boolean(contact.emergency);
             document.getElementById('deleteContactBtn').classList.remove('hidden');
+            document.getElementById('saveContactSubmitBtn').textContent = 'Aggiorna per Tutti';
             document.getElementById('addContactModal').classList.remove('hidden');
         }
 
         function closeAddContactModal() {
             document.getElementById('addContactModal').classList.add('hidden');
+        }
+
+        async function saveContactForm(e) {
+            e.preventDefault();
+            const docId = document.getElementById('editContactDocId').value.trim();
+            const name = document.getElementById('newContactName').value.trim();
+            const phone = document.getElementById('newContactPhone').value.trim();
+            const location = document.getElementById('newContactLoc').value.trim();
+            const note = document.getElementById('newContactNote').value.trim();
+            const emergency = document.getElementById('newContactEmergency').checked;
+
+            const payload = { name, phone, location, note, emergency };
+
+            try {
+                if (window.cloudRubricaAPI) {
+                    await window.cloudRubricaAPI.saveContact(docId || null, payload);
+                    closeAddContactModal();
+                    showToast(docId ? 'Contatto aggiornato per tutti!' : 'Nuovo interno salvato nel cloud!');
+                } else {
+                    // Fallback locale se il cloud non è ancora pronto
+                    if (docId) {
+                        const idx = window.contactsData.findIndex(c => c.docId === docId || `default_${c.id}` === docId);
+                        if (idx !== -1) window.contactsData[idx] = { ...window.contactsData[idx], ...payload };
+                    } else {
+                        window.contactsData.unshift({ id: Date.now(), ...payload });
+                    }
+                    renderContacts();
+                    closeAddContactModal();
+                    showToast('Salvato localmente (connessione cloud in corso)');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Errore durante il salvataggio online');
+            }
+        }
+
+        async function deleteCurrentEditingContact() {
+            const docId = document.getElementById('editContactDocId').value.trim();
+            if (!docId) return;
+            try {
+                if (window.cloudRubricaAPI) {
+                    await window.cloudRubricaAPI.deleteContact(docId);
+                    closeAddContactModal();
+                    showToast('Contatto eliminato per tutti');
+                } else {
+                    window.contactsData = window.contactsData.filter(c => c.docId !== docId && `default_${c.id}` !== docId);
+                    renderContacts();
+                    closeAddContactModal();
+                    showToast('Contatto eliminato');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Errore durante l\'eliminazione');
+            }
         }
 
         function askResetRubrica() {
@@ -3865,187 +3822,139 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
         async function confirmResetRubrica() {
             closeConfirmResetModal();
-            if (window.cloudRubricaAPI) {
-                try {
+            try {
+                if (window.cloudRubricaAPI) {
                     await window.cloudRubricaAPI.resetDefaults();
-                    showToast('Rubrica condivisa ripristinata per tutti');
-                } catch (err) {
-                    showToast('Errore durante il ripristino nel cloud');
-                }
-            } else {
-                window.contactsData = [...defaultContactsData];
-                renderContacts();
-                showToast('Rubrica predefinita ripristinata');
-            }
-        }
-
-        async function saveContactForm(e) {
-            e.preventDefault();
-            const docId = document.getElementById('editContactDocId').value.trim();
-            const name = document.getElementById('newContactName').value.trim();
-            const phone = document.getElementById('newContactPhone').value.trim();
-            const location = document.getElementById('newContactLoc').value.trim() || 'Edificio Ospedaliero';
-            const note = document.getElementById('newContactNote').value.trim();
-            const emergency = document.getElementById('newContactEmergency').checked;
-
-            if (!name || !phone) return;
-
-            const submitBtn = document.getElementById('saveContactSubmitBtn');
-            const origText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Salvataggio...';
-
-            try {
-                if (window.cloudRubricaAPI) {
-                    const createdId = await window.cloudRubricaAPI.saveContact(docId, {
-                        name,
-                        phone,
-                        location,
-                        note,
-                        emergency
-                    });
-                    if (!docId && createdId) {
-                        favContactIds.add(String(createdId));
-                        persistFavorites();
-                    }
-                    showToast(docId ? `Modifica salvata per tutti gli utenti` : `Interno ${phone} pubblicato per tutti`);
+                    showToast('Rubrica condivisa ripristinata');
                 } else {
-                    const newId = Date.now();
-                    window.contactsData.unshift({ id: newId, name, phone, location, note, emergency });
+                    window.contactsData = [...defaultContactsData];
                     renderContacts();
-                    showToast('Salvato localmente (cloud non connesso)');
+                    showToast('Rubrica predefinita ripristinata');
                 }
-                closeAddContactModal();
-                switchTab('rubrica');
             } catch (err) {
-                showToast('Errore salvataggio sul database online');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = origText;
-            }
-        }
-
-        async function deleteCurrentEditingContact() {
-            const docId = document.getElementById('editContactDocId').value.trim();
-            if (!docId) return;
-            try {
-                if (window.cloudRubricaAPI) {
-                    await window.cloudRubricaAPI.deleteContact(docId);
-                    showToast('Contatto eliminato per tutti gli utenti');
-                }
-                closeAddContactModal();
-            } catch (err) {
-                showToast('Errore durante l\'eliminazione');
+                console.error(err);
+                showToast('Errore durante il ripristino');
             }
         }
 
         function clearSearch() {
-            document.getElementById('globalSearch').value = '';
+            const input = document.getElementById('globalSearch');
+            input.value = '';
             document.getElementById('clearSearchBtn').classList.add('hidden');
             renderContacts();
         }
 
         function copyText(text) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => showToast(`Copiato: ${text}`));
+                navigator.clipboard.writeText(text).then(() => showToast(`Copiato: ${text}`)).catch(() => fallbackCopy(text));
             } else {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                showToast(`Copiato: ${text}`);
+                fallbackCopy(text);
             }
         }
 
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast(`Copiato: ${text}`);
+        }
+
+        let toastTimer = null;
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').textContent = msg;
             toast.classList.remove('opacity-0');
-            setTimeout(() => toast.classList.add('opacity-0'), 2200);
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2200);
         }
 
         // ==========================================
-        // INIZIALIZZAZIONE PWA (MANIFEST, ICONE & INSTALLAZIONE)
+        // CONFIGURAZIONE PWA (MANIFEST, ICONE & INSTALLAZIONE)
         // ==========================================
-        let deferredPwaPrompt = null;
+        let deferredInstallPrompt = null;
 
-        function initPwaSetup() {
+        function setupPwaAssets() {
             const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <rect width="512" height="512" rx="112" fill="#082f49"/>
-                <rect x="44" y="210" width="424" height="175" rx="22" fill="#ffed00"/>
-                <path d="M 55,110 L 185,120 L 290,112 L 395,88 L 455,68 L 415,155 L 402,240 L 385,310 L 365,342 L 295,305 L 220,268 L 155,228 L 95,175 L 62,138 Z" fill="#d9291c" stroke="#ffffff" stroke-width="5"/>
-                <text x="256" y="290" font-family="Arial, sans-serif" font-weight="900" font-size="68" fill="#111111" text-anchor="middle">CANNIZZARO</text>
-                <text x="256" y="355" font-family="Arial, sans-serif" font-weight="800" font-size="40" fill="#111111" text-anchor="middle">STAFF NAVIGATOR</text>
+                <rect x="36" y="210" width="440" height="150" rx="22" fill="#ffed00"/>
+                <path d="M 60,115 L 190,126 L 285,118 L 380,95 L 440,76 L 405,150 L 392,225 L 380,295 L 362,325 L 302,295 L 235,260 L 170,225 L 105,175 L 65,142 Z" fill="#d9291c" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+                <g transform="translate(382, 185) rotate(-14)">
+                    <rect x="-32" y="-32" width="64" height="64" rx="8" fill="#ffffff" stroke="#d9291c" stroke-width="3"/>
+                    <text x="0" y="18" font-family="Arial, sans-serif" font-weight="900" font-size="48" fill="#0044aa" text-anchor="middle">H</text>
+                </g>
+                <text x="256" y="278" font-family="Arial, sans-serif" font-weight="900" font-size="56" fill="#111111" text-anchor="middle" letter-spacing="-1">CANNIZZARO</text>
+                <text x="256" y="336" font-family="Arial, sans-serif" font-weight="800" font-size="38" fill="#111111" text-anchor="middle">STAFF NAV</text>
+                <text x="256" y="428" font-family="Arial, sans-serif" font-weight="700" font-size="30" fill="#7dd3fc" text-anchor="middle">ANESTESIA &amp; RIANIMAZIONE</text>
             </svg>`;
-            const iconDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
 
-            const favLink = document.getElementById('pwa-favicon');
-            const appleLink = document.getElementById('pwa-apple-icon');
-            if (favLink) favLink.href = iconDataUrl;
-            if (appleLink) appleLink.href = iconDataUrl;
+            const iconDataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+            const faviconEl = document.getElementById('pwa-favicon');
+            const appleIconEl = document.getElementById('pwa-apple-icon');
+            if (faviconEl) faviconEl.href = iconDataUri;
+            if (appleIconEl) appleIconEl.href = iconDataUri;
 
             const manifestObj = {
-                name: 'Cannizzaro Staff Navigator',
-                short_name: 'Staff Nav',
-                description: 'Turni, Rubrica Interna, Infusioni ml/h e Antibiotici - Ospedale Cannizzaro',
-                start_url: window.location.href,
-                display: 'standalone',
-                background_color: '#f1f5f9',
-                theme_color: '#082f49',
-                orientation: 'portrait',
+                name: "Cannizzaro Staff Navigator",
+                short_name: "Staff Nav",
+                description: "Rubrica interna, turni AI, conversione infusione e percorsi Ospedale Cannizzaro Catania",
+                start_url: window.location.href.split('#')[0],
+                display: "standalone",
+                background_color: "#082f49",
+                theme_color: "#082f49",
+                orientation: "portrait",
                 icons: [
-                    { src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-                    { src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+                    { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+                    { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
                 ]
             };
 
-            try {
-                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                const manifestUrl = URL.createObjectURL(manifestBlob);
-                const manifestLink = document.getElementById('pwa-manifest');
-                if (manifestLink) manifestLink.href = manifestUrl;
-            } catch (e) {}
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPwaPrompt = e;
-                const installBtn = document.getElementById('installAppBtn');
-                if (installBtn) {
-                    installBtn.classList.remove('hidden');
-                    installBtn.classList.add('flex');
-                }
-            });
-
-            window.addEventListener('appinstalled', () => {
-                deferredPwaPrompt = null;
-                const installBtn = document.getElementById('installAppBtn');
-                if (installBtn) {
-                    installBtn.classList.add('hidden');
-                    installBtn.classList.remove('flex');
-                }
-                showToast('App installata nella schermata Home!');
-            });
+            const manifestDataUri = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+            const manifestEl = document.getElementById('pwa-manifest');
+            if (manifestEl) manifestEl.href = manifestDataUri;
         }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const installBtn = document.getElementById('installAppBtn');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+                installBtn.classList.add('flex');
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            const installBtn = document.getElementById('installAppBtn');
+            if (installBtn) {
+                installBtn.classList.add('hidden');
+                installBtn.classList.remove('flex');
+            }
+            showToast('App installata nella schermata Home!');
+        });
 
         async function triggerPwaInstall() {
-            if (!deferredPwaPrompt) {
-                showToast('Usa il menu del browser → "Aggiungi a schermata Home"');
-                return;
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredInstallPrompt = null;
             }
-            deferredPwaPrompt.prompt();
-            await deferredPwaPrompt.userChoice;
-            deferredPwaPrompt = null;
         }
 
-        // Inizializzazione al caricamento
+        // Inizializzazione all'avvio
         document.addEventListener('DOMContentLoaded', () => {
-            initPwaSetup();
+            setupPwaAssets();
             renderContacts();
             initShiftsSection();
             initInfusionCalculator();
-            initAntibioticsSection();
+            initAntibioticGuide();
+            switchTab('rubrica');
         });
     </script>
 </body>
