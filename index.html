@@ -70,15 +70,15 @@
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased pb-16 md:pb-6 select-none sm:select-auto">
+<body class="text-slate-800 antialiased pb-14 md:pb-4 select-none sm:select-auto">
 
     <!-- Header Compatto con Logo Ufficiale A.O.E. Cannizzaro -->
     <header class="bg-hospital-900 text-white sticky top-0 z-40 shadow-md">
-        <div class="max-w-lg md:max-w-4xl mx-auto px-2.5 py-1.5 flex items-center justify-between gap-1.5">
+        <div class="max-w-lg md:max-w-4xl mx-auto px-2 py-1 flex items-center justify-between gap-1.5">
             <!-- Blocco Logo + Titolo -->
-            <div class="flex items-center space-x-2 min-w-0">
+            <div class="flex items-center space-x-1.5 min-w-0">
                 <div class="bg-white px-1 py-0.5 rounded-md shadow-sm border border-white/30 shrink-0 flex items-center justify-center">
-                    <svg viewBox="0 0 210 135" class="h-7 sm:h-8 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
+                    <svg viewBox="0 0 210 135" class="h-6 sm:h-7 w-auto block" aria-label="Logo Ospedale Cannizzaro Catania">
                         <rect x="0" y="56" width="210" height="63" fill="#ffed00"/>
                         <path d="M 10,20 L 68,25 L 112,22 L 154,12 L 182,4 L 166,35 L 161,68 L 156,95 L 148,108 L 122,95 L 92,80 L 64,65 L 35,45 L 14,32 Z" fill="#d9291c" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
                         <path d="M 48,24 L 46,52 M 76,24 L 74,70 M 108,22 L 106,86 M 136,16 L 134,98 M 112,48 L 164,46 M 110,72 L 158,70" stroke="#ffffff" stroke-width="1.3" fill="none"/>
@@ -96,22 +96,22 @@
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <h1 class="font-extrabold text-sm sm:text-base leading-none tracking-tight truncate">Staff Navigator</h1>
-                    <p class="text-[10px] text-sky-200 font-medium truncate mt-0.5">Anestesia e Rianimazione</p>
+                    <h1 class="font-extrabold text-xs sm:text-sm leading-none tracking-tight truncate">Staff Navigator</h1>
+                    <p class="text-[9px] text-sky-200 font-medium truncate mt-0.5">Anestesia e Rianimazione</p>
                 </div>
             </div>
             
             <!-- Azioni Rapide Header -->
             <div class="flex items-center space-x-1 shrink-0">
-                <button id="installAppBtn" onclick="triggerPwaInstall()" class="hidden items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
+                <button id="installAppBtn" onclick="triggerPwaInstall()" class="hidden items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2 py-1 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-download"></i>
                     <span>Installa</span>
                 </button>
-                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
+                <button onclick="openEmergencyModal()" class="flex items-center space-x-1 bg-red-600 hover:bg-red-500 active:scale-95 transition text-white px-2 py-1 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-kit-medical"></i>
                     <span>Urgenze</span>
                 </button>
-                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg font-bold text-[11px] shadow-sm">
+                <button onclick="toggleAssistantModal()" class="flex items-center space-x-1 bg-sky-500 hover:bg-sky-400 active:scale-95 transition text-white px-2 py-1 rounded-lg font-bold text-[11px] shadow-sm">
                     <i class="fa-solid fa-microphone-lines"></i>
                     <span class="hidden sm:inline">Vocale</span>
                 </button>
@@ -119,44 +119,44 @@
         </div>
 
         <!-- Barra di Ricerca Compatta (visibile su Rubrica/Percorsi) -->
-        <div id="globalSearchWrapper" class="bg-hospital-950/50 px-2.5 py-1.5 border-t border-white/10">
+        <div id="globalSearchWrapper" class="bg-hospital-950/50 px-2 py-1 border-t border-white/10">
             <div class="max-w-lg md:max-w-4xl mx-auto relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input 
                     type="search" 
                     id="globalSearch" 
                     oninput="handleSearch()"
                     placeholder="Reparto, piano, edificio, ingresso o interno..." 
-                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-8 pr-8 py-1.5 rounded-lg text-sm sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
+                    class="w-full bg-white text-slate-900 placeholder-slate-400 pl-7 pr-7 py-1 rounded-md text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
                 >
-                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
-                    <i class="fa-solid fa-circle-xmark text-sm"></i>
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5">
+                    <i class="fa-solid fa-circle-xmark text-xs"></i>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Navigazione Tab Desktop -->
-    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[76px] z-30">
+    <nav class="hidden md:block bg-white border-b border-slate-200 sticky top-[62px] z-30">
         <div class="max-w-4xl mx-auto px-4 flex space-x-6">
-            <button onclick="switchTab('rubrica')" id="tab-desk-rubrica" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-hospital-600 text-hospital-700 flex items-center space-x-1.5">
+            <button onclick="switchTab('rubrica')" id="tab-desk-rubrica" class="tab-btn py-2 font-semibold text-xs border-b-2 border-hospital-600 text-hospital-700 flex items-center space-x-1.5">
                 <i class="fa-solid fa-address-book"></i>
                 <span>Rubrica Interna</span>
                 <span id="rubricaBadgeDesk" class="bg-hospital-50 text-hospital-700 font-bold text-[11px] px-1.5 py-0.2 rounded-full">0</span>
             </button>
-            <button onclick="switchTab('turni')" id="tab-desk-turni" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+            <button onclick="switchTab('turni')" id="tab-desk-turni" class="tab-btn py-2 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
                 <i class="fa-solid fa-calendar-days"></i>
                 <span>Turni Mensili</span>
             </button>
-            <button onclick="switchTab('infusioni')" id="tab-desk-infusioni" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+            <button onclick="switchTab('infusioni')" id="tab-desk-infusioni" class="tab-btn py-2 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
                 <i class="fa-solid fa-syringe"></i>
                 <span>ml/h ↔ Dose</span>
             </button>
-            <button onclick="switchTab('antibiotici')" id="tab-desk-antibiotici" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+            <button onclick="switchTab('antibiotici')" id="tab-desk-antibiotici" class="tab-btn py-2 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
                 <i class="fa-solid fa-capsules"></i>
                 <span>Antibiotici & Cl.Cr</span>
             </button>
-            <button onclick="switchTab('utilita')" id="tab-desk-utilita" class="tab-btn py-2.5 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
+            <button onclick="switchTab('utilita')" id="tab-desk-utilita" class="tab-btn py-2 font-semibold text-xs border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-1.5">
                 <i class="fa-solid fa-compass"></i>
                 <span>Percorsi & Mappa</span>
             </button>
@@ -164,60 +164,60 @@
     </nav>
 
     <!-- Navigazione Tab Mobile Inferiore (compatta ad alta densità) -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 grid grid-cols-5 items-center py-1 pb-safe shadow-[0_-3px_10px_rgba(0,0,0,0.05)]">
-        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-1 px-0.5 text-hospital-700 font-bold text-[10px] gap-0.5 active:scale-95 transition">
-            <i class="fa-solid fa-address-book text-sm"></i>
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 grid grid-cols-5 items-center py-0.5 pb-safe shadow-[0_-2px_8px_rgba(0,0,0,0.04)]">
+        <button onclick="switchTab('rubrica')" id="tab-mob-rubrica" class="flex flex-col items-center justify-center py-1 px-0.5 text-hospital-700 font-bold text-[10px] gap-0.2 active:scale-95 transition">
+            <i class="fa-solid fa-address-book text-xs"></i>
             <span>Rubrica</span>
         </button>
-        <button onclick="switchTab('turni')" id="tab-mob-turni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
-            <i class="fa-solid fa-calendar-days text-sm"></i>
+        <button onclick="switchTab('turni')" id="tab-mob-turni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.2 active:scale-95 transition">
+            <i class="fa-solid fa-calendar-days text-xs"></i>
             <span>Turni</span>
         </button>
-        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
-            <i class="fa-solid fa-syringe text-sm"></i>
+        <button onclick="switchTab('infusioni')" id="tab-mob-infusioni" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.2 active:scale-95 transition">
+            <i class="fa-solid fa-syringe text-xs"></i>
             <span>ml/h</span>
         </button>
-        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
-            <i class="fa-solid fa-capsules text-sm"></i>
+        <button onclick="switchTab('antibiotici')" id="tab-mob-antibiotici" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.2 active:scale-95 transition">
+            <i class="fa-solid fa-capsules text-xs"></i>
             <span>Antibiotici</span>
         </button>
-        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.5 active:scale-95 transition">
-            <i class="fa-solid fa-compass text-sm"></i>
+        <button onclick="switchTab('utilita')" id="tab-mob-utilita" class="flex flex-col items-center justify-center py-1 px-0.5 text-slate-400 font-medium text-[10px] gap-0.2 active:scale-95 transition">
+            <i class="fa-solid fa-compass text-xs"></i>
             <span>Percorsi</span>
         </button>
     </nav>
 
     <!-- Contenuto Principale Compatto -->
-    <main class="max-w-lg md:max-w-4xl mx-auto px-2 pt-2">
+    <main class="max-w-lg md:max-w-4xl mx-auto px-1.5 pt-1.5 space-y-1">
 
         <!-- SEZIONE 1: RUBRICA INTERNA -->
-        <section id="view-rubrica" class="space-y-1.5">
+        <section id="view-rubrica" class="space-y-1">
             <!-- Controlli Rapidi & Filtri Sede su singola barra scorrevole -->
-            <div class="flex items-center justify-between gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-xs">
                 <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
-                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
+                    <button onclick="toggleContactFavFilter()" id="btnFilterFavContacts" class="px-2 py-1 rounded-md text-[11px] font-bold border border-slate-200 text-slate-700 bg-slate-50 active:scale-95 transition flex items-center gap-1 shrink-0">
                         <i class="fa-solid fa-star text-amber-400"></i>
                         <span>Pref.</span>
                     </button>
-                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
+                    <button onclick="filterContactsByLocation('ALL')" class="loc-filter active bg-hospital-700 text-white px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="ALL">
                         Tutti
                     </button>
-                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
+                    <button onclick="filterContactsByLocation('F2')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F2">
                         F2
                     </button>
-                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
+                    <button onclick="filterContactsByLocation('F3')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="F3">
                         F3
                     </button>
-                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
+                    <button onclick="filterContactsByLocation('Edificio E')" class="loc-filter bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition active:scale-95" data-loc="Edificio E">
                         Ed. E
                     </button>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                     <span id="contactsCountLabel" class="hidden">Contatti</span>
-                    <button onclick="askResetRubrica()" class="p-1.5 rounded-lg text-xs text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition" title="Ripristina rubrica predefinita">
+                    <button onclick="askResetRubrica()" class="p-1 rounded-md text-xs text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition" title="Ripristina rubrica predefinita">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
-                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2.5 py-1.5 rounded-lg text-[11px] shadow-xs transition flex items-center gap-1">
+                    <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2 py-1 rounded-md text-[11px] shadow-xs transition flex items-center gap-1">
                         <i class="fa-solid fa-plus"></i>
                         <span>Nuovo</span>
                     </button>
@@ -225,155 +225,155 @@
             </div>
 
             <!-- Barra Stato Sincronizzazione Cloud Condivisa -->
-            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200/80 text-[10px]">
-                <div id="cloudSyncStatus" class="flex items-center gap-1.5 font-bold text-hospital-800">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse inline-block"></span>
-                    <span>Connessione al database condiviso in corso...</span>
+            <div class="flex items-center justify-between px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200/80 text-[10px]">
+                <div id="cloudSyncStatus" class="flex items-center gap-1 font-bold text-hospital-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block"></span>
+                    <span>Connessione al database cloud...</span>
                 </div>
-                <span class="text-slate-500 font-medium hidden sm:inline">Modifiche visibili a tutti i colleghi</span>
+                <span class="text-slate-500 font-medium hidden sm:inline">Sincronizzato</span>
             </div>
 
             <!-- Lista Contatti Compatta -->
-            <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+            <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1">
                 <!-- Popolato da JS -->
             </div>
 
-            <div id="emptyContacts" class="hidden text-center py-8 px-4 bg-white rounded-xl border border-slate-200">
-                <h3 class="font-bold text-slate-700 text-sm">Nessun contatto trovato</h3>
-                <p class="text-xs text-slate-500 mt-1">Modifica la ricerca o azzera i filtri.</p>
-                <button onclick="resetContactFilters()" class="mt-3 bg-hospital-50 text-hospital-700 font-bold px-3.5 py-1.5 rounded-lg text-xs active:scale-95 transition">
+            <div id="emptyContacts" class="hidden text-center py-6 px-4 bg-white rounded-lg border border-slate-200">
+                <h3 class="font-bold text-slate-700 text-xs">Nessun contatto trovato</h3>
+                <p class="text-[10px] text-slate-500 mt-0.5">Modifica la ricerca o azzera i filtri.</p>
+                <button onclick="resetContactFilters()" class="mt-2 bg-hospital-50 text-hospital-700 font-bold px-3 py-1 rounded-md text-[11px] active:scale-95 transition">
                     Mostra tutti
                 </button>
             </div>
         </section>
 
         <!-- SEZIONE 1B: TURNI MENSILI S.O.C. ANESTESIA RIANIMAZIONE E TIPO -->
-        <section id="view-turni" class="hidden space-y-2">
+        <section id="view-turni" class="hidden space-y-1">
             <input type="file" id="shiftPhotoInput" accept="image/*" class="hidden" onchange="handleShiftPhotoUpload(event)">
 
             <!-- STATO VUOTO INIZIALE (Quando non c'è ancora nessun foglio turni caricato) -->
-            <div id="emptyShiftsState" class="hidden bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-center space-y-3.5">
-                <div class="w-14 h-14 rounded-2xl bg-sky-100 text-hospital-800 flex items-center justify-center mx-auto text-2xl shadow-xs">
+            <div id="emptyShiftsState" class="hidden bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center space-y-2.5">
+                <div class="w-12 h-12 rounded-xl bg-sky-100 text-hospital-800 flex items-center justify-center mx-auto text-xl shadow-xs">
                     <i class="fa-solid fa-camera"></i>
                 </div>
-                <div class="space-y-1 max-w-sm mx-auto">
-                    <h2 class="font-extrabold text-base text-slate-900">Nessun foglio turni caricato</h2>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Carica o scatta la foto del foglio turni mensile: l'intelligenza artificiale genererà automaticamente il calendario, i turni dei colleghi e le correzioni a penna.
+                <div class="space-y-0.5 max-w-sm mx-auto">
+                    <h2 class="font-extrabold text-sm text-slate-900">Nessun foglio turni caricato</h2>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                        Carica o scatta la foto del foglio turni mensile: l'intelligenza artificiale genererà automaticamente il calendario, i turni e le correzioni a penna.
                     </p>
                 </div>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
-                    <button type="button" onclick="triggerShiftPhotoUpload()" class="w-full sm:w-auto bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2.5 px-5 rounded-xl font-extrabold text-xs shadow-sm flex items-center justify-center gap-2">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5 pt-0.5">
+                    <button type="button" onclick="triggerShiftPhotoUpload()" class="w-full sm:w-auto bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-2 px-4 rounded-lg font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-camera"></i>
                         <span>Carica Foto Turni AI</span>
                     </button>
-                    <div class="flex items-center gap-1.5 w-full sm:w-auto justify-center">
-                        <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtnEmpty" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2.5 px-3 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-1.5">
+                    <div class="flex items-center gap-1 w-full sm:w-auto justify-center">
+                        <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtnEmpty" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-lg font-bold text-xs border border-slate-200 flex items-center justify-center gap-1">
                             <i class="fa-solid fa-key text-amber-600"></i>
                             <span>Chiave AI</span>
                         </button>
-                        <button type="button" onclick="openShiftLegendModal()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2.5 px-3 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="openShiftLegendModal()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-lg font-bold text-xs border border-slate-200 flex items-center justify-center gap-1">
                             <i class="fa-solid fa-circle-info text-hospital-700"></i>
                             <span>Sigle</span>
                         </button>
                     </div>
                 </div>
                 <!-- Barra Avanzamento Analisi Foto AI (visibile anche dallo stato vuoto) -->
-                <div id="shiftScanProgressEmpty" class="hidden bg-sky-50 border border-sky-200 rounded-xl p-2.5 flex items-center justify-center gap-2.5 text-left">
-                    <div class="w-5 h-5 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
+                <div id="shiftScanProgressEmpty" class="hidden bg-sky-50 border border-sky-200 rounded-lg p-2 flex items-center justify-center gap-2 text-left">
+                    <div class="w-4 h-4 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
                     <div>
-                        <div class="text-xs font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
-                        <div class="text-[10px] text-sky-700">Estrazione tabella medici, turni e correzioni a penna</div>
+                        <div class="text-[11px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
+                        <div class="text-[9px] text-sky-700">Estrazione tabella medici, turni e correzioni a penna</div>
                     </div>
                 </div>
             </div>
 
             <!-- CONTENUTO TURNI POPOLATO (Visibile appena viene caricato almeno 1 mese) -->
-            <div id="populatedShiftsContent" class="hidden space-y-1.5">
+            <div id="populatedShiftsContent" class="hidden space-y-1">
                 <!-- Header Turni Compatto: Selettore Medico + Mese + Azioni -->
-                <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
-                    <div class="grid grid-cols-12 gap-1.5 items-end">
+                <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
+                    <div class="grid grid-cols-12 gap-1 items-end">
                         <div class="col-span-7 sm:col-span-8 min-w-0">
-                            <div class="flex items-center justify-between mb-0.5">
-                                <label class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600 truncate">
+                            <div class="flex items-center justify-between mb-0.2">
+                                <label class="text-[8px] font-extrabold uppercase tracking-wider text-hospital-600 truncate">
                                     <i class="fa-solid fa-user-doctor mr-0.5"></i>Medico (<span id="defaultDoctorBadge" class="text-emerald-700">Default: --</span>)
                                 </label>
                             </div>
                             <div class="flex items-center gap-1">
-                                <select id="shiftDoctorSelect" onchange="onShiftDoctorChange()" class="w-full h-8 bg-slate-50 border border-hospital-600/40 text-hospital-950 font-extrabold rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                                <select id="shiftDoctorSelect" onchange="onShiftDoctorChange()" class="w-full h-7 bg-slate-50 border border-hospital-600/40 text-hospital-950 font-extrabold rounded-md px-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-hospital-500">
                                     <!-- Popolato da JS -->
                                 </select>
-                                <button type="button" id="setDefaultDoctorBtn" onclick="setAsDefaultDoctor()" class="h-8 px-2 rounded-lg bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1" title="Imposta come predefinito">
+                                <button type="button" id="setDefaultDoctorBtn" onclick="setAsDefaultDoctor()" class="h-7 px-1.5 rounded-md bg-amber-50 hover:bg-amber-100 active:scale-95 transition border border-amber-300 text-amber-900 font-bold text-[10px] shrink-0 flex items-center gap-1" title="Imposta come predefinito">
                                     <i class="fa-solid fa-star text-amber-500"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="col-span-5 sm:col-span-4">
-                            <label class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-500 mb-0.5">Mese</label>
-                            <select id="shiftMonthSelect" onchange="onShiftMonthChange()" class="w-full h-8 bg-slate-50 border border-slate-300 text-slate-800 font-bold rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                            <label class="block text-[8px] font-extrabold uppercase tracking-wider text-slate-500 mb-0.2">Mese</label>
+                            <select id="shiftMonthSelect" onchange="onShiftMonthChange()" class="w-full h-7 bg-slate-50 border border-slate-300 text-slate-800 font-bold rounded-md px-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-hospital-500">
                                 <!-- Popolato da JS -->
                             </select>
                         </div>
                     </div>
 
                     <!-- Azioni Rapide Turni su una sola riga -->
-                    <div class="flex items-center gap-1 pt-1 border-t border-slate-100">
-                        <button type="button" onclick="triggerShiftPhotoUpload()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-1.5 px-2.5 rounded-lg font-bold text-[11px] shadow-xs flex items-center justify-center gap-1.5 truncate">
+                    <div class="flex items-center gap-1 pt-0.5 border-t border-slate-100">
+                        <button type="button" onclick="triggerShiftPhotoUpload()" class="flex-1 bg-gradient-to-r from-hospital-800 to-sky-700 hover:from-hospital-700 hover:to-sky-600 active:scale-[0.99] transition text-white py-1 px-2 rounded-md font-bold text-[11px] shadow-xs flex items-center justify-center gap-1 truncate">
                             <i class="fa-solid fa-camera"></i>
                             <span>Nuova Foto AI</span>
                         </button>
-                        <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Configura Chiave AI">
+                        <button type="button" onclick="openApiKeyModal()" id="apiKeySettingsBtn" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1 px-1.5 rounded-md font-bold text-[10px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Configura Chiave AI">
                             <i class="fa-solid fa-key text-amber-600"></i>
                             <span>Key</span>
                         </button>
-                        <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Legenda sigle turni">
+                        <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1 px-1.5 rounded-md font-bold text-[10px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Legenda sigle turni">
                             <i class="fa-solid fa-circle-info text-hospital-700"></i>
                             <span>Sigle</span>
                         </button>
-                        <button type="button" onclick="toggleAssistantModal('Qual è il mio prossimo turno?')" class="bg-sky-50 hover:bg-sky-100 active:scale-95 transition text-hospital-800 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-sky-200 flex items-center justify-center shrink-0" title="Chiedi a voce">
+                        <button type="button" onclick="toggleAssistantModal('Qual è il mio prossimo turno?')" class="bg-sky-50 hover:bg-sky-100 active:scale-95 transition text-hospital-800 py-1 px-1.5 rounded-md font-bold text-[10px] border border-sky-200 flex items-center justify-center shrink-0" title="Chiedi a voce">
                             <i class="fa-solid fa-microphone"></i>
                         </button>
-                        <button type="button" onclick="askDeleteCurrentShiftMonth()" class="bg-red-50 hover:bg-red-100 active:scale-95 transition text-red-700 py-1.5 px-2 rounded-lg font-bold text-[11px] border border-red-200 flex items-center justify-center shrink-0" title="Elimina mese corrente">
+                        <button type="button" onclick="askDeleteCurrentShiftMonth()" class="bg-red-50 hover:bg-red-100 active:scale-95 transition text-red-700 py-1 px-1.5 rounded-md font-bold text-[10px] border border-red-200 flex items-center justify-center shrink-0" title="Elimina mese corrente">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
 
                     <!-- Barra Avanzamento Analisi Foto AI -->
-                    <div id="shiftScanProgress" class="hidden bg-sky-50 border border-sky-200 rounded-lg p-1.5 flex items-center gap-2">
-                        <div class="w-4 h-4 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
+                    <div id="shiftScanProgress" class="hidden bg-sky-50 border border-sky-200 rounded-md p-1 flex items-center gap-1.5">
+                        <div class="w-3.5 h-3.5 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
                         <div class="min-w-0 flex-1">
-                            <div class="text-[11px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
+                            <div class="text-[10px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Box Interrogazione Rapida Compatto -->
-                <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-2 rounded-xl shadow-xs space-y-1.5">
-                    <div class="flex items-center justify-between gap-1.5">
+                <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-1.5 rounded-lg shadow-xs space-y-1">
+                    <div class="flex items-center justify-between gap-1">
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" onclick="stepShiftQueryDay(-1)" class="w-7 h-8 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
-                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            <button type="button" onclick="stepShiftQueryDay(-1)" class="w-6 h-7 rounded-md bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
                             </button>
-                            <div class="bg-white text-slate-900 rounded-lg px-2 py-0.5 text-center flex items-center gap-1">
-                                <span class="text-[9px] font-bold uppercase text-slate-400">Gg</span>
-                                <input type="number" id="shiftQueryDayInput" min="1" max="31" value="1" oninput="renderShiftQueryResult()" class="w-8 text-center font-extrabold text-sm text-hospital-950 focus:outline-none">
+                            <div class="bg-white text-slate-900 rounded-md px-1.5 py-0.2 text-center flex items-center gap-0.5">
+                                <span class="text-[8px] font-bold uppercase text-slate-400">Gg</span>
+                                <input type="number" id="shiftQueryDayInput" min="1" max="31" value="1" oninput="renderShiftQueryResult()" class="w-7 text-center font-extrabold text-xs text-hospital-950 focus:outline-none">
                             </div>
-                            <button type="button" onclick="stepShiftQueryDay(1)" class="w-7 h-8 rounded-lg bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
-                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            <button type="button" onclick="stepShiftQueryDay(1)" class="w-6 h-7 rounded-md bg-white/15 active:bg-white/30 text-white flex items-center justify-center border border-white/20">
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
                             </button>
-                            <button type="button" onclick="setShiftQueryToday()" class="px-2 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-[10px] font-bold">Oggi</button>
-                            <button type="button" onclick="setShiftQueryTomorrow()" class="px-2 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-[10px] font-bold">Domani</button>
+                            <button type="button" onclick="setShiftQueryToday()" class="px-1.5 py-1 rounded-md bg-white/15 hover:bg-white/25 active:scale-95 text-[9px] font-bold">Oggi</button>
+                            <button type="button" onclick="setShiftQueryTomorrow()" class="px-1.5 py-1 rounded-md bg-white/15 hover:bg-white/25 active:scale-95 text-[9px] font-bold">Domani</button>
                         </div>
-                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-sky-300 hidden sm:inline">Verifica Giorno</span>
+                        <span class="text-[8px] font-extrabold uppercase tracking-wider text-sky-300 hidden sm:inline">Verifica Giorno</span>
                     </div>
 
                     <!-- Risultato Giorno Selezionato -->
-                    <div id="shiftQueryResultBox" class="bg-white/10 border border-white/15 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2">
+                    <div id="shiftQueryResultBox" class="bg-white/10 border border-white/15 rounded-md px-2 py-1 flex items-center justify-between gap-1.5">
                         <!-- Popolato da JS -->
                     </div>
 
                     <!-- Colleghi di guardia nello stesso giorno -->
-                    <div id="shiftColleaguesOnDay" class="text-[10px] text-sky-100 bg-white/5 rounded-lg px-2 py-1 border border-white/10 leading-snug">
+                    <div id="shiftColleaguesOnDay" class="text-[9px] text-sky-100 bg-white/5 rounded-md px-1.5 py-0.5 border border-white/10 leading-snug">
                         <!-- Popolato da JS -->
                     </div>
                 </div>
@@ -384,16 +384,16 @@
                 </div>
 
                 <!-- Calendario Mensile Compatto -->
-                <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
                     <div class="flex items-center justify-between gap-1">
-                        <h3 class="font-extrabold text-xs text-slate-800">
+                        <h3 class="font-extrabold text-[11px] text-slate-800">
                             <i class="fa-solid fa-calendar-check text-hospital-600 mr-1"></i><span id="calendarMonthHeader">--</span>
                         </h3>
-                        <span class="text-[9px] text-slate-500 font-medium">1 tap seleziona • 2° tap modifica</span>
+                        <span class="text-[8px] text-slate-500 font-medium">1 tap seleziona • 2° tap modifica</span>
                     </div>
 
                     <!-- Intestazione Giorni Settimana -->
-                    <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] font-extrabold text-slate-400 uppercase">
+                    <div class="grid grid-cols-7 gap-0.5 text-center text-[9px] font-extrabold text-slate-400 uppercase">
                         <div>Lun</div>
                         <div>Mar</div>
                         <div>Mer</div>
@@ -409,85 +409,85 @@
                     </div>
 
                     <!-- Legenda rapida compatta -->
-                    <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100 text-[9px] text-slate-600 flex-wrap">
-                        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span>M</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>P</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-700 inline-block"></span>N</span>
-                        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-red-500 border-dashed inline-block"></span>Cambio / Correzione a penna</span>
+                    <div class="flex items-center justify-between gap-1 pt-0.5 border-t border-slate-100 text-[8px] text-slate-600 flex-wrap">
+                        <span class="inline-flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-sky-600 inline-block"></span>M</span>
+                        <span class="inline-flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>P</span>
+                        <span class="inline-flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-indigo-700 inline-block"></span>N</span>
+                        <span class="inline-flex items-center gap-0.5"><span class="w-2 h-2 rounded-full border border-red-500 border-dashed inline-block"></span>Cambio / Penna</span>
                     </div>
                 </div>
 
                 <!-- Riquadro Foto Originale Foglio Turni Caricata (Compatto) -->
-                <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+                <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
                     <div class="flex items-center justify-between gap-2">
-                        <h3 class="font-extrabold text-[11px] text-slate-800 flex items-center gap-1 truncate">
+                        <h3 class="font-extrabold text-[10px] text-slate-800 flex items-center gap-1 truncate">
                             <i class="fa-solid fa-image text-hospital-600"></i>
                             <span>Foto Originale (<span id="photoMonthLabel">--</span>)</span>
                         </h3>
-                        <button type="button" onclick="triggerShiftPhotoUpload()" class="px-2 py-1 rounded-md bg-hospital-50 hover:bg-hospital-100 text-hospital-800 border border-hospital-200 text-[10px] font-bold shrink-0">
+                        <button type="button" onclick="triggerShiftPhotoUpload()" class="px-1.5 py-0.5 rounded bg-hospital-50 hover:bg-hospital-100 text-hospital-800 border border-hospital-200 text-[9px] font-bold shrink-0">
                             <i class="fa-solid fa-upload mr-0.5"></i>Sostituisci
                         </button>
                     </div>
 
                     <div id="uploadedShiftPhotoContainer" class="hidden">
-                        <button type="button" onclick="openShiftPhotoLightbox()" class="w-full relative group overflow-hidden rounded-lg border border-slate-300 bg-slate-100 block">
-                            <img id="uploadedShiftPhotoImg" src="" alt="Foglio turni originale" class="w-full max-h-40 object-contain mx-auto">
-                            <div class="absolute bottom-1.5 right-1.5 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
+                        <button type="button" onclick="openShiftPhotoLightbox()" class="w-full relative group overflow-hidden rounded-md border border-slate-300 bg-slate-100 block">
+                            <img id="uploadedShiftPhotoImg" src="" alt="Foglio turni originale" class="w-full max-h-32 object-contain mx-auto">
+                            <div class="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow">
                                 <i class="fa-solid fa-magnifying-glass-plus"></i>
                                 <span>Ingrandisci</span>
                             </div>
                         </button>
                     </div>
 
-                    <div id="noShiftPhotoPlaceholder" class="bg-slate-50 border border-dashed border-slate-300 rounded-lg py-1.5 px-2.5 text-center">
-                        <p class="text-[10px] text-slate-500">Nessuna immagine salvata per questo mese.</p>
+                    <div id="noShiftPhotoPlaceholder" class="bg-slate-50 border border-dashed border-slate-300 rounded-md py-1 px-2 text-center">
+                        <p class="text-[9px] text-slate-500">Nessuna immagine salvata per questo mese.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- SEZIONE 2: CONVERTITORE BIDIREZIONALE ml/h ↔ DOSE -->
-        <section id="view-infusioni" class="hidden space-y-1.5">
+        <section id="view-infusioni" class="hidden space-y-1">
             <!-- Selezione Farmaco & Diluizione -->
-            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
-                <div class="flex items-center justify-between gap-1.5">
+            <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
+                <div class="flex items-center justify-between gap-1">
                     <div class="min-w-0 flex-1">
                         <input type="hidden" id="drugSelect" value="noradrenalina">
-                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                        <button type="button" onclick="openDrugPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-hospital-600/40 text-slate-900 rounded-lg px-2 py-1.5 flex items-center justify-between gap-2 text-left">
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-hospital-600">Farmaco</span>
-                                    <span id="finalConcBadge" class="text-[10px] font-mono font-extrabold bg-hospital-100 text-hospital-900 px-1.5 py-0.2 rounded">160 mcg/ml</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-[8px] font-extrabold uppercase tracking-wider text-hospital-600">Farmaco</span>
+                                    <span id="finalConcBadge" class="text-[9px] font-mono font-extrabold bg-hospital-100 text-hospital-900 px-1 py-0.2 rounded">160 mcg/ml</span>
                                 </div>
-                                <div id="selectedDrugTitle" class="font-extrabold text-xs sm:text-sm text-hospital-950 truncate leading-tight">Noradrenalina (2 mg/1 ml)</div>
+                                <div id="selectedDrugTitle" class="font-extrabold text-xs text-hospital-950 truncate leading-tight mt-0.2">Noradrenalina (2 mg/1 ml)</div>
                             </div>
-                            <div class="w-7 h-7 rounded-lg bg-hospital-700 text-white flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            <div class="w-6 h-6 rounded-md bg-hospital-700 text-white flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-chevron-down text-[9px]"></i>
                             </div>
                         </button>
                     </div>
-                    <button type="button" onclick="resetInfusionCalc()" class="h-10 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold text-xs border border-slate-200 shrink-0" title="Azzera valori">
+                    <button type="button" onclick="resetInfusionCalc()" class="h-9 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold text-xs border border-slate-200 shrink-0" title="Azzera valori">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
 
                 <!-- Diluizioni Rapide Preimpostate -->
-                <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                <div class="flex items-center justify-between gap-1 flex-wrap">
                     <div id="dilutionButtons" class="flex flex-wrap gap-1">
                         <!-- Popolato da JS -->
                     </div>
-                    <span id="drugPrepNote" class="text-[9px] font-semibold text-slate-500"></span>
+                    <span id="drugPrepNote" class="text-[8px] font-semibold text-slate-500"></span>
                 </div>
 
                 <!-- Parametri Diluizione Personalizzabili (Quantità / Unità / Volume) -->
-                <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100">
+                <div class="grid grid-cols-3 gap-1 pt-0.5 border-t border-slate-100">
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Quantità</label>
-                        <input type="number" step="any" min="0" id="concAmount" value="8" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[8px] font-bold uppercase text-slate-500 mb-0.2">Quantità</label>
+                        <input type="number" step="any" min="0" id="concAmount" value="8" oninput="recalcFromCurrentDirection()" class="w-full h-7 bg-slate-50 border border-slate-300 rounded-md px-1.5 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-1 focus:ring-hospital-500">
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Unità</label>
-                        <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[8px] font-bold uppercase text-slate-500 mb-0.2">Unità</label>
+                        <select id="concUnit" onchange="recalcFromCurrentDirection()" class="w-full h-7 bg-slate-50 border border-slate-300 rounded-md px-1 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-hospital-500">
                             <option value="mg">mg</option>
                             <option value="mcg">mcg</option>
                             <option value="g">g</option>
@@ -496,33 +496,33 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-0.5">Vol. (ml)</label>
-                        <input type="number" step="any" min="0.1" id="concVolume" value="50" oninput="recalcFromCurrentDirection()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                        <label class="block text-[8px] font-bold uppercase text-slate-500 mb-0.2">Vol. (ml)</label>
+                        <input type="number" step="any" min="0.1" id="concVolume" value="50" oninput="recalcFromCurrentDirection()" class="w-full h-7 bg-slate-50 border border-slate-300 rounded-md px-1.5 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-1 focus:ring-hospital-500">
                     </div>
                 </div>
 
                 <!-- Peso Paziente & Unità Dose -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 border-t border-slate-100">
-                    <div id="weightContainer" class="space-y-1 transition-opacity">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 pt-0.5 border-t border-slate-100">
+                    <div id="weightContainer" class="space-y-0.5 transition-opacity">
                         <div class="flex items-center justify-between">
-                            <label class="text-[9px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-weight-scale text-hospital-600 mr-0.5"></i>Peso (kg)</label>
+                            <label class="text-[8px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-weight-scale text-hospital-600 mr-0.5"></i>Peso (kg)</label>
                             <div class="flex gap-1">
-                                <button type="button" onclick="setQuickWeight(60)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">60</button>
-                                <button type="button" onclick="setQuickWeight(70)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">70</button>
-                                <button type="button" onclick="setQuickWeight(80)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">80</button>
-                                <button type="button" onclick="setQuickWeight(90)" class="px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">90</button>
+                                <button type="button" onclick="setQuickWeight(60)" class="px-1 py-0.2 text-[8px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">60</button>
+                                <button type="button" onclick="setQuickWeight(70)" class="px-1 py-0.2 text-[8px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">70</button>
+                                <button type="button" onclick="setQuickWeight(80)" class="px-1 py-0.2 text-[8px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">80</button>
+                                <button type="button" onclick="setQuickWeight(90)" class="px-1 py-0.2 text-[8px] font-bold bg-slate-100 hover:bg-slate-200 rounded text-slate-700">90</button>
                             </div>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="adjustWeight(-5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-[11px] text-slate-700 border border-slate-200">-5</button>
-                            <input type="number" step="0.5" min="1" max="300" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="flex-1 h-8 bg-white border border-slate-300 rounded-lg text-center font-extrabold text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-hospital-500">
-                            <button type="button" onclick="adjustWeight(5)" class="w-8 h-8 rounded-lg bg-slate-100 active:bg-slate-200 font-extrabold text-[11px] text-slate-700 border border-slate-200">+5</button>
+                            <button type="button" onclick="adjustWeight(-5)" class="w-7 h-7 rounded-md bg-slate-100 active:bg-slate-200 font-extrabold text-[10px] text-slate-700 border border-slate-200">-5</button>
+                            <input type="number" step="0.5" min="1" max="300" id="patientWeight" value="70" oninput="recalcFromCurrentDirection()" class="flex-1 h-7 bg-white border border-slate-300 rounded-md text-center font-extrabold text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-hospital-500">
+                            <button type="button" onclick="adjustWeight(5)" class="w-7 h-7 rounded-md bg-slate-100 active:bg-slate-200 font-extrabold text-[10px] text-slate-700 border border-slate-200">+5</button>
                         </div>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="block text-[9px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-gauge-high text-hospital-600 mr-0.5"></i>Unità Dose</label>
-                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-8 bg-slate-50 border border-slate-300 rounded-lg px-2 text-xs font-extrabold text-hospital-950 focus:outline-none focus:ring-2 focus:ring-hospital-500">
+                    <div class="space-y-0.5">
+                        <label class="block text-[8px] font-extrabold uppercase text-slate-700"><i class="fa-solid fa-gauge-high text-hospital-600 mr-0.5"></i>Unità Dose</label>
+                        <select id="doseRateUnit" onchange="onDoseUnitChange()" class="w-full h-7 bg-slate-50 border border-slate-300 rounded-md px-1.5 text-xs font-extrabold text-hospital-950 focus:outline-none focus:ring-1 focus:ring-hospital-500">
                             <!-- Popolato da JS -->
                         </select>
                     </div>
@@ -530,48 +530,48 @@
             </div>
 
             <!-- Box Calcolo Bidirezionale Affiancato su 2 colonne anche su mobile -->
-            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-2 rounded-xl shadow-xs space-y-1.5">
-                <div class="grid grid-cols-2 gap-1.5">
+            <div class="bg-gradient-to-br from-hospital-900 via-hospital-800 to-slate-900 text-white p-1.5 rounded-lg shadow-xs space-y-1">
+                <div class="grid grid-cols-2 gap-1">
                     <!-- Campo 1: Velocità Pompa (ml/h) -->
-                    <div class="bg-white/10 border border-white/20 rounded-lg p-2 space-y-1">
+                    <div class="bg-white/10 border border-white/20 rounded-md p-1.5 space-y-0.5">
                         <div class="flex items-center justify-between gap-1">
-                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-sky-300 truncate">Pompa</span>
-                            <span class="text-[9px] font-mono font-bold text-sky-200 bg-sky-500/20 px-1 py-0.2 rounded shrink-0">ml/h</span>
+                            <span class="text-[8px] font-extrabold uppercase tracking-wider text-sky-300 truncate">Pompa</span>
+                            <span class="text-[8px] font-mono font-bold text-sky-200 bg-sky-500/20 px-1 py-0.2 rounded shrink-0">ml/h</span>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="stepMlH(-1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">-</button>
-                            <input type="number" step="any" min="0" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full min-w-0 h-8 bg-white text-slate-900 placeholder-slate-400 rounded-md px-1 text-center font-mono font-extrabold text-base focus:outline-none focus:ring-2 focus:ring-sky-400">
-                            <button type="button" onclick="stepMlH(1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">+</button>
+                            <button type="button" onclick="stepMlH(-1)" class="w-6 h-7 rounded bg-white/15 active:bg-white/30 text-white font-extrabold text-xs flex items-center justify-center border border-white/20 shrink-0">-</button>
+                            <input type="number" step="any" min="0" inputmode="decimal" id="rateMlH" placeholder="0.0" oninput="calcFromMlH()" class="w-full min-w-0 h-7 bg-white text-slate-900 placeholder-slate-400 rounded px-1 text-center font-mono font-extrabold text-sm focus:outline-none focus:ring-1 focus:ring-sky-400">
+                            <button type="button" onclick="stepMlH(1)" class="w-6 h-7 rounded bg-white/15 active:bg-white/30 text-white font-extrabold text-xs flex items-center justify-center border border-white/20 shrink-0">+</button>
                         </div>
                     </div>
 
                     <!-- Campo 2: Dose Somministrata -->
-                    <div class="bg-white/10 border border-white/20 rounded-lg p-2 space-y-1">
+                    <div class="bg-white/10 border border-white/20 rounded-md p-1.5 space-y-0.5">
                         <div class="flex items-center justify-between gap-1">
-                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 truncate">Dose</span>
-                            <span id="doseUnitBadge" class="text-[9px] font-mono font-bold text-emerald-200 bg-emerald-500/20 px-1 py-0.2 rounded truncate">mcg/kg/min</span>
+                            <span class="text-[8px] font-extrabold uppercase tracking-wider text-emerald-300 truncate">Dose</span>
+                            <span id="doseUnitBadge" class="text-[8px] font-mono font-bold text-emerald-200 bg-emerald-500/20 px-1 py-0.2 rounded truncate">mcg/kg/min</span>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button type="button" onclick="stepDose(-1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">-</button>
-                            <input type="number" step="any" min="0" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full min-w-0 h-8 bg-white text-slate-900 placeholder-slate-400 rounded-md px-1 text-center font-mono font-extrabold text-base focus:outline-none focus:ring-2 focus:ring-emerald-400">
-                            <button type="button" onclick="stepDose(1)" class="w-7 h-8 rounded-md bg-white/15 active:bg-white/30 text-white font-extrabold text-sm flex items-center justify-center border border-white/20 shrink-0">+</button>
+                            <button type="button" onclick="stepDose(-1)" class="w-6 h-7 rounded bg-white/15 active:bg-white/30 text-white font-extrabold text-xs flex items-center justify-center border border-white/20 shrink-0">-</button>
+                            <input type="number" step="any" min="0" inputmode="decimal" id="doseValue" placeholder="0.00" oninput="calcFromDose()" class="w-full min-w-0 h-7 bg-white text-slate-900 placeholder-slate-400 rounded px-1 text-center font-mono font-extrabold text-sm focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                            <button type="button" onclick="stepDose(1)" class="w-6 h-7 rounded bg-white/15 active:bg-white/30 text-white font-extrabold text-xs flex items-center justify-center border border-white/20 shrink-0">+</button>
                         </div>
                         <span id="doseInputUnitLabel" class="sr-only">mcg/kg/min</span>
                     </div>
                 </div>
 
                 <!-- Range Terapeutico Indicativo -->
-                <div class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-sky-100 flex items-start gap-1.5 leading-snug">
-                    <i class="fa-solid fa-circle-info text-sky-300 mt-0.5 shrink-0"></i>
+                <div class="bg-white/5 border border-white/10 rounded-md px-1.5 py-0.5 text-[9px] text-sky-100 flex items-center gap-1 leading-snug">
+                    <i class="fa-solid fa-circle-info text-sky-300 shrink-0"></i>
                     <div><strong class="text-white">Range:</strong> <span id="drugRangeText">0,01 – 0,5 mcg/kg/min</span></div>
                 </div>
             </div>
 
             <!-- Tabella Rapida Velocità Standard -->
-            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+            <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-table-cells text-hospital-600 mr-1"></i>Rapide ml/h → Dose</h3>
-                    <span id="refTableSubtitle" class="text-[10px] font-semibold text-slate-500">Peso 70 kg</span>
+                    <h3 class="font-bold text-[10px] text-slate-800"><i class="fa-solid fa-table-cells text-hospital-600 mr-1"></i>Rapide ml/h → Dose</h3>
+                    <span id="refTableSubtitle" class="text-[9px] font-semibold text-slate-500">Peso 70 kg</span>
                 </div>
                 <div id="quickRefGrid" class="grid grid-cols-6 gap-1">
                     <!-- Popolato da JS -->
@@ -580,199 +580,199 @@
         </section>
 
         <!-- SEZIONE 2B: ANTIBIOTICI E AGGIUSTAMENTO POSOLOGICO INSUFFICIENZA RENALE -->
-        <section id="view-antibiotici" class="hidden space-y-1.5">
-            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
+        <section id="view-antibiotici" class="hidden space-y-1">
+            <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs space-y-1">
                 <div>
                     <input type="hidden" id="abxSelect" value="piperacillina_tazobactam">
-                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2 text-left">
+                    <button type="button" onclick="openAbxPickerModal()" class="w-full bg-slate-50 hover:bg-slate-100 active:scale-[0.99] transition border border-indigo-600/40 text-slate-900 rounded-lg px-2 py-1.5 flex items-center justify-between gap-2 text-left">
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-600">Antibiotico</span>
-                                <span id="selectedAbxCategory" class="text-[9px] text-indigo-700 font-medium truncate">Beta-lattamico / Inibitore beta-lattamasi</span>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[8px] font-extrabold uppercase tracking-wider text-indigo-600">Antibiotico</span>
+                                <span id="selectedAbxCategory" class="text-[8px] text-indigo-700 font-medium truncate">Beta-lattamico / Inibitore beta-lattamasi</span>
                             </div>
-                            <div id="selectedAbxTitle" class="font-extrabold text-xs sm:text-sm text-indigo-950 truncate leading-tight">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
+                            <div id="selectedAbxTitle" class="font-extrabold text-xs sm:text-sm text-indigo-950 truncate leading-tight mt-0.2">PIPERACILLINA / TAZOBACTAM (TAZOCIN)</div>
                         </div>
-                        <div class="w-7 h-7 rounded-lg bg-indigo-700 text-white flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        <div class="w-6 h-6 rounded-md bg-indigo-700 text-white flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-chevron-down text-[9px]"></i>
                         </div>
                     </button>
                 </div>
 
-                <div class="space-y-1.5 pt-1 border-t border-slate-100">
-                    <div class="flex items-center justify-between gap-1.5">
-                        <div class="flex items-center gap-1.5">
-                            <label class="text-[11px] font-bold text-slate-700 uppercase">Cl.Cr:</label>
-                            <div class="relative w-24">
-                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-8 bg-white border border-slate-300 rounded-lg pl-2 pr-9 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">ml/m</span>
+                <div class="space-y-1 pt-0.5 border-t border-slate-100">
+                    <div class="flex items-center justify-between gap-1">
+                        <div class="flex items-center gap-1">
+                            <label class="text-[10px] font-bold text-slate-700 uppercase">Cl.Cr:</label>
+                            <div class="relative w-20">
+                                <input type="number" step="1" min="0" max="200" inputmode="numeric" id="crclInput" value="90" oninput="onCrClChange()" class="w-full h-7 bg-white border border-slate-300 rounded-md pl-2 pr-7 text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] font-bold text-slate-400 pointer-events-none">ml/m</span>
                             </div>
                         </div>
-                        <span id="renalStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
+                        <span id="renalStatusBadge" class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 truncate">Normofunzione (&gt; 80)</span>
                     </div>
 
                     <div class="grid grid-cols-7 gap-1">
-                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">&gt;80</button>
-                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">60</button>
-                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">50</button>
-                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">40</button>
-                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">30</button>
-                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">15</button>
-                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1.5 text-[11px] font-extrabold rounded-md border transition active:scale-95">≤10</button>
+                        <button type="button" onclick="setQuickCrCl(90)" data-crcl="90" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">&gt;80</button>
+                        <button type="button" onclick="setQuickCrCl(60)" data-crcl="60" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">60</button>
+                        <button type="button" onclick="setQuickCrCl(50)" data-crcl="50" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">50</button>
+                        <button type="button" onclick="setQuickCrCl(40)" data-crcl="40" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">40</button>
+                        <button type="button" onclick="setQuickCrCl(30)" data-crcl="30" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">30</button>
+                        <button type="button" onclick="setQuickCrCl(15)" data-crcl="15" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">15</button>
+                        <button type="button" onclick="setQuickCrCl(10)" data-crcl="10" class="crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95">≤10</button>
                     </div>
                 </div>
 
-                <div id="amikacinaCalcBox" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-2 flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-[10px] font-extrabold text-amber-900">Cr × 9:</span>
-                        <div class="relative w-20">
-                            <input type="number" step="0.1" min="0.1" id="amikacinaCreatInput" value="2.0" oninput="updateAmikacinaInterval()" class="w-full h-7 bg-white border border-amber-300 rounded px-1.5 pr-7 text-xs font-extrabold text-slate-900">
-                            <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[8px] font-bold text-slate-400">mg/dl</span>
+                <div id="amikacinaCalcBox" class="hidden bg-amber-50 border border-amber-200 rounded-md p-1.5 flex items-center justify-between gap-1.5">
+                    <div class="flex items-center gap-1 shrink-0">
+                        <span class="text-[9px] font-extrabold text-amber-900">Cr × 9:</span>
+                        <div class="relative w-16">
+                            <input type="number" step="0.1" min="0.1" id="amikacinaCreatInput" value="2.0" oninput="updateAmikacinaInterval()" class="w-full h-6 bg-white border border-amber-300 rounded px-1 pr-6 text-[11px] font-extrabold text-slate-900">
+                            <span class="absolute right-1 top-1/2 -translate-y-1/2 text-[7px] font-bold text-slate-400">mg/dl</span>
                         </div>
                     </div>
-                    <div id="amikacinaResultBadge" class="text-[11px] font-extrabold text-amber-950 truncate">
+                    <div id="amikacinaResultBadge" class="text-[10px] font-extrabold text-amber-950 truncate">
                         Ogni 18 ore
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-indigo-950 via-hospital-900 to-slate-900 text-white p-2.5 rounded-xl shadow-sm space-y-2">
-                <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
+            <div class="bg-gradient-to-br from-indigo-950 via-hospital-900 to-slate-900 text-white p-2 rounded-lg shadow-xs space-y-1.5">
+                <div class="flex items-center justify-between gap-1.5 border-b border-white/10 pb-1">
                     <h3 id="abxResultDrugName" class="font-extrabold text-xs sm:text-sm leading-tight truncate">--</h3>
-                    <span id="abxResultBandLabel" class="bg-sky-500/25 border border-sky-400/40 text-sky-100 text-[10px] font-extrabold px-2 py-0.5 rounded shrink-0">
+                    <span id="abxResultBandLabel" class="bg-sky-500/25 border border-sky-400/40 text-sky-100 text-[9px] font-extrabold px-1.5 py-0.2 rounded shrink-0">
                         Cl.Cr &gt; 80 ml/min
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    <div id="abxLoadingDoseBox" class="bg-amber-500/15 border border-amber-400/40 rounded-lg p-2 flex items-start gap-2">
-                        <i class="fa-solid fa-bolt text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                    <div id="abxLoadingDoseBox" class="bg-amber-500/15 border border-amber-400/40 rounded-md p-1.5 flex items-start gap-1.5">
+                        <i class="fa-solid fa-bolt text-amber-300 text-[10px] mt-0.5 shrink-0"></i>
                         <div class="min-w-0">
-                            <div class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300">Dose di Carico</div>
-                            <div id="abxLoadingDoseText" class="text-[11px] font-bold text-white mt-0.5 leading-snug">--</div>
+                            <div class="text-[8px] font-extrabold uppercase tracking-wider text-amber-300">Dose di Carico</div>
+                            <div id="abxLoadingDoseText" class="text-[10px] font-bold text-white mt-0.2 leading-snug">--</div>
                         </div>
                     </div>
 
-                    <div id="abxMaintenanceBox" class="bg-white/10 border border-white/15 rounded-lg p-2 flex items-start gap-2">
-                        <i class="fa-solid fa-droplet text-emerald-300 text-xs mt-0.5 shrink-0"></i>
+                    <div id="abxMaintenanceBox" class="bg-white/10 border border-white/15 rounded-md p-1.5 flex items-start gap-1.5">
+                        <i class="fa-solid fa-droplet text-emerald-300 text-[10px] mt-0.5 shrink-0"></i>
                         <div class="min-w-0 flex-1">
-                            <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300">Mantenimento (Cl.Cr attuale)</div>
-                            <div id="abxMaintenanceText" class="text-xs sm:text-sm font-extrabold text-white mt-0.5 leading-snug">--</div>
+                            <div class="text-[8px] font-extrabold uppercase tracking-wider text-emerald-300">Mantenimento (Cl.Cr attuale)</div>
+                            <div id="abxMaintenanceText" class="text-xs font-extrabold text-white mt-0.2 leading-snug">--</div>
                         </div>
                     </div>
                 </div>
 
-                <div id="abxClinicalNoteBox" class="hidden text-[10px] text-sky-200 bg-white/5 rounded-md px-2 py-1 border border-white/10 leading-snug">
+                <div id="abxClinicalNoteBox" class="hidden text-[9px] text-sky-200 bg-white/5 rounded px-1.5 py-0.5 border border-white/10 leading-snug">
                     <i class="fa-solid fa-circle-info text-sky-300 mr-1"></i>
                     <span id="abxClinicalNoteText"></span>
                 </div>
             </div>
 
-            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between mb-1.5">
-                    <h3 class="font-bold text-[11px] text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i>Tutte le Fasce Cl. Creatinina</h3>
-                    <span class="text-[9px] text-slate-500">Tocca per selezionare</span>
+            <div class="bg-white p-1.5 rounded-lg border border-slate-200 shadow-xs">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="font-bold text-[10px] text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-1"></i>Tutte le Fasce Cl. Creatinina</h3>
+                    <span class="text-[8px] text-slate-500">Tocca per selezionare</span>
                 </div>
-                <div id="abxBandsList" class="space-y-1">
+                <div id="abxBandsList" class="space-y-0.5">
                     <!-- Popolato da JS -->
                 </div>
             </div>
         </section>
 
         <!-- SEZIONE 3: COME ARRIVARE, ACCESSI E PERCORSI INTERNI -->
-        <section id="view-utilita" class="hidden space-y-2.5">
-            <div class="bg-gradient-to-r from-hospital-900 to-hospital-800 text-white p-3.5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <section id="view-utilita" class="hidden space-y-1.5">
+            <div class="bg-gradient-to-r from-hospital-900 to-hospital-800 text-white p-2.5 rounded-lg shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                    <div class="flex items-center gap-1.5 text-sky-300 text-[11px] font-bold uppercase tracking-wider">
+                    <div class="flex items-center gap-1 text-sky-300 text-[10px] font-bold uppercase tracking-wider">
                         <i class="fa-solid fa-location-dot"></i>
                         <span>Sede Principale Presidio Ospedaliero</span>
                     </div>
-                    <h2 class="font-extrabold text-sm sm:text-base mt-0.5">Via Messina, 829 — 95126 Catania (CT)</h2>
-                    <p class="text-[11px] text-sky-100 mt-0.5">Ingresso centrale Viale Enzo Longo / Via Messina • CUP 800 837 621 • Centralino 095 726 1111</p>
+                    <h2 class="font-extrabold text-xs sm:text-sm mt-0.2">Via Messina, 829 — 95126 Catania (CT)</h2>
+                    <p class="text-[10px] text-sky-100 mt-0.2">Ingresso centrale Viale Enzo Longo / Via Messina • CUP 800 837 621 • Centralino 095 726 1111</p>
                 </div>
-                <div class="flex flex-wrap gap-1.5 shrink-0">
-                    <a href="tel:800837621" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-phone text-[10px]"></i>
+                <div class="flex flex-wrap gap-1 shrink-0">
+                    <a href="tel:800837621" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-phone text-[9px]"></i>
                         <span>CUP: 800 837 621</span>
                     </a>
-                    <a href="tel:0957261111" class="bg-white/15 hover:bg-white/25 active:scale-95 transition text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-headset text-[10px]"></i>
+                    <a href="tel:0957261111" class="bg-white/15 hover:bg-white/25 active:scale-95 transition text-white px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-headset text-[9px]"></i>
                         <span>095 726 1111</span>
                     </a>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex items-center gap-2.5 mb-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0 text-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0 text-xs">
                             <i class="fa-solid fa-bus"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Come Arrivare (Mezzi Pubblici)</h3>
-                            <p class="text-[10px] text-slate-500">Linee AMTS, Metropolitana e Stazione FS</p>
+                            <h3 class="font-bold text-slate-800 text-xs leading-tight">Come Arrivare (Mezzi Pubblici)</h3>
+                            <p class="text-[9px] text-slate-500">Linee AMTS, Metropolitana e Stazione FS</p>
                         </div>
                     </div>
-                    <ul class="space-y-2 text-xs text-slate-600">
-                        <li class="flex items-start gap-2">
-                            <span class="bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BRT5</span>
-                            <span><strong>Linea Veloce AMTS BRT5:</strong> collega direttamente la <strong>Stazione Centrale</strong> e il centro città (P.le Sanzio / V.le Ulisse) con capolinea interno <strong>Ospedale Cannizzaro</strong>.</span>
+                    <ul class="space-y-1.5 text-[11px] text-slate-600">
+                        <li class="flex items-start gap-1.5">
+                            <span class="bg-emerald-700 text-white text-[9px] font-bold px-1 py-0.2 rounded shrink-0 mt-0.2">BRT5</span>
+                            <span><strong>Linea Veloce AMTS BRT5:</strong> collega direttamente la <strong>Stazione Centrale</strong> e il centro città con capolinea interno <strong>Ospedale Cannizzaro</strong>.</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <span class="bg-sky-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">BUS</span>
-                            <span><strong>Altre linee AMTS:</strong> <strong>948</strong> (P.zza Repubblica - Cannizzaro), <strong>247</strong> (P.le Sanzio - V.le Olimpiadi), <strong>434</strong> (Stazione Centrale - Aci Castello/Aci Trezza), <strong>241</strong> e <strong>935</strong> (fermata Scogliera / Via Messina).</span>
+                        <li class="flex items-start gap-1.5">
+                            <span class="bg-sky-700 text-white text-[9px] font-bold px-1 py-0.2 rounded shrink-0 mt-0.2">BUS</span>
+                            <span><strong>Altre linee AMTS:</strong> <strong>948</strong>, <strong>247</strong>, <strong>434</strong>, <strong>241</strong> e <strong>935</strong> (fermata Scogliera / Via Messina).</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <span class="bg-indigo-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5">TRENO</span>
-                            <span><strong>Passante Ferroviario FS:</strong> fermata <strong>Catania Picanello</strong> (circa 900m / 12 min a piedi) oppure Stazione Centrale + bus BRT5.</span>
+                        <li class="flex items-start gap-1.5">
+                            <span class="bg-indigo-700 text-white text-[9px] font-bold px-1 py-0.2 rounded shrink-0 mt-0.2">TRENO</span>
+                            <span><strong>Passante Ferroviario FS:</strong> fermata <strong>Catania Picanello</strong> (circa 900m / 12 min a piedi).</span>
                         </li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex items-center gap-2.5 mb-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-7 h-7 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0 text-xs">
                             <i class="fa-solid fa-square-parking"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Accessi, Auto e Parcheggi</h3>
-                            <p class="text-[10px] text-slate-500">Viabilità interna e sosta utenti/personale</p>
+                            <h3 class="font-bold text-slate-800 text-xs leading-tight">Accessi, Auto e Parcheggi</h3>
+                            <p class="text-[9px] text-slate-500">Viabilità interna e sosta utenti/personale</p>
                         </div>
                     </div>
-                    <ul class="space-y-2 text-xs text-slate-600">
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-road text-blue-600 mt-0.5 shrink-0"></i>
-                            <span><strong>In Auto (Tangenziale / A18):</strong> uscita <strong>Catania Nord / San Gregorio - Canalicchio</strong>, proseguire verso Ognina / Via Messina 829 (rotatoria Viale Enzo Longo).</span>
+                    <ul class="space-y-1.5 text-[11px] text-slate-600">
+                        <li class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-road text-blue-600 mt-0.2 shrink-0"></i>
+                            <span><strong>In Auto (Tangenziale / A18):</strong> uscita <strong>Catania Nord / San Gregorio - Canalicchio</strong>, proseguire verso Via Messina 829.</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-car text-blue-600 mt-0.5 shrink-0"></i>
-                            <span><strong>Parcheggi & Sosta:</strong> disponibile <strong>Parcheggio Multipiano</strong> interno e stalli esterni nell'<strong>Area C</strong> (pagamento anche tramite app EasyPark).</span>
+                        <li class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-car text-blue-600 mt-0.2 shrink-0"></i>
+                            <span><strong>Parcheggi & Sosta:</strong> disponibile <strong>Parcheggio Multipiano</strong> interno e stalli nell'<strong>Area C</strong>.</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-truck-medical text-red-600 mt-0.5 shrink-0"></i>
-                            <span><strong>Accesso Emergenza:</strong> rampa dedicata <strong>Pronto Soccorso / Camera Calda</strong> all'Edificio F1 (Piano Terra) ed Elidromo aziendale.</span>
+                        <li class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-truck-medical text-red-600 mt-0.2 shrink-0"></i>
+                            <span><strong>Accesso Emergenza:</strong> rampa dedicata <strong>Pronto Soccorso</strong> Edificio F1 (Piano Terra).</span>
                         </li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
-                    <div class="flex items-center gap-2.5 mb-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold shrink-0 text-sm">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs md:col-span-2">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-7 h-7 rounded-md bg-sky-100 text-sky-700 flex items-center justify-center font-bold shrink-0 text-xs">
                             <i class="fa-solid fa-map-location-dot"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm leading-tight">Mappa e Ubicazione Edifici Ospedalieri (Tabella Ufficiale)</h3>
-                            <p class="text-[10px] text-slate-500">Riepilogo alfabetico delle lettere degli edifici</p>
+                            <h3 class="font-bold text-slate-800 text-xs leading-tight">Mappa e Ubicazione Edifici Ospedalieri (Tabella Ufficiale)</h3>
+                            <p class="text-[9px] text-slate-500">Riepilogo alfabetico delle lettere degli edifici</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-700">
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F1:</strong> Pronto Soccorso, OBI, Emergenza</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F2:</strong> Monoblocco (Chirurgia, Urologia, Nefrologia)</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. F3:</strong> Torre Diagnostica (Ustioni, Pediatria, Lab)</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. E:</strong> Materno-Infantile, Ostetricia, Ortopedia</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. L (L1-L7):</strong> Medicina, Oncologia, Pneumologia, Infettive</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. S:</strong> Unità Spinale (USU) & UTIR</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. Q:</strong> Anatomia Patologica, Diabetologia</div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><strong>Ed. R, G, M1, N2:</strong> Radioterapia, Riabilitazione, Direzione, 118</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] text-slate-700">
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. F1:</strong> Pronto Soccorso, OBI</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. F2:</strong> Monoblocco (Chirurgia, Urologia)</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. F3:</strong> Torre Diagnostica (Ustioni, Lab)</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. E:</strong> Materno-Infantile, Ortopedia</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. L (L1-L7):</strong> Medicina, Oncologia</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. S:</strong> Unità Spinale (USU) & UTIR</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. Q:</strong> Anatomia Patologica</div>
+                        <div class="bg-slate-50 p-1.5 rounded border border-slate-100"><strong>Ed. R, G, M:</strong> Radioterapia, Direzione</div>
                     </div>
                 </div>
             </div>
