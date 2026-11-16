@@ -215,8 +215,8 @@
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                     <span id="contactsCountLabel" class="text-[10px] font-bold text-slate-500 px-0.5">0</span>
-                    <button type="button" id="cloudSyncPill" onclick="openCloudDiagModal()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 active:scale-95 transition flex items-center gap-1 shrink-0" title="Verifica connessione Firebase">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse inline-block"></span>
+                    <button type="button" id="cloudSyncPill" onclick="openCloudDiagModal()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-hospital-800 border border-sky-200 active:scale-95 transition flex items-center gap-1 shrink-0" title="Verifica connessione Firebase">
+                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping inline-block"></span>
                         <span>Sync...</span>
                     </button>
                     <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2 py-0.5 rounded text-[11px] shadow-xs transition flex items-center gap-1">
@@ -694,7 +694,11 @@
                             <i class="fa-solid fa-circle-xmark text-xs"></i>
                         </button>
                     </div>
-                    <button type="button" onclick="openProtocolEditorModal()" class="h-8 px-2.5 rounded-md bg-hospital-700 hover:bg-hospital-600 active:scale-95 transition text-white font-bold text-[11px] shadow-xs flex items-center gap-1 shrink-0">
+                    <button type="button" id="protoLockBtn" onclick="toggleProtoAdmin()" class="h-8 px-2 rounded-md bg-slate-100 text-slate-500 border border-slate-200 active:scale-95 transition font-bold text-[11px] flex items-center gap-1 shrink-0" title="Gestione protocolli (PIN)" aria-label="Gestione protocolli">
+                        <i class="fa-solid fa-lock text-[11px]"></i>
+                        <span id="protoLockLabel" class="hidden">Gestione</span>
+                    </button>
+                    <button type="button" id="protoNewBtn" onclick="openProtocolEditorModal()" class="hidden h-8 px-2.5 rounded-md bg-hospital-700 hover:bg-hospital-600 active:scale-95 transition text-white font-bold text-[11px] shadow-xs flex items-center gap-1 shrink-0">
                         <i class="fa-solid fa-plus text-[10px]"></i>
                         <span>Nuovo</span>
                     </button>
@@ -751,7 +755,7 @@
 
             <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-1.5">
-                    <button type="button" id="viewerEditProtocolBtn" onclick="editCurrentlyViewedProtocol()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1">
+                    <button type="button" id="viewerEditProtocolBtn" onclick="editCurrentlyViewedProtocol()" class="hidden px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1">
                         <i class="fa-solid fa-pen text-[10px]"></i>
                         <span>Modifica</span>
                     </button>
@@ -819,6 +823,45 @@
                     <button type="submit" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-lg shadow">Salva Protocollo</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PIN GESTIONE PROTOCOLLI -->
+    <div id="protoPinModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-[60] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-300"></i>
+                    <h3 class="font-bold text-sm">Gestione protocolli</h3>
+                </div>
+                <button type="button" onclick="closeProtoPinModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center" aria-label="Chiudi">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3">
+                <p class="text-[11px] text-slate-600 text-center">Inserisci il PIN a 4 cifre per modificare, eliminare o aggiungere protocolli.</p>
+                <div id="protoPinDots" class="flex justify-center gap-3 py-1">
+                    <span class="w-3 h-3 rounded-full border-2 border-slate-300"></span>
+                    <span class="w-3 h-3 rounded-full border-2 border-slate-300"></span>
+                    <span class="w-3 h-3 rounded-full border-2 border-slate-300"></span>
+                    <span class="w-3 h-3 rounded-full border-2 border-slate-300"></span>
+                </div>
+                <p id="protoPinError" class="hidden text-center text-[11px] font-bold text-red-600"></p>
+                <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="protoPinKey('1')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">1</button>
+                        <button type="button" onclick="protoPinKey('2')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">2</button>
+                        <button type="button" onclick="protoPinKey('3')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">3</button>
+                        <button type="button" onclick="protoPinKey('4')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">4</button>
+                        <button type="button" onclick="protoPinKey('5')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">5</button>
+                        <button type="button" onclick="protoPinKey('6')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">6</button>
+                        <button type="button" onclick="protoPinKey('7')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">7</button>
+                        <button type="button" onclick="protoPinKey('8')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">8</button>
+                        <button type="button" onclick="protoPinKey('9')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">9</button>
+                        <span></span>
+                        <button type="button" onclick="protoPinKey('0')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition font-bold text-lg text-slate-800">0</button>
+                        <button type="button" onclick="protoPinKey('del')" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-600" aria-label="Cancella"><i class="fa-solid fa-delete-left"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1259,6 +1302,7 @@
         let currentUser = null;
         let isSeedingDefaults = false;
         let unsubscribeContacts = null;
+        let unsubscribeProtocols = null;
 
         function getHumanFirebaseHint(err) {
             const code = (err?.code || err?.message || '').toLowerCase();
@@ -1296,18 +1340,37 @@
             const pill = document.getElementById('cloudSyncPill');
             if (!pill) return;
 
-            if (state === 'online') {
-                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 active:scale-95 transition flex items-center gap-1 shrink-0';
-                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span><span>Sync</span>`;
-                pill.title = text;
-            } else if (state === 'syncing') {
-                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-hospital-800 border border-sky-200 active:scale-95 transition flex items-center gap-1 shrink-0';
+            const base = 'rounded active:scale-95 transition flex items-center gap-1 shrink-0 ';
+            const prev = window.__lastSyncState;
+            window.__lastSyncState = state;
+            clearTimeout(window.__syncFlashTimer);
+            pill.title = text;
+
+            // Solo un pallino discreto, senza testo, quando tutto è a posto o in attesa
+            const showDot = (color, label) => {
+                pill.className = base + 'p-1 bg-transparent border border-transparent';
+                pill.innerHTML = `<span class="w-2 h-2 rounded-full ${color} inline-block"></span>`;
+                pill.setAttribute('aria-label', label);
+            };
+
+            if (state === 'syncing') {
+                pill.className = base + 'px-1.5 py-0.5 text-[10px] font-bold bg-sky-50 text-hospital-800 border border-sky-200';
                 pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping inline-block"></span><span>Sync...</span>`;
-                pill.title = text;
+            } else if (state === 'online') {
+                if (prev === 'syncing') {
+                    // Breve conferma "Aggiornato", poi torna al pallino discreto
+                    pill.className = base + 'px-1.5 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200';
+                    pill.innerHTML = `<i class="fa-solid fa-check text-[9px]"></i><span>Aggiornato</span>`;
+                    window.__syncFlashTimer = setTimeout(() => showDot('bg-emerald-500', 'Sincronizzato'), 2500);
+                } else {
+                    showDot('bg-emerald-500', 'Sincronizzato');
+                }
+            } else if (text && text.startsWith('Cache locale')) {
+                // In attesa del server: nessun allarme, solo un pallino grigio
+                showDot('bg-slate-300', 'In attesa di sincronizzazione');
             } else {
-                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 active:scale-95 transition flex items-center gap-1 shrink-0';
-                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span><span>Offline</span>`;
-                pill.title = text;
+                // Errore reale: pallino ambra, senza la scritta "Offline"
+                showDot('bg-amber-500', 'Problema di sincronizzazione');
             }
         }
 
@@ -1389,7 +1452,7 @@
                 if (unsubscribeContacts) unsubscribeContacts();
 
                 // Ascolto in tempo reale di tutte le aggiunte e modifiche
-                unsubscribeContacts = onSnapshot(contactsColRef, (snapshot) => {
+                unsubscribeContacts = onSnapshot(contactsColRef, { includeMetadataChanges: true }, (snapshot) => {
                     const cloudList = [];
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
@@ -1409,7 +1472,8 @@
                     cloudList.sort((a, b) => a.name.localeCompare(b.name, 'it'));
 
                     window.contactsData = cloudList;
-                    if (typeof window.renderContacts === 'function') {
+                    const onlyMetaChange = snapshot.docChanges().length === 0;
+                    if (!onlyMetaChange && typeof window.renderContacts === 'function') {
                         window.renderContacts();
                     }
                     const isFromCache = snapshot.metadata?.fromCache;
@@ -1461,6 +1525,89 @@
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', docId));
                     }
                 };
+
+                // ---- Protocolli di reparto condivisi (collezione separata) ----
+                try {
+                    const protocolsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'protocolli_cannizzaro');
+
+                    // Importa i protocolli predefiniti non ancora caricati. Ognuno viene importato una sola
+                    // volta: se poi viene eliminato dalla gestione, non viene ripristinato.
+                    // (Se la lettura arriva solo dalla cache non si scrive nulla, per non sovrascrivere modifiche.)
+                    const protoInitial = await getDocs(protocolsColRef);
+                    if (!protoInitial.metadata.fromCache && typeof window.getDefaultProtocols === 'function') {
+                        let metaData = null;
+                        protoInitial.forEach((d) => { if (d.id === '_meta') metaData = d.data(); });
+                        const defs = window.getDefaultProtocols();
+                        const alreadySeeded = Array.isArray(metaData?.seededIds)
+                            ? metaData.seededIds
+                            : (metaData ? defs.filter(d => !d.addedLater).map(d => d.id) : []);
+                        const toSeed = defs.filter(d => !alreadySeeded.includes(d.id));
+                        if (toSeed.length > 0) {
+                            for (const d of toSeed) {
+                                await setDoc(doc(protocolsColRef, d.id), {
+                                    id: d.id,
+                                    title: d.title,
+                                    category: d.category,
+                                    code: d.code || '',
+                                    summary: d.summary || '',
+                                    content: d.content || '',
+                                    visualDiagram: d.visualDiagram || '',
+                                    isCustom: false,
+                                    sortKey: defs.indexOf(d),
+                                    updatedAt: Date.now()
+                                });
+                            }
+                            await setDoc(doc(protocolsColRef, '_meta'), {
+                                seeded: true,
+                                seededIds: [...alreadySeeded, ...toSeed.map(d => d.id)],
+                                updatedAt: Date.now()
+                            });
+                        }
+                    }
+
+                    if (unsubscribeProtocols) unsubscribeProtocols();
+                    unsubscribeProtocols = onSnapshot(protocolsColRef, (snapshot) => {
+                        const list = [];
+                        snapshot.forEach((docSnap) => {
+                            if (docSnap.id.startsWith('_')) return;
+                            const x = docSnap.data();
+                            list.push({
+                                id: x.id || docSnap.id,
+                                title: x.title || '',
+                                category: x.category || 'Terapia Intensiva',
+                                code: x.code || '',
+                                summary: x.summary || '',
+                                content: x.content || '',
+                                visualDiagram: x.visualDiagram || '',
+                                isCustom: Boolean(x.isCustom),
+                                sortKey: typeof x.sortKey === 'number' ? x.sortKey : 0
+                            });
+                        });
+                        list.sort((a, b) => a.sortKey - b.sortKey);
+                        if (typeof window.onCloudProtocols === 'function') {
+                            window.onCloudProtocols(list, Boolean(snapshot.metadata?.fromCache));
+                        }
+                    }, (error) => {
+                        console.error('Errore sincronizzazione protocolli:', error);
+                    });
+
+                    window.cloudProtocolsAPI = {
+                        save: async (protoId, payload) => {
+                            if (!currentUser || !db || !protoId) throw new Error('Database non connesso');
+                            await setDoc(doc(protocolsColRef, protoId), {
+                                ...payload,
+                                id: protoId,
+                                updatedAt: Date.now()
+                            }, { merge: true });
+                        },
+                        remove: async (protoId) => {
+                            if (!currentUser || !db || !protoId) throw new Error('Database non connesso');
+                            await deleteDoc(doc(protocolsColRef, protoId));
+                        }
+                    };
+                } catch (protoErr) {
+                    console.error('Errore inizializzazione protocolli cloud:', protoErr);
+                }
             } catch (err) {
                 console.error('Errore inizializzazione Firebase:', err);
                 const isAuthErr = (err?.code || '').startsWith('auth/');
@@ -3872,6 +4019,78 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 - Infusione continua: 0,25 ml/kg/min (~18 ml/min = ~1000 ml/h).
 - Se persistenza di collasso cardiovascolare dopo 5 min: ripetere fino a 2 boli da 1,5 ml/kg ogni 5 min e raddoppiare l'infusione a 0,5 ml/kg/min.
 - Dose massima cumulativa: 10–12 ml/kg nelle prime 30 minuti. Continuare infusione per almeno 10–15 min dopo stabilizzazione emodinamica.`
+            },
+            {
+                id: 'proto_uoc_potassiemia',
+                addedLater: true,
+                code: 'UOC-AR-01',
+                category: 'Terapia Intensiva',
+                title: 'Correzione dell’Ipopotassiemia (U.O.C. Anestesia e Rianimazione)',
+                summary: 'Diluizione standard (1,2 mEq/ml), velocità di infusione per fasce di potassiemia e criteri di sicurezza renale.',
+                isCustom: false,
+                content: `1. INTESTAZIONE UFFICIALE
+• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
+• Modalità di correzione dell’ipopotassiemia in funzione dei valori della potassiemia rilevati prima di iniziare l’infusione endovenosa.
+
+2. DILUIZIONE STANDARD (CONCENTRAZIONE FINALE: 1,2 mEq/ml)
+• Opzione A: 2 fiale di potassio aspartato (KFlebo 30 mEq/10 ml) + 30 ml di Soluzione Fisiologica (= 60 mEq / 50 ml).
+• Opzione B: 3 fiale di potassio cloruro (KCl 20 mEq/10 ml) + 20 ml di Soluzione Fisiologica (= 60 mEq / 50 ml).
+
+3. SCHEMA VELOCITÀ DI INFUSIONE E CONTROLLI
+| Valore di Potassiemia | Velocità di Infusione | Controlli |
+| < 3 mEq/L | 10 ml/h (12 mEq/h) | Ogni 6 ore |
+| 3,1 – 4 mEq/L | 4 ml/h (4,8 mEq/h) | Ogni 6 ore |
+| > 4 mEq/L | STOP Infusione | — |
+
+4. AVVERTENZE E CRITERI DI SICUREZZA
+• Avvisare il medico per valori di potassiemia < 2,5 mEq/L.
+• Non somministrare potassio a pazienti con diuresi < 50 ml/h in assenza di specifica prescrizione medica.
+• Nei pazienti in trattamento di sostituzione renale (CRRT/dialisi) non somministrare potassio quando il trattamento non è in corso, se non dopo prescrizione medica.`
+            },
+            {
+                id: 'proto_uoc_insulina',
+                addedLater: true,
+                code: 'UOC-AR-02',
+                category: 'Terapia Intensiva',
+                title: 'Monitoraggio Glicemico e Trattamento Insulinico',
+                summary: 'Diluizione 50 U.I./50 ml (1:1), avvio infusione > 180 mg/dl e tabella di titolazione oraria.',
+                isCustom: false,
+                content: `1. INTESTAZIONE E DILUIZIONE STANDARD (1:1)
+• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
+• Diluizione: Insulina 50 U.I. (0,5 ml) + 49,5 ml di Soluzione Fisiologica.
+• Concentrazione finale: 50 U.I./50 ml (rapporto 1:1 = 1 U.I./ml).
+
+2. AVVIO INFUSIONE
+• Quando si riscontra un valore di Glicemia > 180 mg/dl iniziare l’infusione di insulina a 1 ml/h, controllare la glicemia a 1 ora e procedere secondo lo schema seguente:
+
+3. TABELLA DI REGOLAZIONE VELOCITÀ DI INFUSIONE
+| Valore di Glicemia (mg/dl) | Velocità di infusione | Ricontrollo Glicemico |
+| < 60 | STOP INFUSIONE, iniettare 2 fiale di soluzione glucosata 33% in bolo e avvisare il medico | 15 – 30 min |
+| 61 – 80 | STOP INFUSIONE | 15 – 30 min |
+| 80 – 140 | Ridurre di 0,4 ml/h | Ricontrollo a 1 ora |
+| 141 – 180 | Non modificare | Ricontrollo a 3 ore |
+| 181 – 220 | Aumentare di 0,4 ml/h | Ricontrollo a 3 ore |
+| 221 – 250 | Aumentare di 0,6 ml/h | Ricontrollo a 3 ore |
+| 251 – 300 | Aumentare di 0,8 ml/h | Ricontrollo a 3 ore |
+| > 300 | Aumentare di 1 ml/h * | Ricontrollo a 1 ora |
+
+4. NOTE OPERATIVE
+• (*) Se per due volte consecutive la glicemia si mantiene > 300 mg/dl, passare direttamente ad una velocità di infusione di 3 ml/h (3 U/h), se non lo è già, e ricontrollare a 1 ora.
+• In caso di STOP di infusione di NPT / Soluzione Glucosata durante correzione insulinemica, ricontrollare glicemia a 1 – 2 ore.`
+            },
+            {
+                id: 'proto_uoc_nutrizione',
+                addedLater: true,
+                code: 'UOC-AR-03',
+                category: 'Terapia Intensiva',
+                title: 'Protocollo di Terapia Nutrizionale (Enterale / Parenterale)',
+                summary: 'Algoritmo schematico OS / NE / NPT, progressione 15 ml/h ogni turno, segni di intolleranza e gestione SNG.',
+                isCustom: false,
+                visualDiagram: 'nutrizione_flowchart',
+                content: `• Sia Nutrizione Enterale che Parenterale vanno somministrate in continuo per 24 ore (senza interruzione);
+• La prescrizione nutrizionale va prescritta in cartella secondo il fabbisogno calorico pieno, mentre la velocità della nutrizione enterale dovrà essere gestita a livello infermieristico sulla base dell’algoritmo sopra riportato;
+• Quando è necessaria una procedura che richieda il digiuno basta mettere a caduta il SNG immediatamente prima della procedura (chirurgia, mobilizzazione, ecc.);
+• Cambiare i sistemi di fissaggio del SNG ogni 24/48 ore al fine di ridurre i rischi di decubito.`
             }
         ];
 
@@ -3898,6 +4117,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
         function initProtocolsSection() {
             renderProtocolsList();
+            updateProtoAdminUI();
         }
 
         function filterProtocolsByCategory(cat) {
@@ -3970,14 +4190,14 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                     <button type="button" onclick="openProtocolViewer('${p.id}')" class="bg-white hover:bg-sky-50/40 active:scale-[0.99] transition p-2.5 rounded-lg border border-slate-200 shadow-2xs text-left flex flex-col justify-between gap-1.5">
                         <div class="space-y-1 w-full">
                             <div class="flex items-center justify-between gap-1.5">
-                                <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded border ${badgeCls} truncate">${p.category}</span>
-                                ${p.code ? `<span class="text-[9px] font-mono font-bold text-slate-400 shrink-0">${p.code}</span>` : ''}
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded border ${badgeCls} truncate">${escapeHtml(p.category)}</span>
+                                ${p.code ? `<span class="text-[9px] font-mono font-bold text-slate-400 shrink-0">${escapeHtml(p.code)}</span>` : ''}
                             </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">${p.title}</h4>
-                            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${p.summary}</p>
+                            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">${escapeHtml(p.title)}</h4>
+                            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${escapeHtml(p.summary)}</p>
                         </div>
                         <div class="flex items-center justify-between w-full pt-1 border-t border-slate-100 text-[10px] font-bold text-hospital-700">
-                            <span>Apri protocollo</span>
+                            <span>${p.visualDiagram ? '<i class="fa-solid fa-diagram-project mr-1 text-emerald-600"></i>Include algoritmo' : 'Apri protocollo'}</span>
                             <i class="fa-solid fa-chevron-right text-[9px]"></i>
                         </div>
                     </button>
@@ -3985,19 +4205,412 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             }).join('');
         }
 
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function formatProtocolContentHtml(text) {
             const lines = (text || '').split('\n');
-            return lines.map(line => {
+            let html = '';
+            let tableRows = [];
+
+            const flushTable = () => {
+                if (tableRows.length === 0) return;
+                html += `<div class="overflow-x-auto my-2 rounded-lg border border-slate-200"><table class="w-full text-left border-collapse text-[11px]">`;
+                tableRows.forEach((cells, rowIdx) => {
+                    if (rowIdx === 0) {
+                        html += `<thead class="bg-hospital-900 text-white"><tr>${cells.map(c => `<th class="px-2.5 py-1.5 font-extrabold">${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>`;
+                    } else {
+                        html += `<tr class="${rowIdx % 2 === 1 ? 'bg-white' : 'bg-slate-50'} border-t border-slate-200">${cells.map((c, colIdx) => `<td class="px-2.5 py-1.5 ${colIdx === 0 ? 'font-extrabold text-hospital-900' : 'text-slate-800'}">${escapeHtml(c)}</td>`).join('')}</tr>`;
+                    }
+                });
+                html += '</tbody></table></div>';
+                tableRows = [];
+            };
+
+            lines.forEach(line => {
                 const trimmed = line.trim();
-                if (!trimmed) return '<div class="h-2"></div>';
+                if (!trimmed) {
+                    flushTable();
+                    html += '<div class="h-2"></div>';
+                    return;
+                }
+                // Tabelle: righe nel formato | colonna 1 | colonna 2 |
+                if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+                    const cells = trimmed.slice(1, -1).split('|').map(c => c.trim());
+                    if (cells.every(c => /^-+$/.test(c))) return; // riga separatore markdown
+                    tableRows.push(cells);
+                    return;
+                }
+                flushTable();
                 if (/^\d+\.\s+[A-ZÀ-Ü0-9]/.test(trimmed)) {
-                    return `<div class="font-extrabold text-hospital-900 text-xs uppercase tracking-wide pt-1.5 pb-0.5 border-b border-slate-200">${trimmed}</div>`;
+                    html += `<div class="font-extrabold text-hospital-900 text-xs uppercase tracking-wide pt-1.5 pb-0.5 border-b border-slate-200">${escapeHtml(trimmed)}</div>`;
+                } else if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                    html += `<div class="pl-3 relative text-slate-800"><span class="absolute left-0 text-hospital-600 font-bold">•</span>${escapeHtml(trimmed.slice(1).trim())}</div>`;
+                } else {
+                    html += `<div class="text-slate-800">${escapeHtml(trimmed)}</div>`;
                 }
-                if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-                    return `<div class="pl-3 relative text-slate-800"><span class="absolute left-0 text-hospital-600 font-bold">•</span>${trimmed.slice(1).trim()}</div>`;
+            });
+            flushTable();
+            return html;
+        }
+
+        // ------------------------------------------
+        // ACCESSO GESTIONE PROTOCOLLI (PIN)
+        // ------------------------------------------
+        const PROTO_PIN_SHA256 = 'da5a6e54e190d1cd98a4d9d899e150e6f83db78f7107704109df5d160d1419e5';
+        const PROTO_PIN_FNV = 'c52691d2'; // usato solo se il browser non offre crypto.subtle (pagina non HTTPS)
+        const PROTO_ADMIN_KEY = 'cannizzaro_proto_admin_until';
+        const PROTO_ADMIN_TTL = 15 * 60 * 1000; // la gestione si blocca dopo 15 minuti
+        let protoPinBuffer = '';
+        let protoPinFails = 0;
+        let protoPinLockedUntil = 0;
+        let protoPinPending = null;
+
+        async function hashProtoPin(pin) {
+            const str = 'cannizzaro-protocolli:' + pin;
+            if (window.crypto && crypto.subtle) {
+                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            let h = 0x811c9dc5;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 0x01000193) >>> 0;
+            }
+            return h.toString(16);
+        }
+
+        function isProtoAdmin() {
+            try {
+                return parseInt(sessionStorage.getItem(PROTO_ADMIN_KEY) || '0', 10) > Date.now();
+            } catch (e) { return false; }
+        }
+
+        function touchProtoAdmin() {
+            try { sessionStorage.setItem(PROTO_ADMIN_KEY, String(Date.now() + PROTO_ADMIN_TTL)); } catch (e) {}
+        }
+
+        function lockProtoAdmin(silent = false) {
+            try { sessionStorage.removeItem(PROTO_ADMIN_KEY); } catch (e) {}
+            updateProtoAdminUI();
+            if (!silent) showToast('Gestione protocolli bloccata');
+        }
+
+        function requireProtoAdmin(callback) {
+            if (isProtoAdmin()) {
+                touchProtoAdmin();
+                if (callback) callback();
+                return true;
+            }
+            protoPinPending = callback || null;
+            openProtoPinModal();
+            return false;
+        }
+
+        function toggleProtoAdmin() {
+            if (isProtoAdmin()) lockProtoAdmin();
+            else requireProtoAdmin();
+        }
+
+        function updateProtoAdminUI() {
+            const admin = isProtoAdmin();
+            const lockBtn = document.getElementById('protoLockBtn');
+            const lockLabel = document.getElementById('protoLockLabel');
+            const newBtn = document.getElementById('protoNewBtn');
+            if (lockBtn) {
+                lockBtn.className = admin
+                    ? 'h-8 px-2 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 active:scale-95 transition font-bold text-[11px] flex items-center gap-1 shrink-0'
+                    : 'h-8 px-2 rounded-md bg-slate-100 text-slate-500 border border-slate-200 active:scale-95 transition font-bold text-[11px] flex items-center gap-1 shrink-0';
+                lockBtn.title = admin ? 'Gestione attiva — tocca per bloccare' : 'Gestione protocolli (PIN)';
+                const icon = lockBtn.querySelector('i');
+                if (icon) icon.className = (admin ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock') + ' text-[11px]';
+            }
+            if (lockLabel) lockLabel.classList.toggle('hidden', !admin);
+            if (newBtn) newBtn.classList.toggle('hidden', !admin);
+
+            const editBtn = document.getElementById('viewerEditProtocolBtn');
+            const delBtn = document.getElementById('viewerDeleteProtocolBtn');
+            if (editBtn) editBtn.classList.toggle('hidden', !admin);
+            if (delBtn) delBtn.classList.toggle('hidden', !admin);
+        }
+
+        function openProtoPinModal() {
+            protoPinBuffer = '';
+            renderProtoPinDots();
+            const err = document.getElementById('protoPinError');
+            if (err) err.classList.add('hidden');
+            document.getElementById('protoPinModal').classList.remove('hidden');
+        }
+
+        function closeProtoPinModal() {
+            document.getElementById('protoPinModal').classList.add('hidden');
+            protoPinBuffer = '';
+            protoPinPending = null;
+        }
+
+        function renderProtoPinDots() {
+            const dots = document.querySelectorAll('#protoPinDots span');
+            dots.forEach((d, i) => {
+                d.className = 'w-3 h-3 rounded-full border-2 ' + (i < protoPinBuffer.length ? 'bg-hospital-700 border-hospital-700' : 'border-slate-300');
+            });
+        }
+
+        function showProtoPinError(msg) {
+            const err = document.getElementById('protoPinError');
+            if (!err) return;
+            err.textContent = msg;
+            err.classList.remove('hidden');
+        }
+
+        async function protoPinKey(key) {
+            if (Date.now() < protoPinLockedUntil) {
+                const sec = Math.ceil((protoPinLockedUntil - Date.now()) / 1000);
+                showProtoPinError(`Troppi tentativi. Riprova tra ${sec} s`);
+                return;
+            }
+            if (key === 'del') {
+                protoPinBuffer = protoPinBuffer.slice(0, -1);
+            } else if (protoPinBuffer.length < 4) {
+                protoPinBuffer += key;
+            }
+            renderProtoPinDots();
+            const err = document.getElementById('protoPinError');
+            if (err && key !== 'del') err.classList.add('hidden');
+
+            if (protoPinBuffer.length === 4) {
+                const entered = protoPinBuffer;
+                const hash = await hashProtoPin(entered);
+                const expected = hash.length === 64 ? PROTO_PIN_SHA256 : PROTO_PIN_FNV;
+                if (hash === expected) {
+                    protoPinFails = 0;
+                    touchProtoAdmin();
+                    const pending = protoPinPending;
+                    closeProtoPinModal();
+                    updateProtoAdminUI();
+                    showToast('Gestione protocolli sbloccata');
+                    if (pending) pending();
+                } else {
+                    protoPinFails++;
+                    protoPinBuffer = '';
+                    renderProtoPinDots();
+                    if (protoPinFails >= 5) {
+                        protoPinFails = 0;
+                        protoPinLockedUntil = Date.now() + 30000;
+                        showProtoPinError('Troppi tentativi. Riprova tra 30 s');
+                    } else {
+                        showProtoPinError('PIN errato');
+                    }
                 }
-                return `<div class="text-slate-800">${trimmed}</div>`;
-            }).join('');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('protoPinModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            if (/^\d$/.test(e.key)) protoPinKey(e.key);
+            else if (e.key === 'Backspace') protoPinKey('del');
+            else if (e.key === 'Escape') closeProtoPinModal();
+        });
+
+        // Blocco automatico allo scadere della sessione di gestione
+        setInterval(() => {
+            const btn = document.getElementById('protoNewBtn');
+            if (btn && !btn.classList.contains('hidden') && !isProtoAdmin()) {
+                updateProtoAdminUI();
+                showToast('Gestione protocolli bloccata (sessione scaduta)');
+            }
+        }, 20000);
+
+        // ------------------------------------------
+        // SINCRONIZZAZIONE CLOUD PROTOCOLLI
+        // ------------------------------------------
+        window.getDefaultProtocols = () => defaultProtocolsData;
+
+        window.onCloudProtocols = function (list, fromCache) {
+            // Uno snapshot vuoto dalla cache locale non è affidabile: lo ignoro
+            if (fromCache && list.length === 0) return;
+            protocolsDatabase = list;
+            persistProtocolsDatabase();
+            renderProtocolsList();
+
+            const viewerOpen = !document.getElementById('protocolViewerModal').classList.contains('hidden');
+            if (viewerOpen && viewingProtocolId) {
+                if (protocolsDatabase.some(p => p.id === viewingProtocolId)) {
+                    openProtocolViewer(viewingProtocolId);
+                } else {
+                    closeProtocolViewerModal();
+                    showToast('Questo protocollo è stato eliminato');
+                }
+            }
+        };
+
+        function protoCloudErrorMessage(err) {
+            const code = err?.code || err?.message || '';
+            if (String(code).includes('permission-denied')) {
+                return 'Permesso negato da Firestore: abilita la scrittura su "protocolli_cannizzaro" nelle Rules';
+            }
+            return 'Errore di salvataggio nel database';
+        }
+
+        function withProtoTimeout(promise, ms = 8000) {
+            return Promise.race([
+                promise.then(() => 'ok'),
+                new Promise(resolve => setTimeout(() => resolve('timeout'), ms))
+            ]);
+        }
+
+        function renderNutritionFlowchartDiagram() {
+            return `
+                <div class="overflow-x-auto pb-1">
+                    <div class="min-w-[540px] bg-white p-2 rounded-xl border border-slate-200">
+                        <svg viewBox="0 0 760 735" class="w-full h-auto block font-sans" aria-label="Algoritmo Protocollo di Terapia Nutrizionale">
+                            <defs>
+                                <marker id="arr-dark" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+                                    <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </marker>
+                                <marker id="arr-red" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#b91c1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </marker>
+                            </defs>
+
+                            <!-- NODO 1: Il paziente può alimentarsi per OS? -->
+                            <rect x="35" y="14" width="245" height="52" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                            <text x="157" y="36" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Il paziente può</text>
+                            <text x="157" y="54" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">alimentarsi per OS?</text>
+
+                            <!-- Freccia Sì -> Alimentazione spontanea -->
+                            <line x1="280" y1="40" x2="368" y2="40" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+                            <text x="322" y="33" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Si</text>
+
+                            <rect x="372" y="14" width="320" height="52" rx="3" fill="#7c8084" stroke="#334155" stroke-width="2"/>
+                            <text x="532" y="45" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Alimentazione spontanea</text>
+
+                            <!-- Freccia No -> Nodo 2 -->
+                            <line x1="157" y1="66" x2="157" y2="116" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+                            <rect x="142" y="79" width="30" height="19" fill="#ffffff"/>
+                            <text x="157" y="94" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">No</text>
+
+                            <!-- NODO 2: Ci sono controindicazioni alla Nutrizione Enterale? -->
+                            <rect x="35" y="120" width="245" height="54" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                            <text x="157" y="143" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Ci sono controindicazioni alla</text>
+                            <text x="157" y="161" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Nutrizione Enterale?</text>
+
+                            <!-- Freccia Sì -> Prescrizione Nutrizione Parenterale -->
+                            <line x1="280" y1="147" x2="368" y2="147" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+                            <text x="322" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Si</text>
+
+                            <rect x="372" y="120" width="320" height="54" rx="3" fill="#4678b2" stroke="#1e3a5f" stroke-width="2"/>
+                            <text x="532" y="152" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Prescrizione Nutrizione Parenterale</text>
+
+                            <!-- Freccia No -> Prescrizione Nutrizione Enterale -->
+                            <line x1="157" y1="174" x2="157" y2="226" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+                            <rect x="142" y="188" width="30" height="19" fill="#ffffff"/>
+                            <text x="157" y="203" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">No</text>
+
+                            <!-- NODO 3: Prescrizione Nutrizione Enterale (Verde) -->
+                            <rect x="8" y="230" width="305" height="46" rx="3" fill="#77a246" stroke="#3f5d1e" stroke-width="2"/>
+                            <text x="160" y="258" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Prescrizione Nutrizione Enterale</text>
+
+                            <!-- Freccia -> Box Giallo Tratteggiato -->
+                            <line x1="157" y1="276" x2="157" y2="306" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+
+                            <!-- NODO 4: Iniziare a 15 ml/h per 12 ore e valutare ogni turno -->
+                            <rect x="64" y="310" width="186" height="84" fill="#fef996" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,3"/>
+                            <text x="157" y="335" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Iniziare a <tspan font-weight="800">15 ml/h</tspan></text>
+                            <text x="157" y="356" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">per 12 ore e <tspan text-decoration="underline">valutare</tspan></text>
+                            <text x="157" y="377" text-anchor="middle" font-size="14" font-weight="600" text-decoration="underline" fill="#0f172a">ogni turno:</text>
+
+                            <!-- BIFORCAZIONE DA NODO 4 -->
+                            <line x1="157" y1="394" x2="88" y2="438" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+                            <line x1="157" y1="394" x2="236" y2="438" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+
+                            <!-- RAMO SINISTRO: Nutrizione Enterale ben tollerata -->
+                            <rect x="16" y="442" width="144" height="82" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                            <text x="88" y="468" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">Nutrizione</text>
+                            <text x="88" y="487" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">Enterale</text>
+                            <text x="88" y="507" text-anchor="middle" font-size="13.5" font-weight="800" fill="#0f172a">ben tollerata</text>
+
+                            <!-- Freccia -> Aumentare NE di 15 ml/h -->
+                            <line x1="88" y1="524" x2="88" y2="574" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+
+                            <rect x="18" y="578" width="140" height="132" fill="#fef996" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,3"/>
+                            <text x="88" y="605" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Aumentare NE</text>
+                            <text x="88" y="627" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">di <tspan font-weight="800">15 ml/h</tspan></text>
+                            <text x="88" y="649" text-anchor="middle" font-size="14" font-weight="600" text-decoration="underline" fill="#0f172a">ogni turno</text>
+                            <text x="88" y="671" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">fino alla dose</text>
+                            <text x="88" y="693" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">prescritta</text>
+
+                            <!-- RAMO DESTRO: Presenza di segni di intolleranza o incompatibilità -->
+                            <rect x="170" y="442" width="146" height="82" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                            <text x="243" y="468" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Presenza di <tspan font-weight="800">segni</tspan></text>
+                            <text x="243" y="487" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">di intolleranza <tspan font-weight="600">o</tspan></text>
+                            <text x="243" y="506" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">incompatibilità</text>
+
+                            <!-- 5 CRITERI DI INTOLLERANZA (RIQUADRI ROSSI) -->
+                            <!-- 1 -->
+                            <rect x="336" y="400" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
+                            <text x="346" y="418" font-size="12.5" font-weight="600" fill="#0f172a">Residuo Gastrico &gt; 500 ml per 6 h</text>
+                            <line x1="316" y1="482" x2="336" y2="414" stroke="#b91c1c" stroke-width="1.3"/>
+                            <line x1="570" y1="414" x2="604" y2="472" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
+
+                            <!-- 2 -->
+                            <rect x="336" y="434" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
+                            <text x="346" y="452" font-size="12.5" font-weight="600" fill="#0f172a">Diarrea &gt; 3 scariche/die</text>
+                            <line x1="316" y1="482" x2="336" y2="448" stroke="#b91c1c" stroke-width="1.3"/>
+                            <line x1="570" y1="448" x2="604" y2="480" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
+
+                            <!-- 3 -->
+                            <rect x="336" y="468" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
+                            <text x="346" y="486" font-size="12.5" font-weight="600" fill="#0f172a">Crampi/Distensione addominale</text>
+                            <line x1="316" y1="482" x2="336" y2="482" stroke="#b91c1c" stroke-width="1.3"/>
+                            <line x1="570" y1="482" x2="604" y2="488" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
+
+                            <!-- 4 -->
+                            <rect x="336" y="502" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
+                            <text x="346" y="520" font-size="12.5" font-weight="600" fill="#0f172a">Instabilità emodinamica</text>
+                            <line x1="316" y1="482" x2="336" y2="516" stroke="#b91c1c" stroke-width="1.3"/>
+                            <line x1="570" y1="516" x2="604" y2="496" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
+
+                            <!-- 5 -->
+                            <rect x="336" y="536" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
+                            <text x="346" y="554" font-size="12.5" font-weight="600" fill="#0f172a">Sanguinamento gastroenterico</text>
+                            <line x1="316" y1="482" x2="336" y2="550" stroke="#b91c1c" stroke-width="1.3"/>
+                            <line x1="570" y1="550" x2="604" y2="504" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
+
+                            <!-- BOX DESTRO: Ridurre NE a 10ml/h e allertare il Medico -->
+                            <rect x="607" y="454" width="145" height="68" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/>
+                            <text x="679" y="476" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">Ridurre NE a</text>
+                            <text x="679" y="494" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">10ml/h e</text>
+                            <text x="679" y="512" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">allertare il Medico</text>
+
+                            <!-- FRECCIA TRATTEGGIATA: Considerare Nutrizione Parenterale -->
+                            <polyline points="679,454 679,324 522,324 522,178" fill="none" stroke="#1e293b" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arr-dark)"/>
+                            <rect x="556" y="313" width="88" height="18" fill="#ffffff"/>
+                            <text x="600" y="326" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Considerare</text>
+
+                            <!-- FRECCIA GRANDE ROSSA VERSO IL BASSO -->
+                            <rect x="441" y="572" width="24" height="4" fill="#993333"/>
+                            <rect x="441" y="579" width="24" height="5" fill="#993333"/>
+                            <polygon points="441,587 465,587 465,612 478,612 453,642 428,612 441,612" fill="#993333" stroke="#5c1d1d" stroke-width="1.2"/>
+
+                            <!-- BOX IN BASSO: Rivalutare ogni turno -->
+                            <rect x="382" y="646" width="142" height="52" rx="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8"/>
+                            <text x="453" y="669" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Rivalutare ogni</text>
+                            <text x="453" y="688" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">turno</text>
+
+                            <!-- FRECCE DI RITORNO DA "Rivalutare ogni turno" -->
+                            <line x1="382" y1="672" x2="244" y2="528" stroke="#0f172a" stroke-width="1.7" marker-end="url(#arr-dark)"/>
+                            <line x1="382" y1="672" x2="148" y2="528" stroke="#0f172a" stroke-width="1.7" marker-end="url(#arr-dark)"/>
+                        </svg>
+                    </div>
+                </div>
+            `;
         }
 
         function openProtocolViewer(protoId) {
@@ -4008,21 +4621,21 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             document.getElementById('viewerProtocolCategory').textContent = proto.category;
             document.getElementById('viewerProtocolCode').textContent = proto.code || '';
             document.getElementById('viewerProtocolTitle').textContent = proto.title;
+            const diagramHtml = proto.visualDiagram === 'nutrizione_flowchart'
+                ? renderNutritionFlowchartDiagram()
+                : '';
+
             document.getElementById('viewerProtocolBody').innerHTML = `
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700">
-                    ${proto.summary}
+                    ${escapeHtml(proto.summary)}
                 </div>
+                ${diagramHtml}
                 <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                     ${formatProtocolContentHtml(proto.content)}
                 </div>
             `;
 
-            const delBtn = document.getElementById('viewerDeleteProtocolBtn');
-            if (delBtn) {
-                if (proto.isCustom) delBtn.classList.remove('hidden');
-                else delBtn.classList.add('hidden');
-            }
-
+            updateProtoAdminUI();
             document.getElementById('protocolViewerModal').classList.remove('hidden');
         }
 
@@ -4039,6 +4652,11 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         }
 
         function openProtocolEditorModal(protoToEdit = null) {
+            if (!isProtoAdmin()) {
+                requireProtoAdmin(() => openProtocolEditorModal(protoToEdit));
+                return;
+            }
+            touchProtoAdmin();
             const modal = document.getElementById('protocolEditorModal');
             if (protoToEdit) {
                 document.getElementById('protocolEditorTitle').textContent = 'Modifica Protocollo';
@@ -4067,21 +4685,51 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         function editCurrentlyViewedProtocol() {
             const proto = protocolsDatabase.find(p => p.id === viewingProtocolId);
             if (!proto) return;
+            if (!isProtoAdmin()) {
+                requireProtoAdmin(() => editCurrentlyViewedProtocol());
+                return;
+            }
             closeProtocolViewerModal();
             openProtocolEditorModal(proto);
         }
 
-        function deleteCurrentlyViewedProtocol() {
+        async function deleteCurrentlyViewedProtocol() {
             if (!viewingProtocolId) return;
-            protocolsDatabase = protocolsDatabase.filter(p => p.id !== viewingProtocolId);
-            persistProtocolsDatabase();
-            closeProtocolViewerModal();
-            renderProtocolsList();
-            showToast('Protocollo eliminato');
+            if (!isProtoAdmin()) {
+                requireProtoAdmin(() => deleteCurrentlyViewedProtocol());
+                return;
+            }
+            const proto = protocolsDatabase.find(p => p.id === viewingProtocolId);
+            if (!proto) return;
+            if (!window.cloudProtocolsAPI) {
+                showToast('Database non connesso: riprova tra qualche secondo');
+                return;
+            }
+            if (!confirm(`Eliminare il protocollo "${proto.title}" per tutti gli utenti?`)) return;
+
+            touchProtoAdmin();
+            try {
+                const res = await withProtoTimeout(window.cloudProtocolsAPI.remove(proto.id));
+                closeProtocolViewerModal();
+                showToast(res === 'ok' ? 'Protocollo eliminato per tutti' : 'Connessione lenta: eliminazione in coda');
+            } catch (err) {
+                console.error(err);
+                showToast(protoCloudErrorMessage(err));
+            }
         }
 
-        function saveProtocolForm(event) {
+        async function saveProtocolForm(event) {
             event.preventDefault();
+            if (!isProtoAdmin()) {
+                // Sessione scaduta: chiedo di nuovo il PIN senza perdere il testo inserito
+                requireProtoAdmin(null);
+                return;
+            }
+            if (!window.cloudProtocolsAPI) {
+                showToast('Database non connesso: riprova tra qualche secondo');
+                return;
+            }
+
             const editId = document.getElementById('editProtocolId').value.trim();
             const title = document.getElementById('protoTitleInput').value.trim();
             const category = document.getElementById('protoCategoryInput').value;
@@ -4091,35 +4739,32 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
             if (!title || !summary || !content) return;
 
-            if (editId) {
-                const idx = protocolsDatabase.findIndex(p => p.id === editId);
-                if (idx !== -1) {
-                    protocolsDatabase[idx] = {
-                        ...protocolsDatabase[idx],
-                        title,
-                        category,
-                        code,
-                        summary,
-                        content
-                    };
-                }
-                showToast('Protocollo aggiornato');
-            } else {
-                protocolsDatabase.unshift({
-                    id: 'custom-proto-' + Date.now(),
-                    title,
-                    category,
-                    code: code || 'REPARTO',
-                    summary,
-                    content,
-                    isCustom: true
-                });
-                showToast('Nuovo protocollo salvato');
-            }
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const origText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Salvataggio...'; }
 
-            persistProtocolsDatabase();
-            closeProtocolEditorModal();
-            renderProtocolsList();
+            touchProtoAdmin();
+            try {
+                let res;
+                if (editId) {
+                    res = await withProtoTimeout(window.cloudProtocolsAPI.save(editId, { title, category, code, summary, content }));
+                } else {
+                    const newId = 'custom-proto-' + Date.now();
+                    res = await withProtoTimeout(window.cloudProtocolsAPI.save(newId, {
+                        title, category, code: code || 'REPARTO', summary, content,
+                        isCustom: true,
+                        sortKey: -Date.now()
+                    }));
+                }
+                closeProtocolEditorModal();
+                if (res === 'ok') showToast(editId ? 'Protocollo aggiornato per tutti' : 'Nuovo protocollo salvato per tutti');
+                else showToast('Connessione lenta: salvataggio in coda');
+            } catch (err) {
+                console.error(err);
+                showToast(protoCloudErrorMessage(err));
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+            }
         }
 
         // ==========================================
