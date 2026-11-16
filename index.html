@@ -224,6 +224,15 @@
                 </div>
             </div>
 
+            <!-- Barra Stato Sincronizzazione Cloud Condivisa -->
+            <div class="flex items-center justify-between px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200/80 text-[10px]">
+                <div id="cloudSyncStatus" class="flex items-center gap-1.5 font-bold text-hospital-800">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse inline-block"></span>
+                    <span>Connessione al database condiviso in corso...</span>
+                </div>
+                <span class="text-slate-500 font-medium hidden sm:inline">Modifiche visibili a tutti i colleghi</span>
+            </div>
+
             <!-- Lista Contatti Compatta -->
             <div id="contactsList" class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                 <!-- Popolato da JS -->
@@ -1037,10 +1046,10 @@
         <div class="bg-white w-full max-w-xs rounded-2xl shadow-xl p-4 space-y-3">
             <div class="flex items-center gap-2 text-slate-800">
                 <i class="fa-solid fa-rotate-left text-hospital-700"></i>
-                <h3 class="font-bold text-sm">Ripristinare la rubrica?</h3>
+                <h3 class="font-bold text-sm">Ripristinare la rubrica condivisa?</h3>
             </div>
             <p class="text-xs text-slate-600 leading-relaxed">
-                Verranno ricaricati i contatti predefiniti dell'ospedale e rimossi eventuali interni personalizzati.
+                Verranno ricaricati i contatti predefiniti dell'ospedale nel database online per tutti gli utenti.
             </p>
             <div class="flex justify-end gap-2 pt-1">
                 <button onclick="closeConfirmResetModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
@@ -1050,87 +1059,48 @@
     </div>
 
     <!-- MODAL: ASSISTENTE VOCALE & CHAT AI -->
-    <div id="assistantModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] pb-safe">
-            <div class="bg-hospital-800 text-white px-3.5 py-2.5 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <div class="w-7 h-7 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
-                        <i class="fa-solid fa-robot text-sky-300 text-xs"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm">Assistente Vocale</h3>
-                        <p class="text-[10px] text-sky-200">Chiedi turno del mese, reparto, piano o interno</p>
-                    </div>
-                </div>
-                <button onclick="toggleAssistantModal()" class="text-white/80 hover:text-white p-1.5 rounded-lg">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <div id="chatMessages" class="p-3 overflow-y-auto space-y-2.5 flex-1 bg-slate-50 min-h-[200px]">
-                <div class="flex items-start gap-2">
-                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                        <i class="fa-solid fa-staff-snake"></i>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 space-y-2">
-                        <p>Chiedi il tuo <strong>turno</strong>, la <strong>prossima notte</strong>, i <strong>colleghi di guardia</strong>, un reparto o un interno:</p>
-                        <div class="flex flex-wrap gap-1">
-                            <button onclick="processAssistantQuery('Qual è il mio prossimo turno?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Prossimo turno?</button>
-                            <button onclick="processAssistantQuery('Quando è la mia prossima notte?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Prossima notte?</button>
-                            <button onclick="processAssistantQuery('Con chi sono di turno il 20?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Con chi turno il 20?</button>
-                            <button onclick="processAssistantQuery('Quali sono le mie notti questo mese?')" class="bg-sky-50 text-hospital-800 border border-sky-200 px-2 py-1 rounded-md text-[11px] font-bold active:scale-95">Notti del mese?</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-3 bg-white border-t border-slate-200 space-y-2">
-                <div class="flex flex-col items-center justify-center">
-                    <button id="micBtn" onclick="toggleVoiceRecognition()" class="w-12 h-12 rounded-full bg-hospital-600 active:scale-95 text-white flex items-center justify-center text-lg shadow-md transition-all">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <span id="micStatus" class="text-[11px] font-semibold text-slate-500 mt-1">Tocca il microfono per parlare</span>
-                </div>
-
-                <form onsubmit="handleTextAssistantSubmit(event)" class="flex items-center gap-1.5">
-                    <input type="text" id="assistantTextInput" placeholder="Es. Quando è la mia prossima notte? / Con chi sono il 18?" class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-500">
-                    <button type="submit" class="bg-hospital-700 active:bg-hospital-800 text-white py-2 px-3.5 rounded-lg text-xs font-bold shrink-0">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: AGGIUNGI CONTATTO IN RUBRICA -->
+    <!-- MODAL: AGGIUNGI / MODIFICA CONTATTO IN RUBRICA CONDIVISA -->
     <div id="addContactModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden pb-safe">
             <div class="bg-hospital-800 text-white px-4 py-3 flex justify-between items-center">
-                <h3 class="font-bold text-sm">Aggiungi Nuovo Interno</h3>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-sky-300"></i>
+                    <h3 id="contactModalTitle" class="font-bold text-sm">Aggiungi Nuovo Interno (Condiviso)</h3>
+                </div>
                 <button onclick="closeAddContactModal()" class="text-white/80 p-1"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <form onsubmit="saveNewContact(event)" class="p-3.5 space-y-3">
+            <form onsubmit="saveContactForm(event)" class="p-3.5 space-y-3">
+                <input type="hidden" id="editContactDocId" value="">
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Reparto / Servizio *</label>
-                    <input type="text" id="newContactName" required placeholder="Es. Guardiola Cardiologia" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    <input type="text" id="newContactName" required placeholder="Es. Cardiologia - UTIC" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs text-slate-900 focus:outline-none focus:border-hospital-600">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Interno / Tel *</label>
-                        <input type="text" id="newContactPhone" required placeholder="Es. 3153" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                        <input type="text" id="newContactPhone" required placeholder="Es. 3111 / 3118" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs text-slate-900 focus:outline-none focus:border-hospital-600">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Edificio / Piano</label>
-                        <input type="text" id="newContactLoc" placeholder="Es. F2 - 3° Piano" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Edificio / Piano *</label>
+                        <input type="text" id="newContactLoc" required placeholder="Es. Edificio F2 - 2° Piano" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs text-slate-900 focus:outline-none focus:border-hospital-600">
                     </div>
                 </div>
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Note aggiuntive</label>
-                    <input type="text" id="newContactNote" placeholder="Es. Attivo H24, Caposala..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs focus:outline-none focus:border-hospital-600">
+                    <input type="text" id="newContactNote" placeholder="Es. Attivo H24, Caposala..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-base sm:text-xs text-slate-900 focus:outline-none focus:border-hospital-600">
                 </div>
-                <div class="flex justify-end gap-2 pt-1">
-                    <button type="button" onclick="closeAddContactModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-lg shadow">Salva</button>
+                <div class="flex items-center gap-2 pt-0.5">
+                    <input type="checkbox" id="newContactEmergency" class="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500">
+                    <label for="newContactEmergency" class="text-xs font-bold text-slate-700">Mostra anche in "Urgenze"</label>
+                </div>
+                <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" id="deleteContactBtn" onclick="deleteCurrentEditingContact()" class="hidden px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg">
+                        <i class="fa-solid fa-trash-can mr-1"></i>Elimina
+                    </button>
+                    <div class="flex gap-2 ml-auto">
+                        <button type="button" onclick="closeAddContactModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
+                        <button type="submit" id="saveContactSubmitBtn" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-lg shadow">Salva nel Cloud</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1141,6 +1111,172 @@
         <i class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="toastMsg">Copiato negli appunti</span>
     </div>
+
+    <!-- Integrazione Firebase Cloud Firestore per Rubrica Condivisa in Tempo Reale -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const customCannizzaroFirebaseConfig = {
+            apiKey: "AIzaSyCaQaGf1-dIJKuvYM7s0Qk9mFqoCw_Vkaw",
+            authDomain: "cannizzaro-staff.firebaseapp.com",
+            projectId: "cannizzaro-staff",
+            storageBucket: "cannizzaro-staff.firebasestorage.app",
+            messagingSenderId: "513692658952",
+            appId: "1:513692658952:web:69744cc0fe4fd9aec990bd"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cannizzaro-staff-prod';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : customCannizzaroFirebaseConfig;
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let isSeedingDefaults = false;
+
+        function updateSyncBanner(state, text) {
+            const el = document.getElementById('cloudSyncStatus');
+            if (!el) return;
+            if (state === 'online') {
+                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span><span class="text-emerald-900">${text}</span>`;
+            } else if (state === 'syncing') {
+                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-sky-500 animate-ping inline-block"></span><span class="text-hospital-800">${text}</span>`;
+            } else {
+                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span><span class="text-amber-900">${text}</span>`;
+            }
+        }
+
+        async function seedDefaultContactsToFirestore(contactsColRef) {
+            if (isSeedingDefaults) return;
+            isSeedingDefaults = true;
+            updateSyncBanner('syncing', 'Inizializzazione rubrica nel database online...');
+            try {
+                const defaults = window.defaultContactsData || [];
+                for (const item of defaults) {
+                    const docId = `default_${item.id}`;
+                    await setDoc(doc(contactsColRef, docId), {
+                        id: item.id,
+                        name: item.name,
+                        phone: item.phone,
+                        location: item.location || '',
+                        note: item.note || '',
+                        emergency: Boolean(item.emergency),
+                        updatedAt: Date.now()
+                    });
+                }
+            } catch (err) {
+                console.error('Errore popolamento iniziale Firestore:', err);
+            } finally {
+                isSeedingDefaults = false;
+            }
+        }
+
+        async function initCloudContactsSync() {
+            if (!firebaseConfig) {
+                updateSyncBanner('offline', 'Modalità offline (configurazione cloud assente)');
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+
+                if (!currentUser) return;
+
+                // Percorso pubblico condiviso tra tutti gli utenti dell'app
+                const contactsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro');
+
+                // Controlla se la collezione è vuota al primo avvio e popolala
+                const initialSnap = await getDocs(contactsColRef);
+                if (initialSnap.empty) {
+                    await seedDefaultContactsToFirestore(contactsColRef);
+                }
+
+                // Ascolto in tempo reale di tutte le aggiunte e modifiche
+                onSnapshot(contactsColRef, (snapshot) => {
+                    const cloudList = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        cloudList.push({
+                            docId: docSnap.id,
+                            id: data.id || docSnap.id,
+                            name: data.name || '',
+                            phone: data.phone || '',
+                            location: data.location || '',
+                            note: data.note || '',
+                            emergency: Boolean(data.emergency),
+                            updatedAt: data.updatedAt || 0
+                        });
+                    });
+
+                    // Ordina alfabeticamente per reparto (i preferiti restano comunque in alto in renderContacts)
+                    cloudList.sort((a, b) => a.name.localeCompare(b.name, 'it'));
+
+                    window.contactsData = cloudList;
+                    if (typeof window.renderContacts === 'function') {
+                        window.renderContacts();
+                    }
+                    updateSyncBanner('online', `Database online sincronizzato (${cloudList.length} interni)`);
+                }, (error) => {
+                    console.error('Errore sincronizzazione Firestore:', error);
+                    updateSyncBanner('offline', 'Errore sincronizzazione database online');
+                });
+
+                // Espone le operazioni CRUD cloud allo script principale
+                window.cloudRubricaAPI = {
+                    saveContact: async (docId, payload) => {
+                        if (!currentUser || !db) throw new Error('Database non connesso');
+                        updateSyncBanner('syncing', 'Salvataggio nel database online...');
+                        if (docId) {
+                            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', docId), {
+                                ...payload,
+                                updatedAt: Date.now()
+                            });
+                        } else {
+                            const newDocId = `custom_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', newDocId), {
+                                id: Date.now(),
+                                ...payload,
+                                updatedAt: Date.now()
+                            });
+                            return newDocId;
+                        }
+                    },
+                    deleteContact: async (docId) => {
+                        if (!currentUser || !db || !docId) throw new Error('Database non connesso');
+                        updateSyncBanner('syncing', 'Eliminazione dal database online...');
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', docId));
+                    },
+                    resetDefaults: async () => {
+                        if (!currentUser || !db) throw new Error('Database non connesso');
+                        updateSyncBanner('syncing', 'Ripristino rubrica condivisa...');
+                        const snap = await getDocs(contactsColRef);
+                        for (const d of snap.docs) {
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', d.id));
+                        }
+                        await seedDefaultContactsToFirestore(contactsColRef);
+                    }
+                };
+            } catch (err) {
+                console.error('Errore inizializzazione Firebase:', err);
+                updateSyncBanner('offline', 'Connessione cloud non disponibile');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initCloudContactsSync();
+        });
+    </script>
 
     <script>
         // ==========================================
@@ -2208,33 +2344,17 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         ];
 
         const STORAGE_KEYS = {
-            CONTACTS: 'cannizzaro_custom_contacts_v4',
             FAV_CONTACTS: 'cannizzaro_fav_contacts_v1'
         };
 
-        let contactsData = loadContacts();
+        // Esponi globalmente per sincronizzazione con Firebase Firestore
+        window.defaultContactsData = defaultContactsData;
+        window.contactsData = [...defaultContactsData];
         let favContactIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS.FAV_CONTACTS) || '[]'));
 
         let currentLocationFilter = 'ALL';
         let onlyFavContacts = false;
         let currentTab = 'rubrica';
-
-        function loadContacts() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEYS.CONTACTS);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-                }
-            } catch (e) {}
-            return [...defaultContactsData];
-        }
-
-        function persistContacts() {
-            try {
-                localStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contactsData));
-            } catch (e) {}
-        }
 
         function persistFavorites() {
             try {
@@ -2244,15 +2364,21 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
         function toggleContactFav(id, event) {
             if (event) event.stopPropagation();
-            if (favContactIds.has(id)) {
+            const key = String(id);
+            if (favContactIds.has(key) || favContactIds.has(id)) {
+                favContactIds.delete(key);
                 favContactIds.delete(id);
                 showToast('Contatto rimosso dai preferiti');
             } else {
-                favContactIds.add(id);
+                favContactIds.add(key);
                 showToast('Contatto aggiunto ai preferiti');
             }
             persistFavorites();
             renderContacts();
+        }
+
+        function isContactFav(id) {
+            return favContactIds.has(String(id)) || favContactIds.has(id);
         }
 
         function handleSearch() {
@@ -2275,11 +2401,12 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             const badge = document.getElementById('rubricaBadgeDesk');
             const countLabel = document.getElementById('contactsCountLabel');
             const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+            const currentList = window.contactsData || [];
 
-            badge.textContent = contactsData.length;
+            badge.textContent = currentList.length;
 
-            let filtered = contactsData.filter(c => {
-                const matchesFav = !onlyFavContacts || favContactIds.has(c.id);
+            let filtered = currentList.filter(c => {
+                const matchesFav = !onlyFavContacts || isContactFav(c.id);
                 const matchesLoc = currentLocationFilter === 'ALL' || (c.location && c.location.toLowerCase().includes(currentLocationFilter.toLowerCase()));
                 const str = `${c.name} ${c.phone} ${c.location} ${c.note}`.toLowerCase();
                 const matchesQuery = !query || str.includes(query);
@@ -2287,8 +2414,8 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             });
 
             filtered.sort((a, b) => {
-                const aFav = favContactIds.has(a.id) ? 1 : 0;
-                const bFav = favContactIds.has(b.id) ? 1 : 0;
+                const aFav = isContactFav(a.id) ? 1 : 0;
+                const bFav = isContactFav(b.id) ? 1 : 0;
                 return bFav - aFav;
             });
 
@@ -2304,12 +2431,14 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             list.innerHTML = filtered.map(c => {
                 const rawNum = c.phone.split('/')[0].trim();
                 const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
-                const isFav = favContactIds.has(c.id);
+                const isFav = isContactFav(c.id);
+                const safeDocId = (c.docId || '').replace(/'/g, "\\'");
+                const safeId = String(c.id).replace(/'/g, "\\'");
                 return `
                 <div class="bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-1">
-                            <button onclick="toggleContactFav(${c.id}, event)" class="shrink-0 p-0.5 -ml-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                            <button onclick="toggleContactFav('${safeId}', event)" class="shrink-0 p-0.5 -ml-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
                                 <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
                             </button>
                             <h4 class="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight truncate">${c.name}</h4>
@@ -2320,8 +2449,11 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                         </div>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
-                        <button onclick="copyText('${c.phone}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-[11px] px-2 py-1.5 rounded-lg transition max-w-[105px] truncate" title="Copia ${c.phone}">
+                        <button onclick="copyText('${c.phone.replace(/'/g, "\\'")}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-[11px] px-2 py-1.5 rounded-lg transition max-w-[95px] truncate" title="Copia ${c.phone}">
                             ${c.phone}
+                        </button>
+                        <button onclick="openEditContactModal('${safeDocId}', '${safeId}')" class="w-8 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 active:scale-95 text-hospital-800 border border-sky-200 flex items-center justify-center transition shrink-0" title="Modifica numero o collocazione per tutti">
+                            <i class="fa-solid fa-pen text-[11px]"></i>
                         </button>
                         <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
                             <i class="fa-solid fa-phone text-xs"></i>
@@ -2331,8 +2463,10 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             `}).join('');
         }
 
+        window.renderContacts = renderContacts;
+
         function openEmergencyModal() {
-            const emergencyContacts = contactsData.filter(c => c.emergency);
+            const emergencyContacts = (window.contactsData || []).filter(c => c.emergency);
             const container = document.getElementById('emergencyList');
             container.innerHTML = emergencyContacts.map(c => {
                 const rawNum = c.phone.split('/')[0].trim();
@@ -2856,7 +2990,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             if (dilContainer) {
                 dilContainer.innerHTML = drug.dilutions.map((dil, idx) => `
                     <button type="button" onclick="applyDilution(${idx})" data-dil-idx="${idx}"
-                        class="dil-btn px-2 py-0.5 rounded-md text-[10px] font-bold border transition active:scale-95 ${idx === 0 ? 'bg-hospital-700 text-white border-hospital-700' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">
+                        class="dil-btn px-2.5 py-1 rounded-md text-[10px] font-bold border transition active:scale-95 ${idx === 0 ? 'bg-sky-800 text-white border-sky-800 shadow-xs' : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50'}">
                         ${dil.label}
                     </button>
                 `).join('');
@@ -2918,11 +3052,9 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
             document.querySelectorAll('.dil-btn').forEach((btn, i) => {
                 if (i === idx) {
-                    btn.classList.add('bg-hospital-700', 'text-white', 'border-hospital-700');
-                    btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                    btn.className = 'dil-btn px-2.5 py-1 rounded-md text-[10px] font-bold border transition active:scale-95 bg-sky-800 text-white border-sky-800 shadow-xs';
                 } else {
-                    btn.classList.remove('bg-hospital-700', 'text-white', 'border-hospital-700');
-                    btn.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+                    btn.className = 'dil-btn px-2.5 py-1 rounded-md text-[10px] font-bold border transition active:scale-95 bg-white text-slate-800 border-slate-300 hover:bg-slate-50';
                 }
             });
 
@@ -3628,7 +3760,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 return nameMatch || tagMatch || kwMatch;
             });
 
-            const matchedContacts = contactsData.filter(c => {
+            const matchedContacts = (window.contactsData || []).filter(c => {
                 const words = q.replace(/interno|numero|telefono|chiama|dove|trova|piano|edificio|reparto/g, '').trim().split(/\s+/);
                 return words.some(w => w.length > 2 && `${c.name} ${c.note}`.toLowerCase().includes(w));
             });
@@ -3689,9 +3821,33 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         }
 
         // ==========================================
-        // MODALI RUBRICA & UTILITÀ
+        // MODALI RUBRICA CONDIVISA (AGGIUNTA, MODIFICA, ELIMINAZIONE)
         // ==========================================
         function openAddContactModal() {
+            document.getElementById('editContactDocId').value = '';
+            document.getElementById('contactModalTitle').textContent = 'Aggiungi Nuovo Interno (Condiviso)';
+            document.getElementById('newContactName').value = '';
+            document.getElementById('newContactPhone').value = '';
+            document.getElementById('newContactLoc').value = '';
+            document.getElementById('newContactNote').value = '';
+            document.getElementById('newContactEmergency').checked = false;
+            document.getElementById('deleteContactBtn').classList.add('hidden');
+            document.getElementById('addContactModal').classList.remove('hidden');
+        }
+
+        function openEditContactModal(docId, fallbackId) {
+            const list = window.contactsData || [];
+            const contact = list.find(c => (docId && c.docId === docId) || String(c.id) === String(fallbackId));
+            if (!contact) return;
+
+            document.getElementById('editContactDocId').value = contact.docId || '';
+            document.getElementById('contactModalTitle').textContent = 'Modifica Interno / Collocazione';
+            document.getElementById('newContactName').value = contact.name || '';
+            document.getElementById('newContactPhone').value = contact.phone || '';
+            document.getElementById('newContactLoc').value = contact.location || '';
+            document.getElementById('newContactNote').value = contact.note || '';
+            document.getElementById('newContactEmergency').checked = Boolean(contact.emergency);
+            document.getElementById('deleteContactBtn').classList.remove('hidden');
             document.getElementById('addContactModal').classList.remove('hidden');
         }
 
@@ -3707,35 +3863,80 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             document.getElementById('confirmResetModal').classList.add('hidden');
         }
 
-        function confirmResetRubrica() {
-            localStorage.removeItem(STORAGE_KEYS.CONTACTS);
-            contactsData = [...defaultContactsData];
+        async function confirmResetRubrica() {
             closeConfirmResetModal();
-            renderContacts();
-            showToast('Rubrica predefinita ripristinata');
+            if (window.cloudRubricaAPI) {
+                try {
+                    await window.cloudRubricaAPI.resetDefaults();
+                    showToast('Rubrica condivisa ripristinata per tutti');
+                } catch (err) {
+                    showToast('Errore durante il ripristino nel cloud');
+                }
+            } else {
+                window.contactsData = [...defaultContactsData];
+                renderContacts();
+                showToast('Rubrica predefinita ripristinata');
+            }
         }
 
-        function saveNewContact(e) {
+        async function saveContactForm(e) {
             e.preventDefault();
+            const docId = document.getElementById('editContactDocId').value.trim();
             const name = document.getElementById('newContactName').value.trim();
             const phone = document.getElementById('newContactPhone').value.trim();
             const location = document.getElementById('newContactLoc').value.trim() || 'Edificio Ospedaliero';
             const note = document.getElementById('newContactNote').value.trim();
+            const emergency = document.getElementById('newContactEmergency').checked;
 
             if (!name || !phone) return;
 
-            const newId = Date.now();
-            contactsData.unshift({ id: newId, name, phone, location, note });
-            favContactIds.add(newId);
+            const submitBtn = document.getElementById('saveContactSubmitBtn');
+            const origText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Salvataggio...';
 
-            persistContacts();
-            persistFavorites();
+            try {
+                if (window.cloudRubricaAPI) {
+                    const createdId = await window.cloudRubricaAPI.saveContact(docId, {
+                        name,
+                        phone,
+                        location,
+                        note,
+                        emergency
+                    });
+                    if (!docId && createdId) {
+                        favContactIds.add(String(createdId));
+                        persistFavorites();
+                    }
+                    showToast(docId ? `Modifica salvata per tutti gli utenti` : `Interno ${phone} pubblicato per tutti`);
+                } else {
+                    const newId = Date.now();
+                    window.contactsData.unshift({ id: newId, name, phone, location, note, emergency });
+                    renderContacts();
+                    showToast('Salvato localmente (cloud non connesso)');
+                }
+                closeAddContactModal();
+                switchTab('rubrica');
+            } catch (err) {
+                showToast('Errore salvataggio sul database online');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = origText;
+            }
+        }
 
-            e.target.reset();
-            closeAddContactModal();
-            switchTab('rubrica');
-            renderContacts();
-            showToast(`Interno ${phone} salvato nei preferiti`);
+        async function deleteCurrentEditingContact() {
+            const docId = document.getElementById('editContactDocId').value.trim();
+            if (!docId) return;
+            try {
+                if (window.cloudRubricaAPI) {
+                    await window.cloudRubricaAPI.deleteContact(docId);
+                    showToast('Contatto eliminato per tutti gli utenti');
+                }
+                closeAddContactModal();
+            } catch (err) {
+                showToast('Errore durante l\'eliminazione');
+            }
         }
 
         function clearSearch() {
