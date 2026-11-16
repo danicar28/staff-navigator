@@ -214,9 +214,10 @@
                     </button>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
-                    <span id="contactsCountLabel" class="text-[10px] font-bold text-slate-500 px-1">0</span>
-                    <button onclick="askResetRubrica()" class="w-6 h-6 rounded text-[11px] text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 active:scale-95 transition flex items-center justify-center" title="Ripristina rubrica predefinita">
-                        <i class="fa-solid fa-rotate-left"></i>
+                    <span id="contactsCountLabel" class="text-[10px] font-bold text-slate-500 px-0.5">0</span>
+                    <button type="button" id="cloudSyncPill" onclick="openCloudDiagModal()" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 active:scale-95 transition flex items-center gap-1 shrink-0" title="Verifica connessione Firebase">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse inline-block"></span>
+                        <span>Sync...</span>
                     </button>
                     <button onclick="openAddContactModal()" class="bg-hospital-700 text-white active:scale-95 font-bold px-2 py-0.5 rounded text-[11px] shadow-xs transition flex items-center gap-1">
                         <i class="fa-solid fa-plus text-[10px]"></i>
@@ -230,13 +231,9 @@
                 <!-- Popolato da JS -->
             </div>
 
-            <!-- Indicatore discreto sincronizzazione Cloud -->
-            <div class="flex items-center justify-between px-2 py-0.5 text-[10px] text-slate-500">
-                <div id="cloudSyncStatus" class="flex items-center gap-1 font-medium">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block"></span>
-                    <span>Connessione cloud...</span>
-                </div>
-                <span class="text-[9px]">Tocca il numero per copiare</span>
+            <!-- Nota informativa discreta -->
+            <div class="flex items-center justify-end px-2 py-0.5 text-[9px] text-slate-400">
+                <span>Tocca il numero per copiare • Tocca <i class="fa-solid fa-pen text-[8px]"></i> per modificare</span>
             </div>
 
             <div id="emptyContacts" class="hidden text-center py-6 px-4 bg-white rounded-lg border border-slate-200">
@@ -1087,23 +1084,6 @@
         </div>
     </div>
 
-    <!-- MODAL: CONFERMA RIPRISTINO RUBRICA -->
-    <div id="confirmResetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xs rounded-2xl shadow-xl p-4 space-y-3">
-            <div class="flex items-center gap-2 text-slate-800">
-                <i class="fa-solid fa-rotate-left text-hospital-700"></i>
-                <h3 class="font-bold text-sm">Ripristinare la rubrica condivisa?</h3>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed">
-                Verranno ricaricati i contatti predefiniti dell'ospedale nel database online per tutti gli utenti.
-            </p>
-            <div class="flex justify-end gap-2 pt-1">
-                <button onclick="closeConfirmResetModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
-                <button onclick="confirmResetRubrica()" class="px-3.5 py-1.5 text-xs font-bold bg-hospital-700 text-white rounded-lg">Ripristina</button>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL: ASSISTENTE VOCALE & CHAT AI -->
     <div id="assistantModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] pb-safe">
@@ -1199,9 +1179,66 @@
         <span id="toastMsg">Copiato negli appunti</span>
     </div>
 
+    <!-- MODAL: DIAGNOSTICA CONNESSIONE FIREBASE -->
+    <div id="cloudDiagModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-server text-sky-300"></i>
+                    <h3 class="font-bold text-sm">Stato Connessione Cloud Firebase</h3>
+                </div>
+                <button type="button" onclick="closeCloudDiagModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3 text-xs">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-semibold">Progetto Firebase:</span>
+                        <span id="diagProjectId" class="font-mono font-bold text-slate-900">cannizzaro-staff</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-semibold">Autenticazione Anonima:</span>
+                        <span id="diagAuthStatus" class="font-bold text-amber-700">Verifica in corso...</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-semibold">Database Firestore:</span>
+                        <span id="diagDbStatus" class="font-bold text-amber-700">Verifica in corso...</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-semibold">Dominio Corrente:</span>
+                        <span id="diagDomain" class="font-mono text-[11px] text-slate-700 truncate max-w-[180px]">--</span>
+                    </div>
+                </div>
+
+                <div id="diagErrorBox" class="hidden bg-red-50 border border-red-200 rounded-xl p-2.5 text-[11px] text-red-900 space-y-1">
+                    <div class="font-extrabold flex items-center gap-1">
+                        <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+                        <span>Dettaglio Errore Rilevato:</span>
+                    </div>
+                    <div id="diagErrorCode" class="font-mono font-bold text-red-700 break-all"></div>
+                    <div id="diagErrorHint" class="text-red-800 leading-snug"></div>
+                </div>
+
+                <div id="diagSuccessBox" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-600 text-sm shrink-0"></i>
+                    <span>Connessione attiva e sincronizzata in tempo reale con il cloud!</span>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-1">
+                    <button type="button" onclick="closeCloudDiagModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-xl">Chiudi</button>
+                    <button type="button" id="diagRetryBtn" onclick="retryCloudConnection()" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-xl shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Testa Connessione</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Integrazione Firebase Cloud Firestore per Rubrica Condivisa in Tempo Reale -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -1221,16 +1258,56 @@
         let auth = null;
         let currentUser = null;
         let isSeedingDefaults = false;
+        let unsubscribeContacts = null;
 
-        function updateSyncBanner(state, text) {
-            const el = document.getElementById('cloudSyncStatus');
-            if (!el) return;
+        function getHumanFirebaseHint(err) {
+            const code = (err?.code || err?.message || '').toLowerCase();
+            if (code.includes('unauthorized-domain')) {
+                return `Il dominio "${window.location.hostname || 'file locale'}" non è autorizzato su Firebase. Vai su Authentication → Settings → Authorized domains e aggiungilo (oppure apri l'app da un link HTTPS).`;
+            }
+            if (code.includes('operation-not-allowed')) {
+                return 'L’accesso Anonimo non risulta attivo su Authentication → Sign-in method.';
+            }
+            if (code.includes('permission-denied')) {
+                return 'Le regole di Firestore bloccano l’accesso. Pubblica le nuove regole nella scheda Rules di Firestore.';
+            }
+            if (code.includes('unavailable') || code.includes('offline') || code.includes('network')) {
+                return 'Il dispositivo non riesce a raggiungere i server Google Firestore (rete ospedaliera/firewall o assenza di connessione internet).';
+            }
+            if (code.includes('not-found') || code.includes('does not exist')) {
+                return 'Il database Firestore non è stato ancora creato nella console Firebase (Build → Firestore Database → Crea database).';
+            }
+            return err?.message || 'Errore sconosciuto durante la connessione a Firebase.';
+        }
+
+        function updateSyncBanner(state, text, diagUpdate = {}) {
+            window.cloudSyncInfo = {
+                ...(window.cloudSyncInfo || {}),
+                state,
+                text,
+                projectId: firebaseConfig?.projectId || 'cannizzaro-staff',
+                domain: window.location.hostname || window.location.protocol,
+                ...diagUpdate
+            };
+            if (typeof window.refreshCloudDiagUI === 'function') {
+                window.refreshCloudDiagUI();
+            }
+
+            const pill = document.getElementById('cloudSyncPill');
+            if (!pill) return;
+
             if (state === 'online') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span><span class="text-emerald-800">${text}</span>`;
+                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 active:scale-95 transition flex items-center gap-1 shrink-0';
+                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span><span>Sync</span>`;
+                pill.title = text;
             } else if (state === 'syncing') {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping inline-block"></span><span class="text-hospital-700">${text}</span>`;
+                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-50 text-hospital-800 border border-sky-200 active:scale-95 transition flex items-center gap-1 shrink-0';
+                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping inline-block"></span><span>Sync...</span>`;
+                pill.title = text;
             } else {
-                el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span><span class="text-amber-800">${text}</span>`;
+                pill.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 active:scale-95 transition flex items-center gap-1 shrink-0';
+                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span><span>Offline</span>`;
+                pill.title = text;
             }
         }
 
@@ -1254,6 +1331,7 @@
                 }
             } catch (err) {
                 console.error('Errore popolamento iniziale Firestore:', err);
+                throw err;
             } finally {
                 isSeedingDefaults = false;
             }
@@ -1261,12 +1339,24 @@
 
         async function initCloudContactsSync() {
             if (!firebaseConfig) {
-                updateSyncBanner('offline', 'Modalità offline (configurazione cloud assente)');
+                updateSyncBanner('offline', 'Modalità offline (configurazione cloud assente)', {
+                    authStatus: 'Non configurato',
+                    dbStatus: 'Non configurato',
+                    errorCode: 'missing-config',
+                    errorHint: 'Configurazione Firebase mancante.'
+                });
                 return;
             }
 
+            updateSyncBanner('syncing', 'Connessione al database Firebase in corso...', {
+                authStatus: 'Accesso in corso...',
+                dbStatus: 'In attesa...',
+                errorCode: '',
+                errorHint: ''
+            });
+
             try {
-                const app = initializeApp(firebaseConfig);
+                const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
@@ -1280,6 +1370,13 @@
 
                 if (!currentUser) return;
 
+                updateSyncBanner('syncing', 'Autenticazione OK, lettura Firestore...', {
+                    authStatus: `OK (UID: ${currentUser.uid.slice(0, 6)}...)`,
+                    dbStatus: 'Connessione a Firestore...',
+                    errorCode: '',
+                    errorHint: ''
+                });
+
                 // Percorso pubblico condiviso tra tutti gli utenti dell'app
                 const contactsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro');
 
@@ -1289,8 +1386,10 @@
                     await seedDefaultContactsToFirestore(contactsColRef);
                 }
 
+                if (unsubscribeContacts) unsubscribeContacts();
+
                 // Ascolto in tempo reale di tutte le aggiunte e modifiche
-                onSnapshot(contactsColRef, (snapshot) => {
+                unsubscribeContacts = onSnapshot(contactsColRef, (snapshot) => {
                     const cloudList = [];
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
@@ -1313,10 +1412,27 @@
                     if (typeof window.renderContacts === 'function') {
                         window.renderContacts();
                     }
-                    updateSyncBanner('online', `Cloud attivo • ${cloudList.length} interni`);
+                    const isFromCache = snapshot.metadata?.fromCache;
+                    if (isFromCache) {
+                        updateSyncBanner('offline', `Cache locale (${cloudList.length} interni) — In attesa di rete`, {
+                            dbStatus: `Solo cache locale (${cloudList.length} doc)`,
+                            errorCode: 'firestore/from-cache',
+                            errorHint: 'Il browser non ha ancora ricevuto risposta dal server Firestore (controlla connessione internet o firewall).'
+                        });
+                    } else {
+                        updateSyncBanner('online', `Firebase connesso e sincronizzato (${cloudList.length} interni)`, {
+                            dbStatus: `Connesso (${cloudList.length} interni)`,
+                            errorCode: '',
+                            errorHint: ''
+                        });
+                    }
                 }, (error) => {
                     console.error('Errore sincronizzazione Firestore:', error);
-                    updateSyncBanner('offline', 'Errore sincronizzazione database online');
+                    updateSyncBanner('offline', 'Errore sincronizzazione database online', {
+                        dbStatus: 'Errore lettura/ascolto',
+                        errorCode: error?.code || error?.message || 'firestore-error',
+                        errorHint: getHumanFirebaseHint(error)
+                    });
                 });
 
                 // Espone le operazioni CRUD cloud allo script principale
@@ -1343,22 +1459,21 @@
                         if (!currentUser || !db || !docId) throw new Error('Database non connesso');
                         updateSyncBanner('syncing', 'Eliminazione dal database online...');
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', docId));
-                    },
-                    resetDefaults: async () => {
-                        if (!currentUser || !db) throw new Error('Database non connesso');
-                        updateSyncBanner('syncing', 'Ripristino rubrica condivisa...');
-                        const snap = await getDocs(contactsColRef);
-                        for (const d of snap.docs) {
-                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rubrica_cannizzaro', d.id));
-                        }
-                        await seedDefaultContactsToFirestore(contactsColRef);
                     }
                 };
             } catch (err) {
                 console.error('Errore inizializzazione Firebase:', err);
-                updateSyncBanner('offline', 'Connessione cloud non disponibile');
+                const isAuthErr = (err?.code || '').startsWith('auth/');
+                updateSyncBanner('offline', 'Connessione cloud non disponibile', {
+                    authStatus: isAuthErr ? 'Errore Autenticazione' : (currentUser ? 'OK' : 'Non autenticato'),
+                    dbStatus: isAuthErr ? 'Bloccato (Auth fallita)' : 'Errore connessione',
+                    errorCode: err?.code || err?.message || 'init-error',
+                    errorHint: getHumanFirebaseHint(err)
+                });
             }
         }
+
+        window.retryCloudContactsSync = initCloudContactsSync;
 
         window.addEventListener('DOMContentLoaded', () => {
             initCloudContactsSync();
@@ -2437,7 +2552,71 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
         // Esponi globalmente per sincronizzazione con Firebase Firestore
         window.defaultContactsData = defaultContactsData;
         window.contactsData = [...defaultContactsData];
+        window.cloudSyncInfo = {
+            state: 'syncing',
+            text: 'Connessione al database Firebase in corso...',
+            projectId: 'cannizzaro-staff',
+            authStatus: 'Verifica in corso...',
+            dbStatus: 'Verifica in corso...',
+            domain: window.location.hostname || window.location.protocol,
+            errorCode: '',
+            errorHint: ''
+        };
         let favContactIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEYS.FAV_CONTACTS) || '[]'));
+
+        function refreshCloudDiagUI() {
+            const info = window.cloudSyncInfo || {};
+            const projEl = document.getElementById('diagProjectId');
+            const authEl = document.getElementById('diagAuthStatus');
+            const dbEl = document.getElementById('diagDbStatus');
+            const domEl = document.getElementById('diagDomain');
+            const errBox = document.getElementById('diagErrorBox');
+            const okBox = document.getElementById('diagSuccessBox');
+
+            if (projEl) projEl.textContent = info.projectId || 'cannizzaro-staff';
+            if (domEl) domEl.textContent = info.domain || '--';
+
+            if (authEl) {
+                authEl.textContent = info.authStatus || '--';
+                authEl.className = `font-bold ${(info.authStatus || '').startsWith('OK') ? 'text-emerald-700' : 'text-amber-700'}`;
+            }
+            if (dbEl) {
+                dbEl.textContent = info.dbStatus || '--';
+                dbEl.className = `font-bold ${info.state === 'online' ? 'text-emerald-700' : 'text-amber-700'}`;
+            }
+
+            if (info.errorCode) {
+                if (errBox) errBox.classList.remove('hidden');
+                if (okBox) okBox.classList.add('hidden');
+                const codeEl = document.getElementById('diagErrorCode');
+                const hintEl = document.getElementById('diagErrorHint');
+                if (codeEl) codeEl.textContent = info.errorCode;
+                if (hintEl) hintEl.textContent = info.errorHint || '';
+            } else if (info.state === 'online') {
+                if (errBox) errBox.classList.add('hidden');
+                if (okBox) okBox.classList.remove('hidden');
+            } else {
+                if (errBox) errBox.classList.add('hidden');
+                if (okBox) okBox.classList.add('hidden');
+            }
+        }
+
+        window.refreshCloudDiagUI = refreshCloudDiagUI;
+
+        function openCloudDiagModal() {
+            refreshCloudDiagUI();
+            document.getElementById('cloudDiagModal').classList.remove('hidden');
+        }
+
+        function closeCloudDiagModal() {
+            document.getElementById('cloudDiagModal').classList.add('hidden');
+        }
+
+        async function retryCloudConnection() {
+            if (typeof window.retryCloudContactsSync === 'function') {
+                await window.retryCloudContactsSync();
+            }
+        }
 
         let currentLocationFilter = 'ALL';
         let onlyFavContacts = false;
@@ -3356,35 +3535,25 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             { id: 'cefepime', name: 'CEFEPIME', category: 'Cefalosporina IV gen.', loadingDose: 'd.c. 2 g / 50 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 6 g in 50 ml S.F.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '6 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' } ] },
             { id: 'ceftazidime', name: 'CEFTAZIDIME', category: 'Cefalosporina III gen.', loadingDose: 'd.c. 25 mg/kg in 100 ml S.F. in 1 ora', note: 'Mantenimento in infusione continua: 6 g in 50 ml S.F. (o 2 g in 50 ml S.F. per Cl.Cr ≤ 50).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '6 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' } ] },
             { id: 'ceftriaxone', name: 'CEFTRIAXONE', category: 'Cefalosporina III gen.', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '2 g / 50 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'ciprofloxacina', name: 'CIPROFLOXACINA', category: 'Fluorochinolone', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 3/die' }, { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 2/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '400 mg / 200 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'cefazolina', name: 'CEFAZOLINA', category: 'Cefalosporina I gen.', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 3/die' }, { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 2/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'cefotaxime', name: 'CEFOTAXIME', category: 'Cefalosporina III gen.', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2 g / 50 ml S.F. in 1 ora × 3/die' }, { min: 11, max: 50, label: 'Cl.Cr 11 – 50 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 2–3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'clindamicina', name: 'CLINDAMICINA', category: 'Lincosamide', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 100 ml S.F. in 1 ora × 3/die' } ] },
-            { id: 'colistina', name: 'COLISTINA', category: 'Polimixina', loadingDose: 'd.c. 9 Milioni UI in 100 ml S.F. in 1 ora', note: 'Dose di carico da 9 M UI sempre raccomandata indipendentemente dalla funzione renale.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 M UI in 50 ml S.F. in 1 ora × 2/die' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 M UI in 50 ml S.F. in 1 ora × 3/die' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '1,5 M UI in 50 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 M UI in 50 ml S.F. in 1 ora × 3/die' } ] },
-            { id: 'cefiderocol', name: 'CEFIDEROCOL (FETCROJA)', category: 'Cefalosporina siderofora', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '1,5 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 0, max: 15, label: 'Cl.Cr ≤ 15 ml/min', dose: '0,75 g / 100 ml S.F. — infusione 35 ml/h × 3/die' } ] },
-            { id: 'ceftazidime_avibactam', name: 'CEFTAZIDIME / AVIBACTAM (ZAVICEFTA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 25 ml/h (50 ml in 2 ore).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2,5 g / 50 ml S.F. — infusione 25 ml/h × 3/die' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1,25 g / 50 ml S.F. — infusione 25 ml/h × 3/die' }, { min: 16, max: 30, label: 'Cl.Cr 16 – 30 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h × 2/die' }, { min: 6, max: 15, label: 'Cl.Cr 6 – 15 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h × 1/die' }, { min: 0, max: 5, label: 'Cl.Cr ≤ 5 ml/min', dose: '0,94 g / 50 ml S.F. — infusione 25 ml/h ogni 48h' } ] },
-            { id: 'ceftolozano_tazobactam', name: 'CEFTOLOZANO / TAZOBACTAM (ZERBAXA)', category: 'Cefalosporina / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'In polmonite nosocomiale/VAP considerare raddoppio posologico se indicato dal clinico.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1,5 g / 100 ml S.F. in 1 ora × 3/die' }, { min: 30, max: 50, label: 'Cl.Cr 30 – 50 ml/min', dose: '750 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 15, max: 29, label: 'Cl.Cr 15 – 29 ml/min', dose: '375 mg / 100 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 14, label: 'Cl.Cr < 15 ml/min', dose: '750 mg carico, poi 150 mg / 100 ml S.F. in 1h × 3/die' } ] },
-            { id: 'daptomicina', name: 'DAPTOMICINA', category: 'Lipopeptide ciclico', loadingDose: '8 – 10 mg/kg in 50 ml S.F. in 30 min', note: 'Non usare in polmonite (inattivata dal surfattante polmonare).', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '8 – 10 mg/kg in 50 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '8 – 10 mg/kg in 50 ml S.F. in 30 min ogni 48h' } ] },
-            { id: 'doxiciclina', name: 'DOXICICLINA', category: 'Tetraciclina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '100 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
-            { id: 'ertapenem', name: 'ERTAPENEM', category: 'Carbapeneme', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '1 g / 50 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '500 mg / 50 ml S.F. in 30 min × 1/die' } ] },
-            { id: 'eritromicina', name: 'ERITROMICINA', category: 'Macrolide', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 11, max: 999, label: 'Cl.Cr > 10 ml/min', dose: '1 g / 250 ml S.F. in 1 ora × 3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 250 ml S.F. in 1 ora × 3/die' } ] },
-            { id: 'fluconazolo', name: 'FLUCONAZOLO', category: 'Antimicotico triazolico', loadingDose: 'd.c. 800 mg / 400 ml in 2 ore', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '400 mg / 200 ml in 1 ora × 1/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: '200 mg / 100 ml in 1 ora × 1/die' } ] },
-            { id: 'fosfomicina', name: 'FOSFOMICINA (INFECTOFOS)', category: 'Epossido / Battericida', loadingDose: 'Nessuna dose di carico specifica', note: 'Elevato contenuto di sodio (14,4 mEq Na+ per grammo di fosfomicina).', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '6 g / 250 ml in 1 ora × 3/die (o 8 g × 3/die)' }, { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '70% della dose divisa in 2–3 somministrazioni' }, { min: 21, max: 30, label: 'Cl.Cr 21 – 30 ml/min', dose: '60% della dose divisa in 2–3 somministrazioni' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '40% della dose divisa in 2–3 somministrazioni' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '20% della dose divisa in 1–2 somministrazioni' } ] },
-            { id: 'gentamicina', name: 'GENTAMICINA', category: 'Aminoglicoside', loadingDose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora', note: 'Monitorare livelli plasmatici (picco/valle) e funzione renale.', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 24h' }, { min: 41, max: 60, label: 'Cl.Cr 41 – 60 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 36h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 48h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '3 – 5 mg/kg in 100 ml S.F. in 1 ora ogni 72h' } ] },
-            { id: 'imipenem', name: 'IMIPENEM / CILASTATINA', category: 'Carbapeneme', loadingDose: 'Nessuna dose di carico specifica', note: 'Attenzione al rischio convulsivo in insufficienza renale severa.', bands: [ { min: 71, max: 999, label: 'Cl.Cr > 70 ml/min', dose: '500 mg / 100 ml S.F. in 30 min × 4/die' }, { min: 41, max: 70, label: 'Cl.Cr 41 – 70 ml/min', dose: '500 mg / 100 ml S.F. in 30 min × 3/die' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '250 mg / 100 ml S.F. in 30 min × 3/die' }, { min: 6, max: 20, label: 'Cl.Cr 6 – 20 ml/min', dose: '250 mg / 100 ml S.F. in 30 min × 2/die' }, { min: 0, max: 5, label: 'Cl.Cr ≤ 5 ml/min', dose: '250 mg / 100 ml S.F. solo dopo dialisi' } ] },
-            { id: 'levofloxacina', name: 'LEVOFLOXACINA', category: 'Fluorochinolone', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 2/die' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora × 1/die' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '250 mg / 50 ml S.F. in 1 ora ogni 48h' } ] },
-            { id: 'linezolid', name: 'LINEZOLID (ZYVOXID)', category: 'Ossazolidinone', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale (monitorare emocromo/piastrine > 10–14 gg).', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 300 ml in 1 ora × 2/die' } ] },
-            { id: 'meropenem', name: 'MEROPENEM', category: 'Carbapeneme', loadingDose: 'd.c. 1 – 2 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: preparare 1 g in 50 ml S.F. (stabilità soluzione ~6–8h).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 6,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '1 g / 50 ml S.F. — infusione a 4,5 ml/h' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '1 g / 50 ml S.F. — infusione a 3 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g / 50 ml S.F. — infusione a 2 ml/h' } ] },
-            { id: 'meropenem_vaborbactam', name: 'MEROPENEM / VABORBACTAM (VABOREM)', category: 'Carbapeneme / Inibitore beta-lattamasi', loadingDose: 'Nessuna dose di carico specifica', note: 'Infusione prolungata a 35 ml/h (100 ml in ~3 ore).', bands: [ { min: 40, max: 999, label: 'Cl.Cr ≥ 40 ml/min', dose: '4 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 20, max: 39, label: 'Cl.Cr 20 – 39 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 3/die' }, { min: 10, max: 19, label: 'Cl.Cr 10 – 19 ml/min', dose: '2 g / 100 ml S.F. — infusione 35 ml/h × 2/die' }, { min: 0, max: 9, label: 'Cl.Cr < 10 ml/min', dose: '1 g / 100 ml S.F. — infusione 35 ml/h × 2/die' } ] },
-            { id: 'metronidazolo', name: 'METRONIDAZOLO', category: 'Nitroimidazolo', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '500 mg / 100 ml in 30 min × 3/die' } ] },
-            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Beta-lattamico / Inibitore beta-lattamasi', loadingDose: 'd.c. 4,5 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: 13,5 g (3 fl) in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 2 ml/h' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '13,5 g / 50 ml S.F. — infusione a 1 ml/h' } ] },
-            { id: 'rifampicina', name: 'RIFAMPICINA', category: 'Rifamicina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 250 ml S.F. in 1 ora × 1/die' } ] },
-            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOSID)', category: 'Glicopeptide', loadingDose: 'd.c. 6 – 12 mg/kg ogni 12 ore per 3 dosi (in 50 ml S.F. in 30 min)', note: 'Mantenimento: 6 – 12 mg/kg in 50 ml S.F. in 30 min.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min × 1/die' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min ogni 48h' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '6 – 12 mg/kg in 50 ml S.F. in 30 min ogni 72h' } ] },
-            { id: 'tigeciclina', name: 'TIGECICLINA', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora', note: 'Nessun aggiustamento richiesto in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
-            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 25 – 30 mg/kg in 250 ml S.F. in 2 ore', note: 'Mantenimento in infusione continua (target sierico 20–25 mg/L). Preparare 2 g in 50 ml S.F.', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h (o 3 g / 50 ml)' }, { min: 51, max: 80, label: 'Cl.Cr 51 – 80 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h' }, { min: 31, max: 50, label: 'Cl.Cr 31 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h' }, { min: 11, max: 30, label: 'Cl.Cr 11 – 30 ml/min', dose: '2 g / 50 ml S.F. — infusione a 0,5 ml/h' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 100 ml S.F. in 1 ora ogni 48–72h (su TDM)' } ] }
+            { id: 'ciprofloxacina', name: 'CIPROFLOXACINA', category: 'Fluorochinolone', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 61, max: 999, label: 'Cl.Cr > 60 ml/min', dose: '400 mg / 200 ml × 3/die' }, { min: 31, max: 60, label: 'Cl.Cr 31 – 60 ml/min', dose: '400 mg / 200 ml × 2/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '400 mg / 200 ml × 1/die' } ] },
+            { id: 'clindamicina', name: 'CLINDAMICINA', category: 'Lincosamide', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessuna variazione in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 50 ml S.F. in 30 min × 3/die' } ] },
+            { id: 'colistina', name: 'COLISTINA (COLIMICINA)', category: 'Polimixina', loadingDose: 'd.c. 9.000.000 UI / 100 ml S.F. in 1 ora (somministrare in tutti i casi)', note: 'Mantenimento: iniziare dopo 12 ore dalla dose di carico.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '4,5 milioni UI / 100 ml S.F. in 1 ora × 2/die' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '3,5 milioni UI / 100 ml S.F. in 1 ora × 2/die' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '2,5 milioni UI / 100 ml S.F. in 1 ora × 2/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1,5 milioni UI / 100 ml S.F. in 1 ora × 2/die' } ] },
+            { id: 'daptomicina', name: 'DAPTOMICINA (CUBICIN)', category: 'Lipopeptide', loadingDose: 'Nessuna dose di carico specifica', note: 'Infezioni gravi / batteriemia / endocardite: considerare fino a 8–10 mg/kg secondo clinica.', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '6 mg/kg / 50 ml S.F. in 30 min × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '6 mg/kg / 50 ml S.F. in 30 min ogni 48 ore' } ] },
+            { id: 'doxiciclina', name: 'DOXICICLINA (BASSADO)', category: 'Tetraciclina', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '100 mg / 100 ml S.F. in 1 ora × 2/die' } ] },
+            { id: 'ertapenem', name: 'ERTAPENEM (INVANZ)', category: 'Carbapeneme', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 31, max: 999, label: 'Cl.Cr > 30 ml/min', dose: '1 g / 50 ml S.F. in 1 ora × 1/die' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '500 mg / 50 ml S.F. in 1 ora × 1/die' } ] },
+            { id: 'fluconazolo', name: 'FLUCONAZOLO', category: 'Antimicotico triazolico', loadingDose: 'Nessuna dose di carico specifica', note: 'Se indicato carico nella candidosi invasiva: 800 mg il 1° giorno.', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '400 mg × 1/die' }, { min: 0, max: 50, label: 'Cl.Cr ≤ 50 ml/min', dose: '200 mg × 1/die' } ] },
+            { id: 'fosfomicina', name: 'FOSFOMICINA (INFECTOFOS)', category: 'Epossido', loadingDose: 'Nessuna dose di carico specifica', note: 'Flaconi da 4 g da diluire in 250 ml di soluzione glucosata (G5%).', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '4 g / 250 ml Gluc. × 4/die (16 g/die)' }, { min: 31, max: 40, label: 'Cl.Cr 31 – 40 ml/min', dose: '4 g / 250 ml Gluc. × 3/die (12 g/die)' }, { min: 21, max: 30, label: 'Cl.Cr 21 – 30 ml/min', dose: '4 g / 250 ml Gluc. × 2/die (8 g/die)' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '4 g / 250 ml Gluc. × 1/die (4 g/die)' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '4 g / 250 ml Gluc. ogni 48 ore' } ] },
+            { id: 'levofloxacina', name: 'LEVOFLOXACINA', category: 'Fluorochinolone', loadingDose: 'd.c. 500 mg / 100 ml in 1 ora × 2/die il 1° giorno (se schema ridotto)', note: '', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '500 mg / 100 ml in 1 ora × 2/die (1000 mg/die)' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '500 mg × 2 il 1° giorno, poi 250 mg × 2/die' }, { min: 11, max: 20, label: 'Cl.Cr 11 – 20 ml/min', dose: '500 mg × 2 il 1° giorno, poi 250 mg ogni 24 ore' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg × 2 il 1° giorno, poi 250 mg ogni 48 ore' } ] },
+            { id: 'linezolid', name: 'LINEZOLID (ZYVOXID)', category: 'Ossazolidinone', loadingDose: 'Nessuna dose di carico specifica', note: 'Nessun aggiustamento posologico in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '600 mg / 300 ml × 2/die (infondere in 1 ora)' } ] },
+            { id: 'meropenem', name: 'MEROPENEM', category: 'Carbapeneme', loadingDose: 'd.c. 2 g / 100 ml S.F. in 1 ora', note: 'Stabilità soluzione: 1 g / 50 ml S.F. (sostituire siringa ogni 6–8 ore; non superare 40 mg/ml).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '6 g/die in infusione continua (1 g / 50 ml S.F. a 12,5 ml/h)' }, { min: 26, max: 50, label: 'Cl.Cr 26 – 50 ml/min', dose: '4 g/die in infusione continua (1 g / 50 ml S.F. a 8,3 ml/h)' }, { min: 11, max: 25, label: 'Cl.Cr 11 – 25 ml/min', dose: '2 g/die in infusione continua (1 g / 50 ml S.F. a 4,2 ml/h)' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '1 g/die in infusione continua (1 g / 50 ml S.F. a 2,1 ml/h)' } ] },
+            { id: 'metronidazolo', name: 'METRONIDAZOLO (FLAGYL)', category: 'Nitroimidazolo', loadingDose: 'Nessuna dose di carico specifica', note: '', bands: [ { min: 11, max: 999, label: 'Cl.Cr > 10 ml/min', dose: '500 mg / 100 ml × 3/die' }, { min: 0, max: 10, label: 'Cl.Cr ≤ 10 ml/min', dose: '500 mg / 100 ml × 2/die' } ] },
+            { id: 'piperacillina_tazobactam', name: 'PIPERACILLINA / TAZOBACTAM (TAZOCIN)', category: 'Beta-lattamico / Inibitore beta-lattamasi', loadingDose: 'd.c. 4,5 g / 50 ml S.F. in 30 min', note: 'Mantenimento in infusione continua: preparare 4,5 g in 50 ml S.F.', bands: [ { min: 41, max: 999, label: 'Cl.Cr > 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 8,5 ml/h (18 g/die)' }, { min: 21, max: 40, label: 'Cl.Cr 21 – 40 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 6,5 ml/h (13,5 g/die)' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '4,5 g / 50 ml S.F. — infusione a 4 ml/h (9 g/die)' } ] },
+            { id: 'teicoplanina', name: 'TEICOPLANINA (TARGOSID)', category: 'Glicopeptide', loadingDose: 'd.c. 12 mg/kg ogni 12 ore per 3 somministrazioni (in 50 ml S.F. in 30 min)', note: 'Mantenimento dopo la dose di carico (dal giorno 2-3): 12 mg/kg (oppure 6 mg/kg nelle forme non complicate).', bands: [ { min: 81, max: 999, label: 'Cl.Cr > 80 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min ogni 24 ore' }, { min: 31, max: 80, label: 'Cl.Cr 31 – 80 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min ogni 48 ore' }, { min: 0, max: 30, label: 'Cl.Cr ≤ 30 ml/min', dose: '12 mg/kg / 50 ml S.F. in 30 min ogni 72 ore' } ] },
+            { id: 'tigeciclina', name: 'TIGECICLINA (TYGACIL)', category: 'Glicilciclina', loadingDose: 'd.c. 100 mg / 100 ml S.F. in 1 ora (200 mg nelle infezioni gravi/MDR)', note: 'Nessun aggiustamento posologico in insufficienza renale.', bands: [ { min: 0, max: 999, label: 'Tutte le fasce di Cl.Cr', dose: '50 mg / 100 ml S.F. in 1 ora × 2/die (100 mg × 2/die se alto dosaggio)' } ] },
+            { id: 'vancomicina', name: 'VANCOMICINA', category: 'Glicopeptide', loadingDose: 'd.c. 30 mg/kg / 250 ml S.F. in 2 ore', note: 'Preparazione infusione continua: 2 g in 50 ml S.F. (40 mg/ml). Monitorare vancocinemia (target 20–25 mg/L).', bands: [ { min: 51, max: 999, label: 'Cl.Cr > 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 2 ml/h (2 g/die)' }, { min: 21, max: 50, label: 'Cl.Cr 21 – 50 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1,5 ml/h (1,5 g/die)' }, { min: 0, max: 20, label: 'Cl.Cr ≤ 20 ml/min', dose: '2 g / 50 ml S.F. — infusione a 1 ml/h (1 g/die)' } ] }
         ];
 
-        function initAntibioticGuide() {
+        function initAntibioticsCalculator() {
             renderAbxPickerList();
             onAbxChange();
         }
@@ -3427,7 +3596,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                             <div class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${a.name}</div>
                             <div class="text-[10px] text-slate-500 truncate">${a.category}</div>
                         </div>
-                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-indigo-700' : 'fa-chevron-right text-slate-300'} text-xs shrink-0"></i>
+                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-indigo-700' : 'fa-chevron-right text-slate-300'} text-sm shrink-0"></i>
                     </button>
                 `;
             }).join('');
@@ -3440,13 +3609,37 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             onAbxChange();
         }
 
-        function setQuickCrCl(val) {
-            document.getElementById('crclInput').value = val;
-            onCrClChange();
+        function onAbxChange() {
+            const abxSelectEl = document.getElementById('abxSelect');
+            if (!abxSelectEl) return;
+            const abxId = abxSelectEl.value;
+            const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
+
+            const titleEl = document.getElementById('selectedAbxTitle');
+            const catEl = document.getElementById('selectedAbxCategory');
+            if (titleEl) titleEl.textContent = abx.name;
+            if (catEl) catEl.textContent = abx.category;
+
+            const amikBox = document.getElementById('amikacinaCalcBox');
+            if (amikBox) {
+                if (abx.specialAmikacina) {
+                    amikBox.classList.remove('hidden');
+                    updateAmikacinaInterval();
+                } else {
+                    amikBox.classList.add('hidden');
+                }
+            }
+
+            updateAbxRecommendation();
         }
 
         function onCrClChange() {
-            onAbxChange();
+            updateAbxRecommendation();
+        }
+
+        function setQuickCrCl(val) {
+            document.getElementById('crclInput').value = val;
+            updateAbxRecommendation();
         }
 
         function updateAmikacinaInterval() {
@@ -3455,64 +3648,47 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             if (!badge) return;
             if (!isNaN(creat) && creat > 0) {
                 const hours = Math.round(creat * 9 * 10) / 10;
-                badge.textContent = `Intervallo: ogni ${hours} ore (${creat} × 9)`;
+                badge.textContent = `Ogni ${hours} ore (${creat} × 9)`;
             } else {
-                badge.textContent = 'Inserisci creatininemia';
+                badge.textContent = '-- ore';
             }
         }
 
-        function onAbxChange() {
-            const selectEl = document.getElementById('abxSelect');
-            if (!selectEl) return;
-            const abxId = selectEl.value;
+        function getRenalStatusMeta(crcl) {
+            if (crcl > 80) return { text: 'Normofunzione (> 80)', cls: 'bg-emerald-100 text-emerald-800' };
+            if (crcl > 50) return { text: 'Lieve riduzione (51–80)', cls: 'bg-sky-100 text-sky-800' };
+            if (crcl > 30) return { text: 'Moderata (31–50)', cls: 'bg-amber-100 text-amber-800' };
+            if (crcl > 15) return { text: 'Severa (16–30)', cls: 'bg-orange-100 text-orange-900' };
+            return { text: 'Grave / Dialisi (≤ 15)', cls: 'bg-red-100 text-red-800' };
+        }
+
+        function updateAbxRecommendation() {
+            const abxSelectEl = document.getElementById('abxSelect');
+            if (!abxSelectEl) return;
+            const abxId = abxSelectEl.value;
             const abx = antibioticsDatabase.find(a => a.id === abxId) || antibioticsDatabase[0];
 
-            const titleEl = document.getElementById('selectedAbxTitle');
-            if (titleEl) titleEl.textContent = abx.name;
-            const catEl = document.getElementById('selectedAbxCategory');
-            if (catEl) catEl.textContent = abx.category;
-
             const rawCrCl = parseFloat(document.getElementById('crclInput').value);
-            const crcl = isNaN(rawCrCl) ? 90 : Math.max(0, rawCrCl);
+            const crcl = isNaN(rawCrCl) || rawCrCl < 0 ? 90 : rawCrCl;
+
+            const statusMeta = getRenalStatusMeta(crcl);
+            const statusBadge = document.getElementById('renalStatusBadge');
+            statusBadge.textContent = statusMeta.text;
+            statusBadge.className = `text-[9px] font-extrabold px-1.5 py-0.2 rounded ${statusMeta.cls}`;
 
             document.querySelectorAll('.crcl-chip').forEach(btn => {
-                const chipVal = parseInt(btn.dataset.crcl);
-                if (chipVal === crcl) {
+                const chipVal = parseFloat(btn.dataset.crcl);
+                const isSelected = chipVal === crcl;
+                if (isSelected) {
                     btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95 bg-indigo-700 text-white border-indigo-700 shadow-xs';
                 } else {
-                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95 bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+                    btn.className = 'crcl-chip py-1 text-[10px] font-extrabold rounded border transition active:scale-95 bg-white text-slate-700 border-slate-200 hover:bg-slate-50';
                 }
             });
 
-            const statusBadge = document.getElementById('renalStatusBadge');
-            if (crcl > 80) {
-                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 truncate';
-                statusBadge.textContent = 'Normofunzione (> 80)';
-            } else if (crcl > 50) {
-                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 truncate';
-                statusBadge.textContent = 'Lieve riduzione (51–80)';
-            } else if (crcl > 30) {
-                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 truncate';
-                statusBadge.textContent = 'Moderata (31–50)';
-            } else if (crcl > 10) {
-                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-orange-100 text-orange-900 truncate';
-                statusBadge.textContent = 'Severa (11–30)';
-            } else {
-                statusBadge.className = 'text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-red-100 text-red-900 truncate';
-                statusBadge.textContent = 'Terminale / Dialisi (≤ 10)';
-            }
-
-            const amikBox = document.getElementById('amikacinaCalcBox');
-            if (abx.specialAmikacina) {
-                amikBox.classList.remove('hidden');
-                updateAmikacinaInterval();
-            } else {
-                amikBox.classList.add('hidden');
-            }
-
-            let activeBandIndex = abx.bands.findIndex(b => crcl >= b.min && crcl <= b.max);
-            if (activeBandIndex === -1) activeBandIndex = 0;
-            const activeBand = abx.bands[activeBandIndex];
+            let matchedIdx = abx.bands.findIndex(b => crcl >= b.min && crcl <= b.max);
+            if (matchedIdx === -1) matchedIdx = 0;
+            const activeBand = abx.bands[matchedIdx];
 
             document.getElementById('abxResultDrugName').textContent = abx.name;
             document.getElementById('abxResultBandLabel').textContent = activeBand.label;
@@ -3521,107 +3697,498 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             const maintBox = document.getElementById('abxMaintenanceBox');
             const maintText = document.getElementById('abxMaintenanceText');
             maintText.textContent = activeBand.dose;
+
             if (activeBand.contraindicated) {
-                maintBox.className = 'bg-red-600/35 border border-red-400 rounded-md p-1.5 flex items-start gap-1.5';
+                maintBox.className = 'bg-red-600/30 border border-red-400 rounded-md p-1.5 flex items-start gap-1.5';
+                maintText.className = 'text-xs font-extrabold text-red-200 mt-0.2 leading-snug';
             } else {
                 maintBox.className = 'bg-white/10 border border-white/15 rounded-md p-1.5 flex items-start gap-1.5';
+                maintText.className = 'text-xs font-extrabold text-white mt-0.2 leading-snug';
             }
 
             const noteBox = document.getElementById('abxClinicalNoteBox');
             const noteText = document.getElementById('abxClinicalNoteText');
-            if (abx.note) {
-                noteText.textContent = abx.note;
+            if (abx.note && abx.note.trim().length > 0) {
                 noteBox.classList.remove('hidden');
+                noteText.textContent = abx.note;
             } else {
                 noteBox.classList.add('hidden');
             }
 
-            const bandsContainer = document.getElementById('abxBandsList');
-            bandsContainer.innerHTML = abx.bands.map((b, idx) => {
-                const isCurrent = idx === activeBandIndex;
-                const sampleCrCl = b.max >= 999 ? Math.max(b.min + 10, 90) : Math.round((b.min + b.max) / 2);
+            const bandsList = document.getElementById('abxBandsList');
+            bandsList.innerHTML = abx.bands.map((b, idx) => {
+                const isCurrent = idx === matchedIdx;
+                const sampleCrCl = b.max >= 900 ? Math.max(85, b.min + 10) : Math.max(5, Math.round((b.min + b.max) / 2));
                 return `
-                    <button type="button" onclick="setQuickCrCl(${sampleCrCl})" class="w-full text-left p-1.5 rounded-md border transition flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 ${isCurrent ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}">
-                        <span class="text-[10px] font-extrabold ${isCurrent ? 'text-indigo-900' : 'text-slate-700'} shrink-0">
-                            ${isCurrent ? '<i class="fa-solid fa-circle-check text-indigo-600 mr-1"></i>' : ''}${b.label}
-                        </span>
-                        <span class="text-[11px] font-bold ${b.contraindicated ? 'text-red-700' : (isCurrent ? 'text-slate-950' : 'text-slate-700')}">
-                            ${b.dose}
-                        </span>
+                    <button type="button" onclick="setQuickCrCl(${sampleCrCl})" class="w-full text-left py-1.5 px-2 rounded-md border transition flex items-center justify-between gap-2 ${isCurrent ? 'bg-indigo-50 border-indigo-400 ring-1 ring-indigo-300' : 'bg-slate-50/70 border-slate-200/80 hover:bg-slate-100'}">
+                        <div class="min-w-0">
+                            <div class="text-[9px] font-extrabold uppercase tracking-wider ${isCurrent ? 'text-indigo-800' : 'text-slate-500'}">${b.label}</div>
+                            <div class="text-[11px] font-bold ${b.contraindicated ? 'text-red-700' : 'text-slate-900'} mt-0.2 leading-snug">${b.dose}</div>
+                        </div>
+                        ${isCurrent ? '<span class="shrink-0 bg-indigo-700 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase">Attiva</span>' : ''}
                     </button>
                 `;
             }).join('');
         }
 
         // ==========================================
-        // ASSISTENTE VOCALE & CHAT INTELLIGENTE
+        // DATABASE PROTOCOLLI DI REPARTO
+        // ==========================================
+        const PROTOCOLS_STORAGE_KEY = 'cannizzaro_protocols_db_v1';
+
+        const defaultProtocolsData = [
+            {
+                id: 'proto-rsi-vie-aeree',
+                title: 'Intubazione a Sequenza Rapida (RSI) & Vie Aeree Difficili',
+                category: 'Emergenza / Vie Aeree',
+                code: 'PROC-AR-01',
+                summary: 'Preparazione farmacologica, pre-ossigenazione e algoritmo di emergenza DAS / SIAARTI.',
+                content: `1. PREPARAZIONE & CHECKLIST (SOAP-ME)
+- Aspiratore funzionante con sondino rigido Yankauer pronto sotto il cuscino.
+- Ossigeno 100% + pallone autoespansibile (Ambu) + circuito va-e-vieni / ventilatore testato.
+- Videolaringoscopio + lama Macintosh 3 e 4, mandrino/introduttore di Frova, tubi endotracheali (7.0 - 7.5 - 8.0) con cuffia testata.
+- Presidi sovraglottici di salvataggio (I-gel / LMA) e set cricotiroidotomia d'emergenza (bisturi lama 10 + Frova + tubo 6.0).
+- Monitoraggio completo: ECG, SpO2, NIBP ogni 2 min (o IBP), EtCO2 capnografia continua.
+
+2. PRE-OSSIGENAZIONE (3-5 MINUTI)
+- FiO2 100% a tenuta con maschera facciale (EtO2 > 85%) o NIV/HFNC nel paziente ipossiemico.
+- Posizione sniffing / ramped (allineamento meato acustico esterno - incisura giugulare) soprattutto nell'obeso.
+
+3. INDUZIONE & MIORILASSAMENTO
+- Induttore: Ketamina 1–2 mg/kg EV (preferita in instabilità emodinamica) oppure Propofol 1–2 mg/kg EV (ridurre a 0,5–1 mg/kg nello shock) oppure Midazolam 0,1–0,2 mg/kg EV.
+- Miorilassante: Rocuronio 1,2 mg/kg EV (tempo d'azione 45–60 sec; tenere pronto Sugammadex 16 mg/kg = 1200 mg per 75 kg in caso di "Cannot Intubate Cannot Oxygenate"). In alternativa Succinilcolina 1–1,5 mg/kg EV (se assenti controindicazioni: iperkaliemia, ustioni > 24h, miopatie, trauma midollare).
+
+4. ALGORITMO FALLIMENTO (MAX 3 TENTATIVI)
+- Piano A: Laringoscopia / Videolaringoscopia (max 3 tentativi, ottimizzando posizione e BURP).
+- Piano B: Inserimento presidio sovraglottico (I-gel / LMA) per mantenere ossigenazione.
+- Piano C: Ventilazione con maschera facciale a due mani + cannula oro/nasofaringea.
+- Piano D (CICO - Cannot Intubate Cannot Oxygenate): Cricotiroidotomia chirurgica d'urgenza (incisione verticale cute -> incisione orizzontale membrana cricotiroidea -> introduttore Frova -> tubo cuffiato 6.0).`
+            },
+            {
+                id: 'proto-sepsi-bundle',
+                title: 'Sepsi e Shock Settico — Bundle della 1ª Ora',
+                category: 'Terapia Intensiva',
+                code: 'PROC-TI-02',
+                summary: 'Rianimazione volemica, vasopressori precoci, emocolture e terapia antibiotica empirica entro 60 min.',
+                content: `1. MISURAZIONE LATTATI & EMOCOLTURE (ENTRO 45 MIN)
+- Prelievo EGA arterioso/venoso con lattati (ripetere entro 2–4 ore se lattati > 2 mmol/L).
+- Almeno 2 set di emocolture (aerobi/anaerobi) da siti diversi (e da CVC se presente > 48h) PRIMA dell'antibiotico, senza ritardare l'infusione oltre 45 minuti.
+
+2. TERAPIA ANTIBIOTICA EMPIRICA (ENTRO 1 ORA)
+- Somministrare antibiotici EV ad ampio spettro in base al focolaio sospetto e all'ecologia locale (consultare scheda "Antibiotici & Cl.Cr" per dose di carico piena indipendentemente dalla funzione renale).
+
+3. ESPANSIONE VOLEMICA
+- In caso di ipotensione (PAM < 65 mmHg) o lattati ≥ 4 mmol/L: somministrare almeno 30 ml/kg di cristalloidi bilanciati (Ringer Lattato / Sterofundin) entro le prime 3 ore, valutando la fluid-responsiveness dinamica (PLR, PPV/SVV, ecografia VCI/cuore).
+
+4. SUPPORTO VASOPRESSORE (TARGET PAM ≥ 65 mmHg)
+- Prima scelta: Noradrenalina (8 mg in 50 ml SF = 160 mcg/ml), iniziare precocemente (anche su accesso venoso periferico prossimale valido in attesa di CVC) per mantenere PAM ≥ 65 mmHg.
+- Seconda linea (se Noradrenalina > 0,25–0,5 mcg/kg/min): associare Vasopressina 0,03 UI/min (40 UI in 50 ml SF = 2,25 ml/h) + Idrocortisone 200 mg/24h (8,3 mg/h in infusione continua).`
+            },
+            {
+                id: 'proto-ards-ventilazione',
+                title: 'ARDS & Ventilazione Protettiva in Terapia Intensiva',
+                category: 'Terapia Intensiva',
+                code: 'PROC-TI-03',
+                summary: 'Impostazione Vt su peso ideale (PBW), Driving Pressure < 15 cmH2O, PEEP e pronazione.',
+                content: `1. CALCOLO PESO CORPOREO IDEALE (PBW)
+- Uomini: PBW (kg) = 50 + 0,91 × [Altezza (cm) − 152,4]
+- Donne: PBW (kg) = 45,5 + 0,91 × [Altezza (cm) − 152,4]
+
+2. PARAMETRI VENTILATORI PROTETTIVI
+- Volume Corrente (Vt): 6 ml/kg di PBW (range consentito 4–8 ml/kg PBW).
+- Pressione di Plateau (Pplat): mantenere < 30 cmH2O (misurata con pausa tele-inspiratoria di 0,3–0,5 sec).
+- Driving Pressure (ΔP = Pplat − PEEP): mantenere < 15 cmH2O.
+- Frequenza Respiratoria: 14–28 atti/min per mantenere pH > 7,25 (ipercapnia permissiva tollerata se pH ≥ 7,20–7,25).
+- Target Ossigenazione: SpO2 92–96% (PaO2 60–80 mmHg).
+
+3. ARDS MODERATA-SEVERA (PaO2/FiO2 < 150 mmHg)
+- Ottimizzazione PEEP (tabella PEEP/FiO2 o titolazione su compliance/driving pressure).
+- Miorilassamento continuo nelle prime 24–48h in caso di asincronia severa (Cisatracurio 1–3 mcg/kg/min).
+- Pronazione precoce: cicli di almeno 16 ore consecutive/die se PaO2/FiO2 < 150 mmHg con FiO2 ≥ 0,6 e PEEP ≥ 5 cmH2O.`
+            },
+            {
+                id: 'proto-emorragia-massiva',
+                title: 'Protocollo Emorragia Massiva (PEM) & Emostasi',
+                category: 'Emostasi / Trasfusioni',
+                code: 'PROC-EM-04',
+                summary: 'Rapporto emocomponenti 1:1:1, Acido Tranexamico, Fibrinogeno e target calcio/temperatura.',
+                content: `1. ATTIVAZIONE & CONTATTI RAPIDI
+- Allertare Centro Trasfusionale / SIMT (int. 3077 / 3087) per attivazione Pacchetto Emorragia Massiva.
+- Eseguire immediatamente: Emocromo, PT/INR, aPTT, Fibrinogeno (Clauss), EGA (Hb, lattati, Ca++), ROTEM/TEG se disponibile.
+
+2. TERAPIA ANTIFIBRINOLITICA PRECOCE
+- Acido Tranexamico (Tranex / Ugurol): 1 g EV in 10 minuti entro 3 ore dall'evento emorragico/trauma, seguito da 1 g EV in infusione nelle 8 ore successive.
+
+3. RAPPORTO TRASFUSIONALE & FATTORI
+- Trasfondere Emazie Concentrate (EC), Plasma Fresco Congelato (PFC) e Piastrine (PLT) in rapporto bilanciato 1:1:1.
+- Fibrinogeno: mantenere > 1,5–2,0 g/L (somministrare Fibrinogeno concentrato 2–4 g EV se < 1,5 g/L o FIBTEM MCF < 10 mm).
+- Piastrine: mantenere > 50.000/mmc (> 100.000/mmc nel trauma cranico severo o emorragia cerebrale).
+
+4. PREVENZIONE TRIADE LETALE
+- Normotermia: riscaldatore attivo ad aria forzata + riscaldatore fluidi (target T > 36,0 °C).
+- Calcio ionizzato (Ca++): mantenere > 1,1 mmol/L (somministrare Calcio Cloruro 1 g EV lento o Calcio Gluconato 2–3 g EV ogni 2–4 unità trasfuse).`
+            },
+            {
+                id: 'proto-reversal-anticoagulanti',
+                title: 'Antagonizzazione Anticoagulanti in Urgenza / Chirurgia',
+                category: 'Emostasi / Trasfusioni',
+                code: 'PROC-EM-05',
+                summary: 'Schema rapido di reversal per Warfarin (AVK), Dabigatran, Apixaban, Rivaroxaban ed Eparine.',
+                content: `1. WARFARIN / ACENOCUMAROLO (AVK)
+- Concentrato Complesso Protrombinico (CCP a 4 fattori - Confidex / Octaplex):
+  • INR 2,0 – 3,9: 25 UI/kg EV
+  • INR 4,0 – 6,0: 35 UI/kg EV
+  • INR > 6,0: 50 UI/kg EV (dose max 3000–5000 UI)
+- Associare SEMPRE Vitamina K1 (Konakion) 10 mg EV lenta (in 100 ml SF in 20–30 min) per evitare rebound dell'INR dopo 6–8 ore.
+
+2. DABIGATRAN (PRADAXA — Inibitore diretto Trombina)
+- Antidoto specifico: Idarucizumab (Praxbind) 5 g EV (2 flaconi da 2,5 g/50 ml somministrati consecutivamente in 5–10 min ciascuno).
+
+3. APIXABAN (ELIQUIS) / RIVAROXABAN (XARELTO) / EDOXABAN (LIXIANA)
+- CCP a 4 fattori (Confidex / Octaplex): 50 UI/kg EV (oppure Andexanet alfa se disponibile secondo protocollo emorragia intracranica/gastrointestinale maggiore).
+
+4. EPARINA NON FRAZIONATA (ENF) & EBPM
+- ENF: Protamina Solfato 1 mg EV ogni 100 UI di eparina somministrata nelle ultime 2–3 ore (infusione lenta max 5 mg/min; max 50 mg/dose).
+- Enoxaparina (Clexane): entro 8 ore dall'ultima dose -> Protamina 1 mg per ogni 1 mg di Enoxaparina (neutralizza ~60% dell'attività anti-Xa).`
+            },
+            {
+                id: 'proto-last-anestetici-locali',
+                title: 'Tossicità Sistemica da Anestetici Locali (LAST)',
+                category: 'Anestesia / Sala Op.',
+                code: 'PROC-SO-06',
+                summary: 'Riconoscimento precoce e schema di somministrazione Emulsione Lipidica (Intralipid 20%).',
+                content: `1. SEGNI CLINICI DI ALLARME
+- Prodromi SNC: acufeni, sapore metallico, parestesie periorali, agitazione, disartria -> convulsioni tonico-cloniche.
+- Cardiovascolare: bradicardia, blocco AV, aritmie ventricolari, ipotensione refrattaria fino ad asistolia.
+
+2. AZIONI IMMEDIATE
+- SOSPENDERE immediatamente l'iniezione dell'anestetico locale e chiamare aiuto (int. 4830 / 4831).
+- Gestione vie aeree: ventilare con O2 100% (prevenire ipossia, ipercapnia e acidosi che potenziano la tossicità).
+- Controllo convulsioni: Midazolam 2–5 mg EV o Propofol a basse dosi (evitare alte dosi di Propofol se instabilità emodinamica; NON usare Propofol come sostituto dell'emulsione lipidica!).
+- Rianimazione cardiopolmonare (ACLS modificato): ridurre boli di Adrenalina a ≤ 1 mcg/kg EV; evitare Vasopressina, calcio-antagonisti, beta-bloccanti e anestetici locali (Lidocaina).
+
+3. EMULSIONE LIPIDICA AL 20% (INTRALIPID 20%)
+- Bolo iniziale: 1,5 ml/kg EV in 1 minuto (~100 ml per paziente di 70 kg).
+- Infusione continua: 0,25 ml/kg/min (~18 ml/min = ~1000 ml/h).
+- Se persistenza di collasso cardiovascolare dopo 5 min: ripetere fino a 2 boli da 1,5 ml/kg ogni 5 min e raddoppiare l'infusione a 0,5 ml/kg/min.
+- Dose massima cumulativa: 10–12 ml/kg nelle prime 30 minuti. Continuare infusione per almeno 10–15 min dopo stabilizzazione emodinamica.`
+            }
+        ];
+
+        let protocolsDatabase = loadProtocolsDatabase();
+        let currentProtocolCategory = 'ALL';
+        let viewingProtocolId = null;
+
+        function loadProtocolsDatabase() {
+            try {
+                const raw = localStorage.getItem(PROTOCOLS_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
+            return [...defaultProtocolsData];
+        }
+
+        function persistProtocolsDatabase() {
+            try {
+                localStorage.setItem(PROTOCOLS_STORAGE_KEY, JSON.stringify(protocolsDatabase));
+            } catch (e) {}
+        }
+
+        function initProtocolsSection() {
+            renderProtocolsList();
+        }
+
+        function filterProtocolsByCategory(cat) {
+            currentProtocolCategory = cat;
+            document.querySelectorAll('.proto-cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'proto-cat-btn active bg-hospital-700 text-white px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95';
+                } else {
+                    btn.className = 'proto-cat-btn bg-slate-50 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap transition active:scale-95';
+                }
+            });
+            renderProtocolsList();
+        }
+
+        function clearProtocolSearch() {
+            const input = document.getElementById('protocolSearchInput');
+            if (input) input.value = '';
+            renderProtocolsList();
+        }
+
+        function resetProtocolFilters() {
+            clearProtocolSearch();
+            filterProtocolsByCategory('ALL');
+        }
+
+        function getProtocolCategoryBadgeClass(category) {
+            if (category.includes('Emergenza')) return 'bg-red-50 text-red-800 border-red-200';
+            if (category.includes('Terapia Intensiva')) return 'bg-sky-50 text-hospital-800 border-sky-200';
+            if (category.includes('Emostasi')) return 'bg-amber-50 text-amber-900 border-amber-200';
+            return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+        }
+
+        function renderProtocolsList() {
+            const container = document.getElementById('protocolsList');
+            const emptyBox = document.getElementById('emptyProtocols');
+            const badgeDesk = document.getElementById('protocolliBadgeDesk');
+            const countLabel = document.getElementById('protocolsCountLabel');
+            const searchInput = document.getElementById('protocolSearchInput');
+            const clearBtn = document.getElementById('clearProtocolSearchBtn');
+
+            if (!container) return;
+
+            const query = (searchInput?.value || '').toLowerCase().trim();
+            if (clearBtn) {
+                if (query.length > 0) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+
+            if (badgeDesk) badgeDesk.textContent = protocolsDatabase.length;
+
+            const filtered = protocolsDatabase.filter(p => {
+                const matchCat = currentProtocolCategory === 'ALL' || p.category === currentProtocolCategory;
+                const haystack = `${p.title} ${p.category} ${p.code || ''} ${p.summary} ${p.content}`.toLowerCase();
+                const matchQuery = !query || haystack.includes(query);
+                return matchCat && matchQuery;
+            });
+
+            if (countLabel) countLabel.textContent = `${filtered.length}`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                if (emptyBox) emptyBox.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyBox) emptyBox.classList.add('hidden');
+            container.innerHTML = filtered.map(p => {
+                const badgeCls = getProtocolCategoryBadgeClass(p.category);
+                return `
+                    <button type="button" onclick="openProtocolViewer('${p.id}')" class="bg-white hover:bg-sky-50/40 active:scale-[0.99] transition p-2.5 rounded-lg border border-slate-200 shadow-2xs text-left flex flex-col justify-between gap-1.5">
+                        <div class="space-y-1 w-full">
+                            <div class="flex items-center justify-between gap-1.5">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded border ${badgeCls} truncate">${p.category}</span>
+                                ${p.code ? `<span class="text-[9px] font-mono font-bold text-slate-400 shrink-0">${p.code}</span>` : ''}
+                            </div>
+                            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">${p.title}</h4>
+                            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${p.summary}</p>
+                        </div>
+                        <div class="flex items-center justify-between w-full pt-1 border-t border-slate-100 text-[10px] font-bold text-hospital-700">
+                            <span>Apri protocollo</span>
+                            <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function formatProtocolContentHtml(text) {
+            const lines = (text || '').split('\n');
+            return lines.map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return '<div class="h-2"></div>';
+                if (/^\d+\.\s+[A-ZÀ-Ü0-9]/.test(trimmed)) {
+                    return `<div class="font-extrabold text-hospital-900 text-xs uppercase tracking-wide pt-1.5 pb-0.5 border-b border-slate-200">${trimmed}</div>`;
+                }
+                if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                    return `<div class="pl-3 relative text-slate-800"><span class="absolute left-0 text-hospital-600 font-bold">•</span>${trimmed.slice(1).trim()}</div>`;
+                }
+                return `<div class="text-slate-800">${trimmed}</div>`;
+            }).join('');
+        }
+
+        function openProtocolViewer(protoId) {
+            const proto = protocolsDatabase.find(p => p.id === protoId);
+            if (!proto) return;
+            viewingProtocolId = proto.id;
+
+            document.getElementById('viewerProtocolCategory').textContent = proto.category;
+            document.getElementById('viewerProtocolCode').textContent = proto.code || '';
+            document.getElementById('viewerProtocolTitle').textContent = proto.title;
+            document.getElementById('viewerProtocolBody').innerHTML = `
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700">
+                    ${proto.summary}
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                    ${formatProtocolContentHtml(proto.content)}
+                </div>
+            `;
+
+            const delBtn = document.getElementById('viewerDeleteProtocolBtn');
+            if (delBtn) {
+                if (proto.isCustom) delBtn.classList.remove('hidden');
+                else delBtn.classList.add('hidden');
+            }
+
+            document.getElementById('protocolViewerModal').classList.remove('hidden');
+        }
+
+        function closeProtocolViewerModal() {
+            document.getElementById('protocolViewerModal').classList.add('hidden');
+            viewingProtocolId = null;
+        }
+
+        function copyCurrentProtocolText() {
+            const proto = protocolsDatabase.find(p => p.id === viewingProtocolId);
+            if (!proto) return;
+            const fullText = `${proto.title} (${proto.code || proto.category})\n\n${proto.content}`;
+            copyText(fullText);
+        }
+
+        function openProtocolEditorModal(protoToEdit = null) {
+            const modal = document.getElementById('protocolEditorModal');
+            if (protoToEdit) {
+                document.getElementById('protocolEditorTitle').textContent = 'Modifica Protocollo';
+                document.getElementById('editProtocolId').value = protoToEdit.id;
+                document.getElementById('protoTitleInput').value = protoToEdit.title;
+                document.getElementById('protoCategoryInput').value = protoToEdit.category;
+                document.getElementById('protoCodeInput').value = protoToEdit.code || '';
+                document.getElementById('protoSummaryInput').value = protoToEdit.summary;
+                document.getElementById('protoContentInput').value = protoToEdit.content;
+            } else {
+                document.getElementById('protocolEditorTitle').textContent = 'Nuovo Protocollo di Reparto';
+                document.getElementById('editProtocolId').value = '';
+                document.getElementById('protoTitleInput').value = '';
+                document.getElementById('protoCategoryInput').value = 'Emergenza / Vie Aeree';
+                document.getElementById('protoCodeInput').value = '';
+                document.getElementById('protoSummaryInput').value = '';
+                document.getElementById('protoContentInput').value = '';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeProtocolEditorModal() {
+            document.getElementById('protocolEditorModal').classList.add('hidden');
+        }
+
+        function editCurrentlyViewedProtocol() {
+            const proto = protocolsDatabase.find(p => p.id === viewingProtocolId);
+            if (!proto) return;
+            closeProtocolViewerModal();
+            openProtocolEditorModal(proto);
+        }
+
+        function deleteCurrentlyViewedProtocol() {
+            if (!viewingProtocolId) return;
+            protocolsDatabase = protocolsDatabase.filter(p => p.id !== viewingProtocolId);
+            persistProtocolsDatabase();
+            closeProtocolViewerModal();
+            renderProtocolsList();
+            showToast('Protocollo eliminato');
+        }
+
+        function saveProtocolForm(event) {
+            event.preventDefault();
+            const editId = document.getElementById('editProtocolId').value.trim();
+            const title = document.getElementById('protoTitleInput').value.trim();
+            const category = document.getElementById('protoCategoryInput').value;
+            const code = document.getElementById('protoCodeInput').value.trim();
+            const summary = document.getElementById('protoSummaryInput').value.trim();
+            const content = document.getElementById('protoContentInput').value.trim();
+
+            if (!title || !summary || !content) return;
+
+            if (editId) {
+                const idx = protocolsDatabase.findIndex(p => p.id === editId);
+                if (idx !== -1) {
+                    protocolsDatabase[idx] = {
+                        ...protocolsDatabase[idx],
+                        title,
+                        category,
+                        code,
+                        summary,
+                        content
+                    };
+                }
+                showToast('Protocollo aggiornato');
+            } else {
+                protocolsDatabase.unshift({
+                    id: 'custom-proto-' + Date.now(),
+                    title,
+                    category,
+                    code: code || 'REPARTO',
+                    summary,
+                    content,
+                    isCustom: true
+                });
+                showToast('Nuovo protocollo salvato');
+            }
+
+            persistProtocolsDatabase();
+            closeProtocolEditorModal();
+            renderProtocolsList();
+        }
+
+        // ==========================================
+        // ASSISTENTE VOCALE & CHAT AI (TURNI + REPARTI + RUBRICA)
         // ==========================================
         let recognition = null;
         let isListening = false;
 
-        function toggleAssistantModal(prefillQuery = '') {
-            const modal = document.getElementById('assistantModal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden') && prefillQuery) {
-                processAssistantQuery(prefillQuery);
-            }
-        }
-
-        function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return null;
-            const rec = new SpeechRecognition();
-            rec.lang = 'it-IT';
-            rec.interimResults = false;
-            rec.maxAlternatives = 1;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
 
-            rec.onstart = () => {
+            recognition.onstart = () => {
                 isListening = true;
                 const btn = document.getElementById('micBtn');
-                btn.classList.remove('bg-hospital-600');
                 btn.classList.add('bg-red-600', 'pulse-ring');
-                document.getElementById('micStatus').textContent = 'In ascolto... parla ora';
+                btn.classList.remove('bg-hospital-600');
+                document.getElementById('micStatus').textContent = "In ascolto... parla ora";
             };
 
-            rec.onresult = (event) => {
+            recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                processAssistantQuery(transcript);
+                processAssistantQuery(transcript, true);
             };
 
-            rec.onerror = () => {
-                stopVoiceUI();
-                document.getElementById('micStatus').textContent = 'Microfono non disponibile. Usa la tastiera.';
-            };
-
-            rec.onend = () => {
+            recognition.onerror = () => {
+                document.getElementById('micStatus').textContent = "Errore microfono o permesso negato";
                 stopVoiceUI();
             };
 
-            return rec;
+            recognition.onend = () => {
+                stopVoiceUI();
+            };
         }
 
         function stopVoiceUI() {
             isListening = false;
             const btn = document.getElementById('micBtn');
-            btn.classList.add('bg-hospital-600');
-            btn.classList.remove('bg-red-600', 'pulse-ring');
-            document.getElementById('micStatus').textContent = 'Tocca il microfono per parlare';
+            if (btn) {
+                btn.classList.remove('bg-red-600', 'pulse-ring');
+                btn.classList.add('bg-hospital-600');
+            }
+            const status = document.getElementById('micStatus');
+            if (status) status.textContent = "Tocca il microfono per parlare";
         }
 
         function toggleVoiceRecognition() {
             if (!recognition) {
-                recognition = initSpeechRecognition();
-            }
-            if (!recognition) {
-                showToast('Riconoscimento vocale non supportato');
+                appendMessage('bot', "Il browser non supporta il microfono. Usa il campo di testo qui sotto.");
                 return;
             }
-            if (isListening) {
+            if (isListening) recognition.stop();
+            else recognition.start();
+        }
+
+        function toggleAssistantModal(prefillQuestion = '') {
+            const modal = document.getElementById('assistantModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                if (prefillQuestion) {
+                    processAssistantQuery(prefillQuestion, false);
+                } else {
+                    document.getElementById('assistantTextInput').focus();
+                }
+            } else if (isListening && recognition) {
                 recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                } catch (e) {}
             }
         }
 
@@ -3631,64 +4198,70 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             const text = input.value.trim();
             if (!text) return;
             input.value = '';
-            processAssistantQuery(text);
+            processAssistantQuery(text, false);
         }
 
-        function processAssistantQuery(query) {
-            appendChatMessage(query, 'user');
-            const q = query.toLowerCase();
-            let replyHtml = '';
-            let speechText = '';
+        function answerShiftAssistantQuery(q) {
+            const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
+            if (monthKeys.length === 0) {
+                return "Non hai ancora caricato nessun foglio turni. Vai nella scheda Turni e scatta o carica la foto della tabella per iniziare.";
+            }
 
-            const isShiftQuery = ['turno', 'turni', 'lavoro', 'smonto', 'montante', 'notte', 'mattina', 'pomeriggio', 'ferie', 'riposo', 'chi è di guardia'].some(k => q.includes(k));
+            const monthObj = shiftsDatabase[selectedShiftMonth] || shiftsDatabase[monthKeys[0]];
+            if (!monthObj) return null;
 
-            if (isShiftQuery) {
-                const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
-                if (monthKeys.length === 0) {
-                    speechText = `Non hai ancora caricato nessun foglio turni. Vai nella scheda Turni e tocca Carica Foto Turni AI.`;
-                    replyHtml = `Non hai ancora caricato nessun foglio turni.<br><button onclick="toggleAssistantModal(); switchTab('turni');" class="mt-2 bg-hospital-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">Vai a Turni AI</button>`;
-                } else {
-                    const monthObj = shiftsDatabase[selectedShiftMonth] || shiftsDatabase[monthKeys[0]];
-                    let targetDoc = defaultShiftDoctor || selectedShiftDoctor;
-                    Object.keys(monthObj.doctors).forEach(d => {
-                        if (q.includes(d.toLowerCase())) targetDoc = d;
-                    });
+            const isShiftQuery = q.includes('turno') || q.includes('turni') || q.includes('lavoro') || q.includes('guardia') || q.includes('notte') || q.includes('smonto') || q.includes('ferie') || q.includes('libero');
+            if (!isShiftQuery) return null;
 
-                    const now = new Date();
-                    let targetDay = now.getDate();
-                    if (q.includes('domani')) {
-                        targetDay = now.getDate() + 1;
-                    } else if (q.includes('dopodomani')) {
-                        targetDay = now.getDate() + 2;
-                    } else {
-                        const dayMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
-                        if (dayMatch) targetDay = parseInt(dayMatch[1]);
-                    }
-                    targetDay = Math.max(1, Math.min(monthObj.daysCount, targetDay));
-
-                    const cell = parseShiftCell((monthObj.doctors[targetDoc] || [])[targetDay - 1]);
-                    const desc = describeParsedCell(cell);
-
-                    speechText = `Il ${targetDay} ${monthObj.label}, il dottor ${targetDoc} ha: ${desc}.`;
-                    replyHtml = `
-                        <div class="space-y-1.5">
-                            <div class="font-bold text-hospital-900">Dott. ${targetDoc} — Giorno ${targetDay} (${monthObj.label}):</div>
-                            <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
-                                <span class="font-mono font-extrabold text-sm text-hospital-900 mr-1.5">[${renderShiftCellHtml(cell)}]</span>
-                                <span class="font-bold text-slate-800">${desc}</span>
-                            </div>
-                            <button onclick="toggleAssistantModal(); switchTab('turni'); document.getElementById('shiftDoctorSelect').value='${targetDoc}'; onShiftDoctorChange(); document.getElementById('shiftQueryDayInput').value=${targetDay}; renderShiftCalendarAndStats();" class="bg-hospital-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">
-                                Apri in Turni Mensili
-                            </button>
-                        </div>
-                    `;
+            let targetDoc = defaultShiftDoctor || selectedShiftDoctor;
+            Object.keys(monthObj.doctors).forEach(docName => {
+                if (q.includes(docName.toLowerCase())) {
+                    targetDoc = docName;
                 }
+            });
+
+            const now = new Date();
+            let targetDay = now.getDate();
+            let dayLabel = `oggi (${targetDay} ${monthObj.label})`;
+
+            if (q.includes('dopodomani')) {
+                targetDay = now.getDate() + 2;
+                dayLabel = `dopodomani (${targetDay} ${monthObj.label})`;
+            } else if (q.includes('domani')) {
+                targetDay = now.getDate() + 1;
+                dayLabel = `domani (${targetDay} ${monthObj.label})`;
             } else {
-                const matchedProtocols = (protocolsData || []).filter(p =>
-                    p.title.toLowerCase().includes(q) ||
-                    p.summary.toLowerCase().includes(q) ||
-                    p.content.toLowerCase().includes(q) ||
-                    q.split(' ').some(word => word.length > 3 && (p.title.toLowerCase().includes(word) || p.summary.toLowerCase().includes(word)))
+                const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
+                if (numMatch) {
+                    targetDay = parseInt(numMatch[1]);
+                    dayLabel = `il giorno ${targetDay} ${monthObj.label}`;
+                }
+            }
+
+            if (targetDay < 1 || targetDay > monthObj.daysCount) {
+                return `Il giorno richiesto (${targetDay}) è fuori dal calendario di ${monthObj.label} (${monthObj.daysCount} giorni).`;
+            }
+
+            const rawCell = (monthObj.doctors[targetDoc] || [])[targetDay - 1] || '/';
+            const cell = parseShiftCell(rawCell);
+            const desc = describeParsedCell(cell);
+
+            return `Dott. ${targetDoc}, ${dayLabel} hai: ${desc}.`;
+        }
+
+        function processAssistantQuery(queryText, speakResponse) {
+            appendMessage('user', queryText);
+            const q = queryText.toLowerCase().trim();
+            let reply = "";
+
+            const shiftReply = answerShiftAssistantQuery(q);
+            if (shiftReply) {
+                reply = shiftReply;
+            } else {
+                const matchedDepts = departmentsData.filter(d =>
+                    d.name.toLowerCase().includes(q) ||
+                    d.keywords.includes(q) ||
+                    q.split(' ').some(word => word.length > 3 && (d.name.toLowerCase().includes(word) || d.keywords.includes(word)))
                 );
 
                 const matchedContacts = (window.contactsData || []).filter(c =>
@@ -3696,110 +4269,111 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                     q.split(' ').some(word => word.length > 3 && c.name.toLowerCase().includes(word))
                 );
 
-                if (matchedProtocols.length > 0 || matchedContacts.length > 0) {
-                    const topProto = matchedProtocols[0];
-                    const topContacts = matchedContacts.slice(0, 3);
-
-                    if (topProto) {
-                        speechText = `Ho trovato il protocollo ${topProto.title}. ${topProto.summary}. `;
-                        replyHtml += `
-                            <div class="mb-2 bg-sky-50/80 border border-sky-200 rounded-lg p-2">
-                                <div class="text-[9px] font-extrabold uppercase text-hospital-700">${topProto.category}</div>
-                                <div class="font-bold text-hospital-950 text-xs">${topProto.title}</div>
-                                <div class="text-[11px] text-slate-600 mt-0.5">${topProto.summary}</div>
-                                <button onclick="toggleAssistantModal(); switchTab('protocolli'); openProtocolViewerModal('${topProto.id}');" class="mt-1.5 bg-hospital-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">
-                                    Apri Protocollo
-                                </button>
-                            </div>
-                        `;
+                if (matchedDepts.length > 0) {
+                    const top = matchedDepts[0];
+                    const buildingName = top.building === 'CR' ? 'Padiglione Cassa di Risparmio' : (top.building === 'INF' ? 'Padiglione Infettivi' : `Edificio ${top.building}`);
+                    reply = `<strong>${top.name}</strong> si trova in <strong>${buildingName}, ${top.floor}</strong>.<br>${top.accessNote}`;
+                    if (matchedContacts.length > 0) {
+                        reply += `<br><br>📞 Interno <strong>${matchedContacts[0].name}</strong>: <strong>${matchedContacts[0].phone}</strong>.`;
                     }
-
-                    if (topContacts.length > 0) {
-                        speechText += `Interno telefonico: ${topContacts[0].phone}.`;
-                        replyHtml += `<div class="space-y-1 border-t border-slate-100 pt-1.5">`;
-                        topContacts.forEach(c => {
-                            const rawNum = c.phone.split('/')[0].trim();
-                            const fullNum = rawNum.length === 4 ? '095726' + rawNum : rawNum.replace(/[^0-9+]/g, '');
-                            replyHtml += `
-                                <div class="flex items-center justify-between bg-slate-50 px-2 py-1 rounded border border-slate-200 text-xs">
-                                    <span class="font-medium truncate pr-2">${c.name}</span>
-                                    <div class="flex items-center gap-1 shrink-0">
-                                        <span class="font-mono font-bold text-hospital-800">${c.phone}</span>
-                                        <a href="tel:${fullNum}" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">Chiama</a>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        replyHtml += `</div>`;
-                    }
+                } else if (matchedContacts.length > 0) {
+                    const topC = matchedContacts[0];
+                    reply = `Per <strong>${topC.name}</strong> (${topC.location}): interno <strong>${topC.phone}</strong>.`;
                 } else {
-                    speechText = "Non ho trovato corrispondenze esatte. Prova a cercare con il nome del reparto, un protocollo o la sigla del turno.";
-                    replyHtml = `Non ho trovato corrispondenze esatte per <strong>"${query}"</strong>. Prova a chiedere: <em>"Qual è il mio turno domani?"</em>, <em>"Protocollo sepsi"</em> oppure <em>"Numero UTIC"</em>.`;
+                    reply = `Nessun risultato esatto per "${queryText}". Prova a chiedere "Qual è il mio turno domani?", "Dov'è Neurologia?" o "Interno UTIC".`;
                 }
             }
 
-            appendChatMessage(replyHtml, 'bot');
-            speakText(speechText);
+            setTimeout(() => {
+                appendMessage('bot', reply);
+                if (speakResponse && 'speechSynthesis' in window) {
+                    const plainText = reply.replace(/<[^>]*>?/gm, ' ');
+                    const utterance = new SpeechSynthesisUtterance(plainText);
+                    utterance.lang = 'it-IT';
+                    window.speechSynthesis.speak(utterance);
+                }
+            }, 250);
         }
 
-        function appendChatMessage(content, sender) {
-            const container = document.getElementById('chatMessages');
+        function appendMessage(sender, htmlContent) {
+            const chat = document.getElementById('chatMessages');
             const wrapper = document.createElement('div');
-            wrapper.className = sender === 'user' ? 'flex justify-end' : 'flex items-start gap-2';
-
             if (sender === 'user') {
-                wrapper.innerHTML = `<div class="bg-hospital-700 text-white px-3 py-2 rounded-xl rounded-tr-none text-xs font-medium max-w-[82%] shadow-xs">${content}</div>`;
+                wrapper.className = "flex justify-end";
+                wrapper.innerHTML = `<div class="bg-hospital-700 text-white p-2.5 rounded-xl rounded-tr-none text-xs max-w-[82%] shadow-xs">${htmlContent}</div>`;
             } else {
+                wrapper.className = "flex items-start gap-2";
                 wrapper.innerHTML = `
-                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                        <i class="fa-solid fa-staff-snake"></i>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-800 max-w-[88%]">${content}</div>
+                    <div class="w-6 h-6 rounded-full bg-hospital-700 text-white flex items-center justify-center shrink-0 text-[11px] mt-0.5"><i class="fa-solid fa-staff-snake"></i></div>
+                    <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 max-w-[85%] leading-relaxed">${htmlContent}</div>
                 `;
             }
-            container.appendChild(wrapper);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function speakText(text) {
-            if (!('speechSynthesis' in window) || !text) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'it-IT';
-            utterance.rate = 1.05;
-            window.speechSynthesis.speak(utterance);
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
         }
 
         // ==========================================
-        // MODALI RUBRICA CONDIVISA & UTILITÀ
+        // FUNZIONI UTILITY & MODAL CONTATTI CLOUD
         // ==========================================
+        function clearSearch() {
+            const input = document.getElementById('globalSearch');
+            input.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderContacts();
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast(`Copiato: ${text}`));
+            } else {
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+                showToast(`Copiato: ${text}`);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2200);
+        }
+
         function openAddContactModal() {
-            document.getElementById('editContactDocId').value = '';
             document.getElementById('contactModalTitle').textContent = 'Aggiungi Nuovo Interno (Condiviso)';
+            document.getElementById('editContactDocId').value = '';
             document.getElementById('newContactName').value = '';
             document.getElementById('newContactPhone').value = '';
             document.getElementById('newContactLoc').value = '';
             document.getElementById('newContactNote').value = '';
             document.getElementById('newContactEmergency').checked = false;
             document.getElementById('deleteContactBtn').classList.add('hidden');
-            document.getElementById('saveContactSubmitBtn').textContent = 'Salva nel Cloud';
             document.getElementById('addContactModal').classList.remove('hidden');
         }
 
         function openEditContactModal(docId, contactId) {
             const list = window.contactsData || [];
-            const contact = list.find(c => (docId && c.docId === docId) || String(c.id) === String(contactId));
-            if (!contact) return;
+            const item = list.find(c => (docId && c.docId === docId) || String(c.id) === String(contactId));
+            if (!item) return;
 
-            document.getElementById('editContactDocId').value = contact.docId || `default_${contact.id}`;
             document.getElementById('contactModalTitle').textContent = 'Modifica Interno (Condiviso)';
-            document.getElementById('newContactName').value = contact.name || '';
-            document.getElementById('newContactPhone').value = contact.phone || '';
-            document.getElementById('newContactLoc').value = contact.location || '';
-            document.getElementById('newContactNote').value = contact.note || '';
-            document.getElementById('newContactEmergency').checked = Boolean(contact.emergency);
-            document.getElementById('deleteContactBtn').classList.remove('hidden');
-            document.getElementById('saveContactSubmitBtn').textContent = 'Aggiorna per Tutti';
+            document.getElementById('editContactDocId').value = item.docId || '';
+            document.getElementById('newContactName').value = item.name || '';
+            document.getElementById('newContactPhone').value = item.phone || '';
+            document.getElementById('newContactLoc').value = item.location || '';
+            document.getElementById('newContactNote').value = item.note || '';
+            document.getElementById('newContactEmergency').checked = Boolean(item.emergency);
+
+            const delBtn = document.getElementById('deleteContactBtn');
+            if (item.docId) {
+                delBtn.classList.remove('hidden');
+            } else {
+                delBtn.classList.add('hidden');
+            }
             document.getElementById('addContactModal').classList.remove('hidden');
         }
 
@@ -3816,155 +4390,99 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             const note = document.getElementById('newContactNote').value.trim();
             const emergency = document.getElementById('newContactEmergency').checked;
 
-            const payload = { name, phone, location, note, emergency };
+            if (!name || !phone) return;
+
+            const submitBtn = document.getElementById('saveContactSubmitBtn');
+            const origText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Salvataggio...';
 
             try {
                 if (window.cloudRubricaAPI) {
-                    await window.cloudRubricaAPI.saveContact(docId || null, payload);
+                    await window.cloudRubricaAPI.saveContact(docId || null, {
+                        name,
+                        phone,
+                        location,
+                        note,
+                        emergency
+                    });
                     closeAddContactModal();
-                    showToast(docId ? 'Contatto aggiornato per tutti!' : 'Nuovo interno salvato nel cloud!');
+                    showToast(docId ? 'Interno aggiornato per tutti!' : 'Interno aggiunto per tutti!');
                 } else {
                     // Fallback locale se il cloud non è ancora pronto
                     if (docId) {
-                        const idx = window.contactsData.findIndex(c => c.docId === docId || `default_${c.id}` === docId);
-                        if (idx !== -1) window.contactsData[idx] = { ...window.contactsData[idx], ...payload };
+                        const idx = window.contactsData.findIndex(c => c.docId === docId);
+                        if (idx !== -1) window.contactsData[idx] = { ...window.contactsData[idx], name, phone, location, note, emergency };
                     } else {
-                        window.contactsData.unshift({ id: Date.now(), ...payload });
+                        window.contactsData.unshift({ id: Date.now(), name, phone, location, note, emergency });
                     }
                     renderContacts();
                     closeAddContactModal();
-                    showToast('Salvato localmente (connessione cloud in corso)');
+                    showToast('Salvato localmente');
                 }
             } catch (err) {
                 console.error(err);
-                showToast('Errore durante il salvataggio online');
+                showToast('Errore salvataggio nel database');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = origText;
             }
         }
 
         async function deleteCurrentEditingContact() {
             const docId = document.getElementById('editContactDocId').value.trim();
-            if (!docId) return;
+            if (!docId || !window.cloudRubricaAPI) return;
             try {
-                if (window.cloudRubricaAPI) {
-                    await window.cloudRubricaAPI.deleteContact(docId);
-                    closeAddContactModal();
-                    showToast('Contatto eliminato per tutti');
-                } else {
-                    window.contactsData = window.contactsData.filter(c => c.docId !== docId && `default_${c.id}` !== docId);
-                    renderContacts();
-                    closeAddContactModal();
-                    showToast('Contatto eliminato');
-                }
+                await window.cloudRubricaAPI.deleteContact(docId);
+                closeAddContactModal();
+                showToast('Contatto eliminato dalla rubrica condivisa');
             } catch (err) {
                 console.error(err);
-                showToast('Errore durante l\'eliminazione');
+                showToast('Errore durante l’eliminazione');
             }
-        }
-
-        function askResetRubrica() {
-            document.getElementById('confirmResetModal').classList.remove('hidden');
-        }
-
-        function closeConfirmResetModal() {
-            document.getElementById('confirmResetModal').classList.add('hidden');
-        }
-
-        async function confirmResetRubrica() {
-            closeConfirmResetModal();
-            try {
-                if (window.cloudRubricaAPI) {
-                    await window.cloudRubricaAPI.resetDefaults();
-                    showToast('Rubrica condivisa ripristinata');
-                } else {
-                    window.contactsData = [...defaultContactsData];
-                    renderContacts();
-                    showToast('Rubrica predefinita ripristinata');
-                }
-            } catch (err) {
-                console.error(err);
-                showToast('Errore durante il ripristino');
-            }
-        }
-
-        function clearSearch() {
-            const input = document.getElementById('globalSearch');
-            input.value = '';
-            document.getElementById('clearSearchBtn').classList.add('hidden');
-            renderContacts();
-        }
-
-        function copyText(text) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => showToast(`Copiato: ${text}`)).catch(() => fallbackCopy(text));
-            } else {
-                fallbackCopy(text);
-            }
-        }
-
-        function fallbackCopy(text) {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            showToast(`Copiato: ${text}`);
-        }
-
-        let toastTimer = null;
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').textContent = msg;
-            toast.classList.remove('opacity-0');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.add('opacity-0');
-            }, 2200);
         }
 
         // ==========================================
-        // CONFIGURAZIONE PWA (MANIFEST, ICONE & INSTALLAZIONE)
+        // CONFIGURAZIONE PWA (MANIFEST & ICONA)
         // ==========================================
         let deferredInstallPrompt = null;
 
         function setupPwaAssets() {
             const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <rect width="512" height="512" rx="112" fill="#082f49"/>
-                <rect x="36" y="210" width="440" height="150" rx="22" fill="#ffed00"/>
-                <path d="M 60,115 L 190,126 L 285,118 L 380,95 L 440,76 L 405,150 L 392,225 L 380,295 L 362,325 L 302,295 L 235,260 L 170,225 L 105,175 L 65,142 Z" fill="#d9291c" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
-                <g transform="translate(382, 185) rotate(-14)">
-                    <rect x="-32" y="-32" width="64" height="64" rx="8" fill="#ffffff" stroke="#d9291c" stroke-width="3"/>
-                    <text x="0" y="18" font-family="Arial, sans-serif" font-weight="900" font-size="48" fill="#0044aa" text-anchor="middle">H</text>
-                </g>
-                <text x="256" y="278" font-family="Arial, sans-serif" font-weight="900" font-size="56" fill="#111111" text-anchor="middle" letter-spacing="-1">CANNIZZARO</text>
-                <text x="256" y="336" font-family="Arial, sans-serif" font-weight="800" font-size="38" fill="#111111" text-anchor="middle">STAFF NAV</text>
-                <text x="256" y="428" font-family="Arial, sans-serif" font-weight="700" font-size="30" fill="#7dd3fc" text-anchor="middle">ANESTESIA &amp; RIANIMAZIONE</text>
+                <rect x="44" y="210" width="424" height="190" rx="22" fill="#ffed00"/>
+                <path d="M 75,110 L 185,120 L 270,114 L 365,92 L 420,75 L 385,145 L 375,215 L 365,275 L 348,305 L 292,275 L 230,242 L 175,210 L 118,165 L 80,135 Z" fill="#d9291c" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+                <rect x="330" y="138" width="54" height="54" rx="8" fill="#ffffff" stroke="#d9291c" stroke-width="3"/>
+                <text x="357" y="178" font-family="Arial, sans-serif" font-weight="900" font-size="38" fill="#0044aa" text-anchor="middle">H</text>
+                <text x="256" y="295" font-family="Arial, sans-serif" font-weight="900" font-size="60" fill="#111111" text-anchor="middle">CANNIZZARO</text>
+                <text x="256" y="362" font-family="Arial, sans-serif" font-weight="800" font-size="40" fill="#082f49" text-anchor="middle">STAFF NAV</text>
             </svg>`;
+            const iconDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
 
-            const iconDataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
-            const faviconEl = document.getElementById('pwa-favicon');
-            const appleIconEl = document.getElementById('pwa-apple-icon');
-            if (faviconEl) faviconEl.href = iconDataUri;
-            if (appleIconEl) appleIconEl.href = iconDataUri;
+            const favicon = document.getElementById('pwa-favicon');
+            const appleIcon = document.getElementById('pwa-apple-icon');
+            if (favicon) favicon.href = iconDataUrl;
+            if (appleIcon) appleIcon.href = iconDataUrl;
 
             const manifestObj = {
                 name: "Cannizzaro Staff Navigator",
                 short_name: "Staff Nav",
-                description: "Rubrica interna, turni AI, conversione infusione e percorsi Ospedale Cannizzaro Catania",
-                start_url: window.location.href.split('#')[0],
+                description: "Rubrica, Turni AI e Calcolatore Farmaci - A.O.E. Cannizzaro Catania",
+                start_url: window.location.href,
                 display: "standalone",
                 background_color: "#082f49",
                 theme_color: "#082f49",
-                orientation: "portrait",
                 icons: [
-                    { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-                    { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+                    { src: iconDataUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+                    { src: iconDataUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
                 ]
             };
 
-            const manifestDataUri = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
-            const manifestEl = document.getElementById('pwa-manifest');
-            if (manifestEl) manifestEl.href = manifestDataUri;
+            const manifestLink = document.getElementById('pwa-manifest');
+            if (manifestLink) {
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+                manifestLink.href = URL.createObjectURL(manifestBlob);
+            }
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -3977,540 +4495,27 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             }
         });
 
-        window.addEventListener('appinstalled', () => {
-            deferredInstallPrompt = null;
-            const installBtn = document.getElementById('installAppBtn');
-            if (installBtn) {
-                installBtn.classList.add('hidden');
-                installBtn.classList.remove('flex');
-            }
-            showToast('App installata nella schermata Home!');
-        });
-
         async function triggerPwaInstall() {
-            if (!deferredInstallPrompt) return;
+            if (!deferredInstallPrompt) {
+                showToast('Usa "Aggiungi a schermata Home" dal menu del browser');
+                return;
+            }
             deferredInstallPrompt.prompt();
             const { outcome } = await deferredInstallPrompt.userChoice;
             if (outcome === 'accepted') {
-                deferredInstallPrompt = null;
+                const installBtn = document.getElementById('installAppBtn');
+                if (installBtn) installBtn.classList.add('hidden');
             }
+            deferredInstallPrompt = null;
         }
 
-        // ==========================================
-        // SEZIONE PROTOCOLLI CLINICI DI REPARTO
-        // ==========================================
-        const PROTOCOLS_STORAGE_KEY = 'cannizzaro_protocols_v4';
-
-        const defaultProtocolsData = [
-            {
-                id: 'proto_uoc_potassiemia',
-                code: 'UOC-AR-01',
-                category: 'Terapia Intensiva',
-                title: 'Correzione dell’Ipopotassiemia (U.O.C. Anestesia e Rianimazione)',
-                summary: 'Diluizione standard (1,2 mEq/ml), velocità di infusione per fasce di potassiemia e criteri di sicurezza renale.',
-                isCustom: false,
-                content: `1. INTESTAZIONE UFFICIALE
-• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
-• Modalità di correzione dell’ipopotassiemia in funzione dei valori della potassiemia rilevati prima di iniziare l’infusione endovenosa.
-
-2. DILUIZIONE STANDARD (CONCENTRAZIONE FINALE: 1,2 mEq/ml)
-• Opzione A: 2 fiale di potassio aspartato (KFlebo 30 mEq/10 ml) + 30 ml di Soluzione Fisiologica (= 60 mEq / 50 ml).
-• Opzione B: 3 fiale di potassio cloruro (KCl 20 mEq/10 ml) + 20 ml di Soluzione Fisiologica (= 60 mEq / 50 ml).
-
-3. SCHEMA VELOCITÀ DI INFUSIONE E CONTROLLI
-| Valore di Potassiemia | Velocità di Infusione | Controlli |
-| < 3 mEq/L | 10 ml/h (12 mEq/h) | Ogni 6 ore |
-| 3,1 – 4 mEq/L | 4 ml/h (4,8 mEq/h) | Ogni 6 ore |
-| > 4 mEq/L | STOP Infusione | — |
-
-4. AVVERTENZE E CRITERI DI SICUREZZA
-• Avvisare il medico per valori di potassiemia < 2,5 mEq/L.
-• Non somministrare potassio a pazienti con diuresi < 50 ml/h in assenza di specifica prescrizione medica.
-• Nei pazienti in trattamento di sostituzione renale (CRRT/dialisi) non somministrare potassio quando il trattamento non è in corso, se non dopo prescrizione medica.`
-            },
-            {
-                id: 'proto_uoc_insulina',
-                code: 'UOC-AR-02',
-                category: 'Terapia Intensiva',
-                title: 'Monitoraggio Glicemico e Trattamento Insulinico',
-                summary: 'Diluizione 50 U.I./50 ml (1:1), avvio infusione > 180 mg/dl e tabella di titolazione oraria.',
-                isCustom: false,
-                content: `1. INTESTAZIONE E DILUIZIONE STANDARD (1:1)
-• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
-• Diluizione: Insulina 50 U.I. (0,5 ml) + 49,5 ml di Soluzione Fisiologica.
-• Concentrazione finale: 50 U.I./50 ml (rapporto 1:1 = 1 U.I./ml).
-
-2. AVVIO INFUSIONE
-• Quando si riscontra un valore di Glicemia > 180 mg/dl iniziare l’infusione di insulina a 1 ml/h, controllare la glicemia a 1 ora e procedere secondo lo schema seguente:
-
-3. TABELLA DI REGOLAZIONE VELOCITÀ DI INFUSIONE
-| Valore di Glicemia (mg/dl) | Velocità di infusione | Ricontrollo Glicemico |
-| < 60 | STOP INFUSIONE, iniettare 2 fiale di soluzione glucosata 33% in bolo e avvisare il medico | 15 – 30 min |
-| 61 – 80 | STOP INFUSIONE | 15 – 30 min |
-| 80 – 140 | Ridurre di 0,4 ml/h | Ricontrollo a 1 ora |
-| 141 – 180 | Non modificare | Ricontrollo a 3 ore |
-| 181 – 220 | Aumentare di 0,4 ml/h | Ricontrollo a 3 ore |
-| 221 – 250 | Aumentare di 0,6 ml/h | Ricontrollo a 3 ore |
-| 251 – 300 | Aumentare di 0,8 ml/h | Ricontrollo a 3 ore |
-| > 300 | Aumentare di 1 ml/h * | Ricontrollo a 1 ora |
-
-4. NOTE OPERATIVE
-• (*) Se per due volte consecutive la glicemia si mantiene > 300 mg/dl, passare direttamente ad una velocità di infusione di 3 ml/h (3 U/h), se non lo è già, e ricontrollare a 1 ora.
-• In caso di STOP di infusione di NPT / Soluzione Glucosata durante correzione insulinemica, ricontrollare glicemia a 1 – 2 ore.`
-            },
-            {
-                id: 'proto_uoc_nutrizione',
-                code: 'UOC-AR-03',
-                category: 'Terapia Intensiva',
-                title: 'Protocollo di Terapia Nutrizionale (Enterale / Parenterale)',
-                summary: 'Algoritmo schematico OS / NE / NPT, progressione 15 ml/h ogni turno, segni di intolleranza e gestione SNG.',
-                isCustom: false,
-                visualDiagram: 'nutrizione_flowchart',
-                content: `• Sia Nutrizione Enterale che Parenterale vanno somministrate in continuo per 24 ore (senza interruzione);
-• La prescrizione nutrizionale va prescritta in cartella secondo il fabbisogno calorico pieno, mentre la velocità della nutrizione enterale dovrà essere gestita a livello infermieristico sulla base dell’algoritmo sopra riportato;
-• Quando è necessaria una procedura che richieda il digiuno basta mettere a caduta il SNG immediatamente prima della procedura (chirurgia, mobilizzazione, ecc.);
-• Cambiare i sistemi di fissaggio del SNG ogni 24/48 ore al fine di ridurre i rischi di decubito.`
-            }
-        ];
-
-        let protocolsData = loadProtocolsDatabase();
-        let currentProtocolCategoryFilter = 'ALL';
-        let currentViewedProtocolId = null;
-
-        function loadProtocolsDatabase() {
-            try {
-                const raw = localStorage.getItem(PROTOCOLS_STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-                }
-            } catch (e) {}
-            return [...defaultProtocolsData];
-        }
-
-        function persistProtocolsDatabase() {
-            try {
-                localStorage.setItem(PROTOCOLS_STORAGE_KEY, JSON.stringify(protocolsData));
-            } catch (e) {}
-        }
-
-        function initProtocolsSection() {
-            renderProtocolsList();
-        }
-
-        function filterProtocolsByCategory(category) {
-            currentProtocolCategoryFilter = category;
-            document.querySelectorAll('.proto-cat-btn').forEach(btn => {
-                if (btn.dataset.cat === category) {
-                    btn.classList.add('active', 'bg-hospital-700', 'text-white');
-                    btn.classList.remove('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
-                } else {
-                    btn.classList.remove('active', 'bg-hospital-700', 'text-white');
-                    btn.classList.add('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
-                }
-            });
-            renderProtocolsList();
-        }
-
-        function clearProtocolSearch() {
-            const input = document.getElementById('protocolSearchInput');
-            if (input) input.value = '';
-            const clearBtn = document.getElementById('clearProtocolSearchBtn');
-            if (clearBtn) clearBtn.classList.add('hidden');
-            renderProtocolsList();
-        }
-
-        function resetProtocolFilters() {
-            const input = document.getElementById('protocolSearchInput');
-            if (input) input.value = '';
-            const clearBtn = document.getElementById('clearProtocolSearchBtn');
-            if (clearBtn) clearBtn.classList.add('hidden');
-            filterProtocolsByCategory('ALL');
-        }
-
-        function renderProtocolsList() {
-            const listEl = document.getElementById('protocolsList');
-            const emptyEl = document.getElementById('emptyProtocols');
-            const countLabel = document.getElementById('protocolsCountLabel');
-            const badgeDesk = document.getElementById('protocolliBadgeDesk');
-            const searchInput = document.getElementById('protocolSearchInput');
-            const clearBtn = document.getElementById('clearProtocolSearchBtn');
-
-            if (!listEl) return;
-
-            const q = (searchInput?.value || '').toLowerCase().trim();
-            if (clearBtn) {
-                if (q.length > 0) clearBtn.classList.remove('hidden');
-                else clearBtn.classList.add('hidden');
-            }
-
-            if (badgeDesk) badgeDesk.textContent = protocolsData.length;
-
-            const filtered = protocolsData.filter(p => {
-                const matchesCat = currentProtocolCategoryFilter === 'ALL' || p.category === currentProtocolCategoryFilter;
-                const haystack = `${p.title} ${p.category} ${p.code || ''} ${p.summary} ${p.content}`.toLowerCase();
-                const matchesQuery = !q || haystack.includes(q);
-                return matchesCat && matchesQuery;
-            });
-
-            if (countLabel) countLabel.textContent = `${filtered.length}`;
-
-            if (filtered.length === 0) {
-                listEl.innerHTML = '';
-                if (emptyEl) emptyEl.classList.remove('hidden');
-                return;
-            }
-
-            if (emptyEl) emptyEl.classList.add('hidden');
-            listEl.innerHTML = filtered.map(p => `
-                <button type="button" onclick="openProtocolViewerModal('${p.id}')" class="w-full text-left bg-white hover:bg-sky-50/40 active:scale-[0.99] transition p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between gap-1.5">
-                    <div class="space-y-1">
-                        <div class="flex items-center justify-between gap-1.5">
-                            <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-hospital-50 text-hospital-800 border border-hospital-200/70 truncate">
-                                ${p.category}
-                            </span>
-                            <span class="text-[9px] font-mono font-bold text-slate-400 shrink-0">${p.code || ''}</span>
-                        </div>
-                        <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">${p.title}</h4>
-                        <p class="text-[11px] text-slate-600 leading-relaxed line-clamp-2">${p.summary}</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px] font-bold text-hospital-700">
-                        <span>${p.visualDiagram ? '<i class="fa-solid fa-diagram-project mr-1 text-emerald-600"></i>Include algoritmo' : '<i class="fa-solid fa-file-lines mr-1"></i>Scheda operativa'}</span>
-                        <span class="inline-flex items-center gap-1">Apri <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
-                    </div>
-                </button>
-            `).join('');
-        }
-
-        function formatProtocolContentHtml(rawContent) {
-            if (!rawContent) return '';
-            const lines = rawContent.split('\n');
-            let html = '';
-            let inTable = false;
-            let tableRows = [];
-
-            const flushTable = () => {
-                if (!inTable || tableRows.length === 0) return;
-                html += `<div class="overflow-x-auto my-2 rounded-lg border border-slate-200"><table class="w-full text-left border-collapse text-[11px]">`;
-                tableRows.forEach((rowCells, rowIdx) => {
-                    if (rowIdx === 0) {
-                        html += `<thead class="bg-hospital-900 text-white"><tr>${rowCells.map(c => `<th class="px-2.5 py-1.5 font-extrabold">${c}</th>`).join('')}</tr></thead><tbody>`;
-                    } else {
-                        html += `<tr class="${rowIdx % 2 === 1 ? 'bg-white' : 'bg-slate-50'} border-t border-slate-200">${rowCells.map((c, colIdx) => `<td class="px-2.5 py-1.5 ${colIdx === 0 ? 'font-extrabold text-hospital-900' : 'text-slate-800'}">${c}</td>`).join('')}</tr>`;
-                    }
-                });
-                html += `</tbody></table></div>`;
-                inTable = false;
-                tableRows = [];
-            };
-
-            lines.forEach(line => {
-                const trimmed = line.trim();
-                if (!trimmed) {
-                    flushTable();
-                    return;
-                }
-
-                if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-                    const cells = trimmed.slice(1, -1).split('|').map(c => c.trim());
-                    // Ignora eventuali righe separatore markdown tipo |---|---|
-                    if (cells.every(c => /^-+$/.test(c))) return;
-                    inTable = true;
-                    tableRows.push(cells);
-                    return;
-                }
-
-                flushTable();
-
-                if (/^\d+\.\s+[A-ZÀ-Ü0-9\s/().:-]+$/.test(trimmed)) {
-                    html += `<div class="font-extrabold text-[11px] uppercase tracking-wide text-hospital-800 pt-2 pb-0.5 border-b border-slate-100">${trimmed}</div>`;
-                } else if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
-                    const body = trimmed.replace(/^[•-]\s*/, '');
-                    html += `<div class="flex items-start gap-1.5 pl-1 py-0.5 text-xs text-slate-800"><span class="text-hospital-600 font-bold mt-0.5">•</span><span>${body}</span></div>`;
-                } else {
-                    html += `<p class="text-xs text-slate-800 py-0.5">${trimmed}</p>`;
-                }
-            });
-
-            flushTable();
-            return html;
-        }
-
-        function renderNutritionFlowchartDiagram() {
-            return `
-                <div class="overflow-x-auto pb-1">
-                    <div class="min-w-[540px] bg-white p-2 rounded-xl border border-slate-200">
-                        <svg viewBox="0 0 760 735" class="w-full h-auto block font-sans" aria-label="Algoritmo Protocollo di Terapia Nutrizionale">
-                            <defs>
-                                <marker id="arr-dark" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
-                                    <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </marker>
-                                <marker id="arr-red" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                                    <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#b91c1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </marker>
-                            </defs>
-
-                            <!-- NODO 1: Il paziente può alimentarsi per OS? -->
-                            <rect x="35" y="14" width="245" height="52" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
-                            <text x="157" y="36" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Il paziente può</text>
-                            <text x="157" y="54" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">alimentarsi per OS?</text>
-
-                            <!-- Freccia Sì -> Alimentazione spontanea -->
-                            <line x1="280" y1="40" x2="368" y2="40" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-                            <text x="322" y="33" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Si</text>
-
-                            <rect x="372" y="14" width="320" height="52" rx="3" fill="#7c8084" stroke="#334155" stroke-width="2"/>
-                            <text x="532" y="45" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Alimentazione spontanea</text>
-
-                            <!-- Freccia No -> Nodo 2 -->
-                            <line x1="157" y1="66" x2="157" y2="116" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-                            <rect x="142" y="79" width="30" height="19" fill="#ffffff"/>
-                            <text x="157" y="94" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">No</text>
-
-                            <!-- NODO 2: Ci sono controindicazioni alla Nutrizione Enterale? -->
-                            <rect x="35" y="120" width="245" height="54" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
-                            <text x="157" y="143" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Ci sono controindicazioni alla</text>
-                            <text x="157" y="161" text-anchor="middle" font-size="13.5" font-style="italic" font-weight="600" fill="#0f172a">Nutrizione Enterale?</text>
-
-                            <!-- Freccia Sì -> Prescrizione Nutrizione Parenterale -->
-                            <line x1="280" y1="147" x2="368" y2="147" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-                            <text x="322" y="140" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Si</text>
-
-                            <rect x="372" y="120" width="320" height="54" rx="3" fill="#4678b2" stroke="#1e3a5f" stroke-width="2"/>
-                            <text x="532" y="152" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Prescrizione Nutrizione Parenterale</text>
-
-                            <!-- Freccia No -> Prescrizione Nutrizione Enterale -->
-                            <line x1="157" y1="174" x2="157" y2="226" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-                            <rect x="142" y="188" width="30" height="19" fill="#ffffff"/>
-                            <text x="157" y="203" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">No</text>
-
-                            <!-- NODO 3: Prescrizione Nutrizione Enterale (Verde) -->
-                            <rect x="8" y="230" width="305" height="46" rx="3" fill="#77a246" stroke="#3f5d1e" stroke-width="2"/>
-                            <text x="160" y="258" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Prescrizione Nutrizione Enterale</text>
-
-                            <!-- Freccia -> Box Giallo Tratteggiato -->
-                            <line x1="157" y1="276" x2="157" y2="306" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-
-                            <!-- NODO 4: Iniziare a 15 ml/h per 12 ore e valutare ogni turno -->
-                            <rect x="64" y="310" width="186" height="84" fill="#fef996" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,3"/>
-                            <text x="157" y="335" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Iniziare a <tspan font-weight="800">15 ml/h</tspan></text>
-                            <text x="157" y="356" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">per 12 ore e <tspan text-decoration="underline">valutare</tspan></text>
-                            <text x="157" y="377" text-anchor="middle" font-size="14" font-weight="600" text-decoration="underline" fill="#0f172a">ogni turno:</text>
-
-                            <!-- BIFORCAZIONE DA NODO 4 -->
-                            <line x1="157" y1="394" x2="88" y2="438" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-                            <line x1="157" y1="394" x2="236" y2="438" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-
-                            <!-- RAMO SINISTRO: Nutrizione Enterale ben tollerata -->
-                            <rect x="16" y="442" width="144" height="82" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
-                            <text x="88" y="468" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">Nutrizione</text>
-                            <text x="88" y="487" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">Enterale</text>
-                            <text x="88" y="507" text-anchor="middle" font-size="13.5" font-weight="800" fill="#0f172a">ben tollerata</text>
-
-                            <!-- Freccia -> Aumentare NE di 15 ml/h -->
-                            <line x1="88" y1="524" x2="88" y2="574" stroke="#1e293b" stroke-width="1.8" marker-end="url(#arr-dark)"/>
-
-                            <rect x="18" y="578" width="140" height="132" fill="#fef996" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="5,3"/>
-                            <text x="88" y="605" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Aumentare NE</text>
-                            <text x="88" y="627" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">di <tspan font-weight="800">15 ml/h</tspan></text>
-                            <text x="88" y="649" text-anchor="middle" font-size="14" font-weight="600" text-decoration="underline" fill="#0f172a">ogni turno</text>
-                            <text x="88" y="671" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">fino alla dose</text>
-                            <text x="88" y="693" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">prescritta</text>
-
-                            <!-- RAMO DESTRO: Presenza di segni di intolleranza o incompatibilità -->
-                            <rect x="170" y="442" width="146" height="82" rx="12" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
-                            <text x="243" y="468" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Presenza di <tspan font-weight="800">segni</tspan></text>
-                            <text x="243" y="487" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">di intolleranza <tspan font-weight="600">o</tspan></text>
-                            <text x="243" y="506" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">incompatibilità</text>
-
-                            <!-- 5 CRITERI DI INTOLLERANZA (RIQUADRI ROSSI) -->
-                            <!-- 1 -->
-                            <rect x="336" y="400" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
-                            <text x="346" y="418" font-size="12.5" font-weight="600" fill="#0f172a">Residuo Gastrico &gt; 500 ml per 6 h</text>
-                            <line x1="316" y1="482" x2="336" y2="414" stroke="#b91c1c" stroke-width="1.3"/>
-                            <line x1="570" y1="414" x2="604" y2="472" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
-
-                            <!-- 2 -->
-                            <rect x="336" y="434" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
-                            <text x="346" y="452" font-size="12.5" font-weight="600" fill="#0f172a">Diarrea &gt; 3 scariche/die</text>
-                            <line x1="316" y1="482" x2="336" y2="448" stroke="#b91c1c" stroke-width="1.3"/>
-                            <line x1="570" y1="448" x2="604" y2="480" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
-
-                            <!-- 3 -->
-                            <rect x="336" y="468" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
-                            <text x="346" y="486" font-size="12.5" font-weight="600" fill="#0f172a">Crampi/Distensione addominale</text>
-                            <line x1="316" y1="482" x2="336" y2="482" stroke="#b91c1c" stroke-width="1.3"/>
-                            <line x1="570" y1="482" x2="604" y2="488" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
-
-                            <!-- 4 -->
-                            <rect x="336" y="502" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
-                            <text x="346" y="520" font-size="12.5" font-weight="600" fill="#0f172a">Instabilità emodinamica</text>
-                            <line x1="316" y1="482" x2="336" y2="516" stroke="#b91c1c" stroke-width="1.3"/>
-                            <line x1="570" y1="516" x2="604" y2="496" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
-
-                            <!-- 5 -->
-                            <rect x="336" y="536" width="234" height="28" fill="#ffffff" stroke="#b91c1c" stroke-width="1.6"/>
-                            <text x="346" y="554" font-size="12.5" font-weight="600" fill="#0f172a">Sanguinamento gastroenterico</text>
-                            <line x1="316" y1="482" x2="336" y2="550" stroke="#b91c1c" stroke-width="1.3"/>
-                            <line x1="570" y1="550" x2="604" y2="504" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#arr-red)"/>
-
-                            <!-- BOX DESTRO: Ridurre NE a 10ml/h e allertare il Medico -->
-                            <rect x="607" y="454" width="145" height="68" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/>
-                            <text x="679" y="476" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">Ridurre NE a</text>
-                            <text x="679" y="494" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">10ml/h e</text>
-                            <text x="679" y="512" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">allertare il Medico</text>
-
-                            <!-- FRECCIA TRATTEGGIATA: Considerare Nutrizione Parenterale -->
-                            <polyline points="679,454 679,324 522,324 522,178" fill="none" stroke="#1e293b" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arr-dark)"/>
-                            <rect x="556" y="313" width="88" height="18" fill="#ffffff"/>
-                            <text x="600" y="326" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Considerare</text>
-
-                            <!-- FRECCIA GRANDE ROSSA VERSO IL BASSO -->
-                            <rect x="441" y="572" width="24" height="4" fill="#993333"/>
-                            <rect x="441" y="579" width="24" height="5" fill="#993333"/>
-                            <polygon points="441,587 465,587 465,612 478,612 453,642 428,612 441,612" fill="#993333" stroke="#5c1d1d" stroke-width="1.2"/>
-
-                            <!-- BOX IN BASSO: Rivalutare ogni turno -->
-                            <rect x="382" y="646" width="142" height="52" rx="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8"/>
-                            <text x="453" y="669" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">Rivalutare ogni</text>
-                            <text x="453" y="688" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">turno</text>
-
-                            <!-- FRECCE DI RITORNO DA "Rivalutare ogni turno" -->
-                            <line x1="382" y1="672" x2="244" y2="528" stroke="#0f172a" stroke-width="1.7" marker-end="url(#arr-dark)"/>
-                            <line x1="382" y1="672" x2="148" y2="528" stroke="#0f172a" stroke-width="1.7" marker-end="url(#arr-dark)"/>
-                        </svg>
-                    </div>
-                </div>
-            `;
-        }
-
-        function openProtocolViewerModal(protocolId) {
-            const proto = protocolsData.find(p => p.id === protocolId);
-            if (!proto) return;
-            currentViewedProtocolId = protocolId;
-
-            document.getElementById('viewerProtocolCategory').textContent = proto.category;
-            document.getElementById('viewerProtocolCode').textContent = proto.code || '';
-            document.getElementById('viewerProtocolTitle').textContent = proto.title;
-
-            const diagramHtml = proto.visualDiagram === 'nutrizione_flowchart'
-                ? renderNutritionFlowchartDiagram()
-                : '';
-
-            document.getElementById('viewerProtocolBody').innerHTML = `
-                <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-[11px] text-slate-600 font-medium">
-                    ${proto.summary}
-                </div>
-                ${diagramHtml}
-                <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-1">
-                    ${formatProtocolContentHtml(proto.content)}
-                </div>
-            `;
-
-            const delBtn = document.getElementById('viewerDeleteProtocolBtn');
-            if (delBtn) {
-                if (proto.isCustom) delBtn.classList.remove('hidden');
-                else delBtn.classList.add('hidden');
-            }
-
-            document.getElementById('protocolViewerModal').classList.remove('hidden');
-        }
-
-        function closeProtocolViewerModal() {
-            document.getElementById('protocolViewerModal').classList.add('hidden');
-            currentViewedProtocolId = null;
-        }
-
-        function copyCurrentProtocolText() {
-            const proto = protocolsData.find(p => p.id === currentViewedProtocolId);
-            if (!proto) return;
-            const fullText = `${proto.title} (${proto.category})\n${proto.summary}\n\n${proto.content}`;
-            copyText(fullText);
-        }
-
-        function openProtocolEditorModal(protocolToEdit = null) {
-            if (protocolToEdit) {
-                document.getElementById('editProtocolId').value = protocolToEdit.id;
-                document.getElementById('protocolEditorTitle').textContent = 'Modifica Protocollo';
-                document.getElementById('protoTitleInput').value = protocolToEdit.title;
-                document.getElementById('protoCategoryInput').value = protocolToEdit.category;
-                document.getElementById('protoCodeInput').value = protocolToEdit.code || '';
-                document.getElementById('protoSummaryInput').value = protocolToEdit.summary;
-                document.getElementById('protoContentInput').value = protocolToEdit.content;
-            } else {
-                document.getElementById('editProtocolId').value = '';
-                document.getElementById('protocolEditorTitle').textContent = 'Nuovo Protocollo di Reparto';
-                document.getElementById('protoTitleInput').value = '';
-                document.getElementById('protoCategoryInput').value = 'Terapia Intensiva';
-                document.getElementById('protoCodeInput').value = '';
-                document.getElementById('protoSummaryInput').value = '';
-                document.getElementById('protoContentInput').value = '';
-            }
-            document.getElementById('protocolEditorModal').classList.remove('hidden');
-        }
-
-        function closeProtocolEditorModal() {
-            document.getElementById('protocolEditorModal').classList.add('hidden');
-        }
-
-        function editCurrentlyViewedProtocol() {
-            const proto = protocolsData.find(p => p.id === currentViewedProtocolId);
-            if (!proto) return;
-            closeProtocolViewerModal();
-            openProtocolEditorModal(proto);
-        }
-
-        function deleteCurrentlyViewedProtocol() {
-            if (!currentViewedProtocolId) return;
-            protocolsData = protocolsData.filter(p => p.id !== currentViewedProtocolId);
-            persistProtocolsDatabase();
-            closeProtocolViewerModal();
-            renderProtocolsList();
-            showToast('Protocollo eliminato');
-        }
-
-        function saveProtocolForm(e) {
-            e.preventDefault();
-            const existingId = document.getElementById('editProtocolId').value.trim();
-            const title = document.getElementById('protoTitleInput').value.trim();
-            const category = document.getElementById('protoCategoryInput').value;
-            const code = document.getElementById('protoCodeInput').value.trim();
-            const summary = document.getElementById('protoSummaryInput').value.trim();
-            const content = document.getElementById('protoContentInput').value.trim();
-
-            if (existingId) {
-                const idx = protocolsData.findIndex(p => p.id === existingId);
-                if (idx !== -1) {
-                    protocolsData[idx] = { ...protocolsData[idx], title, category, code, summary, content };
-                }
-                showToast('Protocollo aggiornato');
-            } else {
-                protocolsData.unshift({
-                    id: `proto_custom_${Date.now()}`,
-                    title,
-                    category,
-                    code: code || 'REPARTO',
-                    summary,
-                    content,
-                    isCustom: true
-                });
-                showToast('Nuovo protocollo aggiunto');
-            }
-
-            persistProtocolsDatabase();
-            closeProtocolEditorModal();
-            renderProtocolsList();
-        }
-
-        // Inizializzazione all'avvio
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', () => {
             setupPwaAssets();
             renderContacts();
             initShiftsSection();
             initInfusionCalculator();
-            initAntibioticGuide();
+            initAntibioticsCalculator();
             initProtocolsSection();
-            switchTab('rubrica');
         });
     </script>
 </body>
