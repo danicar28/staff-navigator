@@ -718,7 +718,7 @@
             </div>
 
             <!-- Elenco Protocolli -->
-            <div id="protocolsList" class="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+            <div id="protocolsList" class="grid grid-cols-1 md:grid-cols-2 gap-1">
                 <!-- Popolato da JS -->
             </div>
 
@@ -4150,6 +4150,20 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             return 'bg-indigo-50 text-indigo-800 border-indigo-200';
         }
 
+        function getProtocolCategoryBarClass(category) {
+            if (category.includes('Emergenza')) return 'bg-red-500';
+            if (category.includes('Terapia Intensiva')) return 'bg-sky-500';
+            if (category.includes('Emostasi')) return 'bg-amber-500';
+            return 'bg-indigo-500';
+        }
+
+        function getProtocolCategoryShortName(category) {
+            if (category.includes('Emergenza')) return 'Emergenza';
+            if (category.includes('Anestesia')) return 'Sala Op.';
+            if (category.includes('Emostasi')) return 'Emostasi';
+            return category;
+        }
+
         function renderProtocolsList() {
             const container = document.getElementById('protocolsList');
             const emptyBox = document.getElementById('emptyProtocols');
@@ -4185,21 +4199,20 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
             if (emptyBox) emptyBox.classList.add('hidden');
             container.innerHTML = filtered.map(p => {
-                const badgeCls = getProtocolCategoryBadgeClass(p.category);
+                const barCls = getProtocolCategoryBarClass(p.category);
+                const shortCat = getProtocolCategoryShortName(p.category);
                 return `
-                    <button type="button" onclick="openProtocolViewer('${p.id}')" class="bg-white hover:bg-sky-50/40 active:scale-[0.99] transition p-2.5 rounded-lg border border-slate-200 shadow-2xs text-left flex flex-col justify-between gap-1.5">
-                        <div class="space-y-1 w-full">
-                            <div class="flex items-center justify-between gap-1.5">
-                                <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded border ${badgeCls} truncate">${escapeHtml(p.category)}</span>
-                                ${p.code ? `<span class="text-[9px] font-mono font-bold text-slate-400 shrink-0">${escapeHtml(p.code)}</span>` : ''}
+                    <button type="button" onclick="openProtocolViewer('${p.id}')" class="bg-white active:bg-sky-50 transition rounded-lg border border-slate-200 text-left flex items-stretch overflow-hidden">
+                        <span class="w-1 shrink-0 ${barCls}"></span>
+                        <div class="flex-1 min-w-0 px-2 py-1.5">
+                            <h4 class="font-bold text-[12px] text-slate-900 leading-tight line-clamp-2">${escapeHtml(p.title)}</h4>
+                            <div class="flex items-center gap-1.5 mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+                                <span class="truncate">${escapeHtml(shortCat)}</span>
+                                ${p.code ? `<span class="font-mono normal-case shrink-0">· ${escapeHtml(p.code)}</span>` : ''}
+                                ${p.visualDiagram ? '<i class="fa-solid fa-diagram-project text-emerald-600 shrink-0" title="Include algoritmo"></i>' : ''}
                             </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 leading-snug">${escapeHtml(p.title)}</h4>
-                            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${escapeHtml(p.summary)}</p>
                         </div>
-                        <div class="flex items-center justify-between w-full pt-1 border-t border-slate-100 text-[10px] font-bold text-hospital-700">
-                            <span>${p.visualDiagram ? '<i class="fa-solid fa-diagram-project mr-1 text-emerald-600"></i>Include algoritmo' : 'Apri protocollo'}</span>
-                            <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                        </div>
+                        <i class="fa-solid fa-chevron-right text-[9px] text-slate-300 self-center pr-2 shrink-0"></i>
                     </button>
                 `;
             }).join('');
