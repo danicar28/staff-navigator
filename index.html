@@ -2435,29 +2435,29 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 const safeDocId = (c.docId || '').replace(/'/g, "\\'");
                 const safeId = String(c.id).replace(/'/g, "\\'");
                 return `
-                <div class="bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-2">
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-1">
-                            <button onclick="toggleContactFav('${safeId}', event)" class="shrink-0 p-0.5 -ml-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
-                                <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
-                            </button>
-                            <h4 class="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight truncate">${c.name}</h4>
-                        </div>
-                        <div class="flex items-center gap-1 mt-0.5 pl-4 text-[10px] text-slate-500 truncate">
-                            <span class="font-semibold text-hospital-700 shrink-0">${c.location || 'Sede'}</span>
-                            ${c.note ? `<span class="truncate">• ${c.note}</span>` : ''}
-                        </div>
+                <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between gap-2">
+                    <div class="flex items-start gap-1.5">
+                        <button onclick="toggleContactFav('${safeId}', event)" class="shrink-0 p-0.5 mt-0.5 active:scale-90 transition ${isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}" title="Preferito">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-xs"></i>
+                        </button>
+                        <h4 class="font-bold text-slate-900 text-[13px] sm:text-sm leading-snug break-words flex-1">${c.name}</h4>
                     </div>
-                    <div class="flex items-center gap-1 shrink-0">
-                        <button onclick="copyText('${c.phone.replace(/'/g, "\\'")}')" class="bg-slate-100 active:bg-slate-200 text-slate-800 font-mono font-bold text-[11px] px-2 py-1.5 rounded-lg transition max-w-[95px] truncate" title="Copia ${c.phone}">
-                            ${c.phone}
-                        </button>
-                        <button onclick="openEditContactModal('${safeDocId}', '${safeId}')" class="w-8 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 active:scale-95 text-hospital-800 border border-sky-200 flex items-center justify-center transition shrink-0" title="Modifica numero o collocazione per tutti">
-                            <i class="fa-solid fa-pen text-[11px]"></i>
-                        </button>
-                        <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
-                            <i class="fa-solid fa-phone text-xs"></i>
-                        </a>
+                    <div class="flex items-center justify-between gap-2 pl-5 pt-1 border-t border-slate-100">
+                        <div class="min-w-0 flex-1 text-[11px] leading-tight">
+                            <div class="font-semibold text-hospital-700 break-words">${c.location || 'Sede'}</div>
+                            ${c.note ? `<div class="text-slate-500 text-[10px] mt-0.5 break-words">${c.note}</div>` : ''}
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="copyText('${c.phone.replace(/'/g, "\\'")}')" class="bg-slate-100 active:bg-slate-200 text-slate-900 font-mono font-extrabold text-xs px-2.5 py-1.5 rounded-lg transition max-w-[125px] truncate border border-slate-200" title="Copia ${c.phone}">
+                                ${c.phone}
+                            </button>
+                            <button onclick="openEditContactModal('${safeDocId}', '${safeId}')" class="w-8 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 active:scale-95 text-hospital-800 border border-sky-200 flex items-center justify-center transition shrink-0" title="Modifica numero o collocazione per tutti">
+                                <i class="fa-solid fa-pen text-[11px]"></i>
+                            </button>
+                            <a href="tel:${fullNum}" class="w-8 h-8 rounded-lg bg-emerald-600 active:bg-emerald-700 text-white flex items-center justify-center shadow-xs transition shrink-0" title="Chiama ${fullNum}">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             `}).join('');
