@@ -698,6 +698,9 @@
                         <i class="fa-solid fa-lock text-[11px]"></i>
                         <span id="protoLockLabel" class="hidden">Gestione</span>
                     </button>
+                    <button type="button" id="protoExportBtn" onclick="exportProtocolsBackup()" class="hidden h-8 w-8 rounded-md bg-slate-100 text-slate-600 border border-slate-200 active:scale-95 transition flex items-center justify-center shrink-0" title="Scarica una copia dei protocolli (JSON)" aria-label="Esporta protocolli">
+                        <i class="fa-solid fa-download text-[11px]"></i>
+                    </button>
                     <button type="button" id="protoNewBtn" onclick="openProtocolEditorModal()" class="hidden h-8 px-2.5 rounded-md bg-hospital-700 hover:bg-hospital-600 active:scale-95 transition text-white font-bold text-[11px] shadow-xs flex items-center gap-1 shrink-0">
                         <i class="fa-solid fa-plus text-[10px]"></i>
                         <span>Nuovo</span>
@@ -1536,13 +1539,19 @@
                     const protoInitial = await getDocs(protocolsColRef);
                     if (!protoInitial.metadata.fromCache && typeof window.getDefaultProtocols === 'function') {
                         let metaData = null;
-                        protoInitial.forEach((d) => { if (d.id === '_meta') metaData = d.data(); });
+                        const existingIds = new Set();
+                        protoInitial.forEach((d) => {
+                            if (d.id === '_meta') metaData = d.data();
+                            else existingIds.add(d.id);
+                        });
                         const defs = window.getDefaultProtocols();
                         const alreadySeeded = Array.isArray(metaData?.seededIds)
                             ? metaData.seededIds
                             : (metaData ? defs.filter(d => !d.addedLater).map(d => d.id) : []);
-                        const toSeed = defs.filter(d => !alreadySeeded.includes(d.id));
-                        if (toSeed.length > 0) {
+                        const pending = defs.filter(d => !alreadySeeded.includes(d.id));
+                        // Non si sovrascrive mai ciò che esiste già su Firestore (modifiche incluse)
+                        const toSeed = pending.filter(d => !existingIds.has(d.id));
+                        if (pending.length > 0) {
                             for (const d of toSeed) {
                                 await setDoc(doc(protocolsColRef, d.id), {
                                     id: d.id,
@@ -1559,7 +1568,7 @@
                             }
                             await setDoc(doc(protocolsColRef, '_meta'), {
                                 seeded: true,
-                                seededIds: [...alreadySeeded, ...toSeed.map(d => d.id)],
+                                seededIds: [...alreadySeeded, ...pending.map(d => d.id)],
                                 updatedAt: Date.now()
                             });
                         }
@@ -3885,102 +3894,12 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
 
         const defaultProtocolsData = [
             {
-                id: 'proto-rsi-vie-aeree',
-                title: 'Intubazione a Sequenza Rapida (RSI) & Vie Aeree Difficili',
-                category: 'Emergenza / Vie Aeree',
-                code: 'PROC-AR-01',
-                summary: 'Preparazione farmacologica, pre-ossigenazione e algoritmo di emergenza DAS / SIAARTI.',
-                content: `1. PREPARAZIONE & CHECKLIST (SOAP-ME)
-- Aspiratore funzionante con sondino rigido Yankauer pronto sotto il cuscino.
-- Ossigeno 100% + pallone autoespansibile (Ambu) + circuito va-e-vieni / ventilatore testato.
-- Videolaringoscopio + lama Macintosh 3 e 4, mandrino/introduttore di Frova, tubi endotracheali (7.0 - 7.5 - 8.0) con cuffia testata.
-- Presidi sovraglottici di salvataggio (I-gel / LMA) e set cricotiroidotomia d'emergenza (bisturi lama 10 + Frova + tubo 6.0).
-- Monitoraggio completo: ECG, SpO2, NIBP ogni 2 min (o IBP), EtCO2 capnografia continua.
-
-2. PRE-OSSIGENAZIONE (3-5 MINUTI)
-- FiO2 100% a tenuta con maschera facciale (EtO2 > 85%) o NIV/HFNC nel paziente ipossiemico.
-- Posizione sniffing / ramped (allineamento meato acustico esterno - incisura giugulare) soprattutto nell'obeso.
-
-3. INDUZIONE & MIORILASSAMENTO
-- Induttore: Ketamina 1–2 mg/kg EV (preferita in instabilità emodinamica) oppure Propofol 1–2 mg/kg EV (ridurre a 0,5–1 mg/kg nello shock) oppure Midazolam 0,1–0,2 mg/kg EV.
-- Miorilassante: Rocuronio 1,2 mg/kg EV (tempo d'azione 45–60 sec; tenere pronto Sugammadex 16 mg/kg = 1200 mg per 75 kg in caso di "Cannot Intubate Cannot Oxygenate"). In alternativa Succinilcolina 1–1,5 mg/kg EV (se assenti controindicazioni: iperkaliemia, ustioni > 24h, miopatie, trauma midollare).
-
-4. ALGORITMO FALLIMENTO (MAX 3 TENTATIVI)
-- Piano A: Laringoscopia / Videolaringoscopia (max 3 tentativi, ottimizzando posizione e BURP).
-- Piano B: Inserimento presidio sovraglottico (I-gel / LMA) per mantenere ossigenazione.
-- Piano C: Ventilazione con maschera facciale a due mani + cannula oro/nasofaringea.
-- Piano D (CICO - Cannot Intubate Cannot Oxygenate): Cricotiroidotomia chirurgica d'urgenza (incisione verticale cute -> incisione orizzontale membrana cricotiroidea -> introduttore Frova -> tubo cuffiato 6.0).`
-            },
-            {
-                id: 'proto-sepsi-bundle',
-                title: 'Sepsi e Shock Settico — Bundle della 1ª Ora',
-                category: 'Terapia Intensiva',
-                code: 'PROC-TI-02',
-                summary: 'Rianimazione volemica, vasopressori precoci, emocolture e terapia antibiotica empirica entro 60 min.',
-                content: `1. MISURAZIONE LATTATI & EMOCOLTURE (ENTRO 45 MIN)
-- Prelievo EGA arterioso/venoso con lattati (ripetere entro 2–4 ore se lattati > 2 mmol/L).
-- Almeno 2 set di emocolture (aerobi/anaerobi) da siti diversi (e da CVC se presente > 48h) PRIMA dell'antibiotico, senza ritardare l'infusione oltre 45 minuti.
-
-2. TERAPIA ANTIBIOTICA EMPIRICA (ENTRO 1 ORA)
-- Somministrare antibiotici EV ad ampio spettro in base al focolaio sospetto e all'ecologia locale (consultare scheda "Antibiotici & Cl.Cr" per dose di carico piena indipendentemente dalla funzione renale).
-
-3. ESPANSIONE VOLEMICA
-- In caso di ipotensione (PAM < 65 mmHg) o lattati ≥ 4 mmol/L: somministrare almeno 30 ml/kg di cristalloidi bilanciati (Ringer Lattato / Sterofundin) entro le prime 3 ore, valutando la fluid-responsiveness dinamica (PLR, PPV/SVV, ecografia VCI/cuore).
-
-4. SUPPORTO VASOPRESSORE (TARGET PAM ≥ 65 mmHg)
-- Prima scelta: Noradrenalina (8 mg in 50 ml SF = 160 mcg/ml), iniziare precocemente (anche su accesso venoso periferico prossimale valido in attesa di CVC) per mantenere PAM ≥ 65 mmHg.
-- Seconda linea (se Noradrenalina > 0,25–0,5 mcg/kg/min): associare Vasopressina 0,03 UI/min (40 UI in 50 ml SF = 2,25 ml/h) + Idrocortisone 200 mg/24h (8,3 mg/h in infusione continua).`
-            },
-            {
-                id: 'proto-ards-ventilazione',
-                title: 'ARDS & Ventilazione Protettiva in Terapia Intensiva',
-                category: 'Terapia Intensiva',
-                code: 'PROC-TI-03',
-                summary: 'Impostazione Vt su peso ideale (PBW), Driving Pressure < 15 cmH2O, PEEP e pronazione.',
-                content: `1. CALCOLO PESO CORPOREO IDEALE (PBW)
-- Uomini: PBW (kg) = 50 + 0,91 × [Altezza (cm) − 152,4]
-- Donne: PBW (kg) = 45,5 + 0,91 × [Altezza (cm) − 152,4]
-
-2. PARAMETRI VENTILATORI PROTETTIVI
-- Volume Corrente (Vt): 6 ml/kg di PBW (range consentito 4–8 ml/kg PBW).
-- Pressione di Plateau (Pplat): mantenere < 30 cmH2O (misurata con pausa tele-inspiratoria di 0,3–0,5 sec).
-- Driving Pressure (ΔP = Pplat − PEEP): mantenere < 15 cmH2O.
-- Frequenza Respiratoria: 14–28 atti/min per mantenere pH > 7,25 (ipercapnia permissiva tollerata se pH ≥ 7,20–7,25).
-- Target Ossigenazione: SpO2 92–96% (PaO2 60–80 mmHg).
-
-3. ARDS MODERATA-SEVERA (PaO2/FiO2 < 150 mmHg)
-- Ottimizzazione PEEP (tabella PEEP/FiO2 o titolazione su compliance/driving pressure).
-- Miorilassamento continuo nelle prime 24–48h in caso di asincronia severa (Cisatracurio 1–3 mcg/kg/min).
-- Pronazione precoce: cicli di almeno 16 ore consecutive/die se PaO2/FiO2 < 150 mmHg con FiO2 ≥ 0,6 e PEEP ≥ 5 cmH2O.`
-            },
-            {
-                id: 'proto-emorragia-massiva',
-                title: 'Protocollo Emorragia Massiva (PEM) & Emostasi',
-                category: 'Emostasi / Trasfusioni',
-                code: 'PROC-EM-04',
-                summary: 'Rapporto emocomponenti 1:1:1, Acido Tranexamico, Fibrinogeno e target calcio/temperatura.',
-                content: `1. ATTIVAZIONE & CONTATTI RAPIDI
-- Allertare Centro Trasfusionale / SIMT (int. 3077 / 3087) per attivazione Pacchetto Emorragia Massiva.
-- Eseguire immediatamente: Emocromo, PT/INR, aPTT, Fibrinogeno (Clauss), EGA (Hb, lattati, Ca++), ROTEM/TEG se disponibile.
-
-2. TERAPIA ANTIFIBRINOLITICA PRECOCE
-- Acido Tranexamico (Tranex / Ugurol): 1 g EV in 10 minuti entro 3 ore dall'evento emorragico/trauma, seguito da 1 g EV in infusione nelle 8 ore successive.
-
-3. RAPPORTO TRASFUSIONALE & FATTORI
-- Trasfondere Emazie Concentrate (EC), Plasma Fresco Congelato (PFC) e Piastrine (PLT) in rapporto bilanciato 1:1:1.
-- Fibrinogeno: mantenere > 1,5–2,0 g/L (somministrare Fibrinogeno concentrato 2–4 g EV se < 1,5 g/L o FIBTEM MCF < 10 mm).
-- Piastrine: mantenere > 50.000/mmc (> 100.000/mmc nel trauma cranico severo o emorragia cerebrale).
-
-4. PREVENZIONE TRIADE LETALE
-- Normotermia: riscaldatore attivo ad aria forzata + riscaldatore fluidi (target T > 36,0 °C).
-- Calcio ionizzato (Ca++): mantenere > 1,1 mmol/L (somministrare Calcio Cloruro 1 g EV lento o Calcio Gluconato 2–3 g EV ogni 2–4 unità trasfuse).`
-            },
-            {
                 id: 'proto-reversal-anticoagulanti',
                 title: 'Antagonizzazione Anticoagulanti in Urgenza / Chirurgia',
                 category: 'Emostasi / Trasfusioni',
                 code: 'PROC-EM-05',
                 summary: 'Schema rapido di reversal per Warfarin (AVK), Dabigatran, Apixaban, Rivaroxaban ed Eparine.',
+                isCustom: false,
                 content: `1. WARFARIN / ACENOCUMAROLO (AVK)
 - Concentrato Complesso Protrombinico (CCP a 4 fattori - Confidex / Octaplex):
   • INR 2,0 – 3,9: 25 UI/kg EV
@@ -4004,6 +3923,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 category: 'Anestesia / Sala Op.',
                 code: 'PROC-SO-06',
                 summary: 'Riconoscimento precoce e schema di somministrazione Emulsione Lipidica (Intralipid 20%).',
+                isCustom: false,
                 content: `1. SEGNI CLINICI DI ALLARME
 - Prodromi SNC: acufeni, sapore metallico, parestesie periorali, agitazione, disartria -> convulsioni tonico-cloniche.
 - Cardiovascolare: bradicardia, blocco AV, aritmie ventricolari, ipotensione refrattaria fino ad asistolia.
@@ -4023,13 +3943,12 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_potassiemia',
                 addedLater: true,
-                code: 'UOC-AR-01',
+                title: 'Correzione dell’Ipopotassiemia',
                 category: 'Terapia Intensiva',
-                title: 'Correzione dell’Ipopotassiemia (U.O.C. Anestesia e Rianimazione)',
+                code: 'UOC-AR-01',
                 summary: 'Diluizione standard (1,2 mEq/ml), velocità di infusione per fasce di potassiemia e criteri di sicurezza renale.',
                 isCustom: false,
                 content: `1. INTESTAZIONE UFFICIALE
-• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
 • Modalità di correzione dell’ipopotassiemia in funzione dei valori della potassiemia rilevati prima di iniziare l’infusione endovenosa.
 
 2. DILUIZIONE STANDARD (CONCENTRAZIONE FINALE: 1,2 mEq/ml)
@@ -4050,13 +3969,12 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_insulina',
                 addedLater: true,
-                code: 'UOC-AR-02',
-                category: 'Terapia Intensiva',
                 title: 'Monitoraggio Glicemico e Trattamento Insulinico',
+                category: 'Terapia Intensiva',
+                code: 'UOC-AR-02',
                 summary: 'Diluizione 50 U.I./50 ml (1:1), avvio infusione > 180 mg/dl e tabella di titolazione oraria.',
                 isCustom: false,
                 content: `1. INTESTAZIONE E DILUIZIONE STANDARD (1:1)
-• A.O.E. "Cannizzaro" Catania — U.O.C. Anestesia e Rianimazione con Terapia Intensiva e Trauma Center (Direttore: Dott. S. Borraccino).
 • Diluizione: Insulina 50 U.I. (0,5 ml) + 49,5 ml di Soluzione Fisiologica.
 • Concentrazione finale: 50 U.I./50 ml (rapporto 1:1 = 1 U.I./ml).
 
@@ -4081,16 +3999,71 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_nutrizione',
                 addedLater: true,
-                code: 'UOC-AR-03',
-                category: 'Terapia Intensiva',
                 title: 'Protocollo di Terapia Nutrizionale (Enterale / Parenterale)',
+                category: 'Terapia Intensiva',
+                code: 'UOC-AR-03',
                 summary: 'Algoritmo schematico OS / NE / NPT, progressione 15 ml/h ogni turno, segni di intolleranza e gestione SNG.',
-                isCustom: false,
                 visualDiagram: 'nutrizione_flowchart',
+                isCustom: false,
                 content: `• Sia Nutrizione Enterale che Parenterale vanno somministrate in continuo per 24 ore (senza interruzione);
 • La prescrizione nutrizionale va prescritta in cartella secondo il fabbisogno calorico pieno, mentre la velocità della nutrizione enterale dovrà essere gestita a livello infermieristico sulla base dell’algoritmo sopra riportato;
 • Quando è necessaria una procedura che richieda il digiuno basta mettere a caduta il SNG immediatamente prima della procedura (chirurgia, mobilizzazione, ecc.);
 • Cambiare i sistemi di fissaggio del SNG ogni 24/48 ore al fine di ridurre i rischi di decubito.`
+            },
+            {
+                id: 'proto_uoc_conduzione_citrato',
+                addedLater: true,
+                title: 'Conduzione del Trattamento CRRT con Citrato (Prismaflex)',
+                category: 'Terapia Intensiva',
+                code: 'UOC-AR-04',
+                summary: 'Monitoraggio del calcio, compensazione % della calcemia (siringa Prismaflex), dose citrato post filtro e aggiustamento bicarbonati.',
+                visualDiagram: 'citrato_schema',
+                isCustom: false,
+                content: `1. MONITORAGGIO CONSIGLIATO DURANTE IL TRATTAMENTO
+Con "controllo" ci si riferisce all'emogasanalisi.
+
+| Parametro | Range | Quando controllare |
+| Calcio ionizzato sistemico | 1,00 – 1,20 mmol/L (4,00 – 4,80 mg/dL) | Entro i primi 30 min; a 2 ore dalla partenza; almeno ogni 6 ore (vedi schema) |
+| Calcio ionizzato post filtro | 0,25 – 0,50 mmol/L (1,00 – 2,00 mg/dL) | Entro i primi 30 min; almeno ogni 24 ore (vedi schema) |
+
+2. COMPENSAZIONE % DELLA CALCEMIA PAZIENTE TRAMITE SIRINGA PRISMAFLEX
+Le variazioni si intendono rispetto al valore attualmente impostato.
+Da applicare dopo la seconda ora dall'inizio del trattamento o su richiesta del sistema Prismaflex.
+
+| Ca++ sistemico (mg/dL) | Ca++ sistemico (mmol/L) | Compensazione | Prossimo controllo |
+| < 3,2 | < 0,8 | +30% | dopo 1 ora |
+| 3,2 – 3,6 | 0,8 – 0,9 | +20% | dopo 2 ore |
+| 3,6 – 4,0 | 0,9 – 1,0 | +10% | dopo 4 ore |
+| 4,0 – 4,8 | 1,0 – 1,2 | Compensazione adeguata: nessuna modifica | dopo 6 ore |
+| 4,8 – 5,4 | 1,2 – 1,35 | -10% | dopo 4 ore |
+| > 5,4 | > 1,35 | -20% | dopo 2 ore |
+
+- In caso di grave ipocalcemia si suggerisce di valutare un'ipotetica intolleranza mediante il rapporto Ca Tot. / Ca++.
+
+3. AGGIUSTAMENTO DEL CALCIO IONIZZATO POST FILTRO
+
+| Ca++ post filtro (mg/dL) | Ca++ post filtro (mmol/L) | Azione | Prossimo controllo |
+| < 1,00 | < 0,25 | Impostare dose citrato = 2,7 mmol/L | dopo 6 ore |
+| 1,00 – 2,00 | 0,25 – 0,50 | Nessuna modifica | dopo 24 ore |
+| > 2,00 | > 0,50 | Impostare dose citrato = 3,3 mmol/L (*) | dopo 6 ore |
+
+(*) Da impostare solo se HCO3- < 28 mmol/L.
+
+4. EVENTUALE AGGIUSTAMENTO BICARBONATI (DOPO 6 ORE DALLA PARTENZA)
+Applicare possibilmente entrambe le modifiche.
+
+| HCO3- (mmol/L) | Dialisato | Flusso sangue | Prossimo controllo |
+| < 22 | - 300 mL/h | + 10 mL/min | dopo 6 ore |
+| 22 – 28 | Nessuna modifica | Nessuna modifica | dopo 12 ore |
+| > 28 | + 300 mL/h | - 10 mL/min | dopo 6 ore |
+
+Range consigliati:
+- Dialisato: 900 – 1800 mL/h
+- Flusso sangue: 100 – 170 mL/min
+
+5. CONTROLLO UNA VOLTA AL GIORNO
+- Calcio totale / Ca ionizzato (range: < 2,5), Mg, Na, K.
+- Se il rapporto Ca Tot. / Ca++ è > 2,5, per diminuire il carico di citrato al paziente si suggerisce di abbassare il flusso sangue e/o la dose citrato.`
             }
         ];
 
@@ -4209,7 +4182,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                             <div class="flex items-center gap-1.5 mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400">
                                 <span class="truncate">${escapeHtml(shortCat)}</span>
                                 ${p.code ? `<span class="font-mono normal-case shrink-0">· ${escapeHtml(p.code)}</span>` : ''}
-                                ${p.visualDiagram ? '<i class="fa-solid fa-diagram-project text-emerald-600 shrink-0" title="Include algoritmo"></i>' : ''}
+                                ${getProtocolDiagramKey(p) ? '<i class="fa-solid fa-diagram-project text-emerald-600 shrink-0" title="Include schema grafico"></i>' : ''}
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-right text-[9px] text-slate-300 self-center pr-2 shrink-0"></i>
@@ -4346,6 +4319,8 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             }
             if (lockLabel) lockLabel.classList.toggle('hidden', !admin);
             if (newBtn) newBtn.classList.toggle('hidden', !admin);
+            const exportBtn = document.getElementById('protoExportBtn');
+            if (exportBtn) exportBtn.classList.toggle('hidden', !admin);
 
             const editBtn = document.getElementById('viewerEditProtocolBtn');
             const delBtn = document.getElementById('viewerDeleteProtocolBtn');
@@ -4462,6 +4437,33 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
                 }
             }
         };
+
+        function exportProtocolsBackup() {
+            if (!isProtoAdmin()) {
+                requireProtoAdmin(() => exportProtocolsBackup());
+                return;
+            }
+            if (!window.cloudProtocolsAPI) {
+                showToast('Database non connesso: riprova tra qualche secondo');
+                return;
+            }
+            touchProtoAdmin();
+            const data = {
+                exportedAt: new Date().toISOString(),
+                source: 'protocolli_cannizzaro',
+                protocols: protocolsDatabase
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `protocolli_cannizzaro_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            showToast(`Copia scaricata (${protocolsDatabase.length} protocolli)`);
+        }
 
         function protoCloudErrorMessage(err) {
             const code = err?.code || err?.message || '';
@@ -4626,6 +4628,166 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             `;
         }
 
+        // ------------------------------------------
+        // SCHEMI GRAFICI DEI PROTOCOLLI
+        // ------------------------------------------
+        // Per i protocolli sotto elencati lo schema grafico viene mostrato in evidenza e il testo
+        // (tabelle) resta consultabile in una sezione richiudibile.
+        const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema' };
+        const PROTOCOL_DIAGRAMS_REPLACING_TEXT = ['citrato_schema'];
+
+        function getProtocolDiagramKey(proto) {
+            return (proto && (proto.visualDiagram || PROTOCOL_DIAGRAM_BY_ID[proto.id])) || '';
+        }
+
+        function renderProtocolDiagram(key) {
+            if (key === 'nutrizione_flowchart') return renderNutritionFlowchartDiagram();
+            if (key === 'citrato_schema') return renderCitrateSchemaDiagram();
+            return '';
+        }
+
+        function renderCitrateSchemaDiagram() {
+            const caPP = 'Ca<sup>++</sup>';
+            const hco3 = 'HCO<sub>3</sub><sup>-</sup>';
+            const pct = (t) => `<div class="text-[13px] font-extrabold leading-none">${t}</div>`;
+            const lbl = (t) => `<div class="text-[9px] font-extrabold leading-tight">${t}</div>`;
+            const lblUp = (t) => `<div class="text-[8px] font-extrabold uppercase leading-tight">${t}</div>`;
+            const sub = (t) => `<div class="text-[9px] font-semibold leading-tight mt-0.5">${t}</div>`;
+
+            const card = (title, subtitle, body) => `
+                <div class="bg-white rounded-lg border border-slate-300 overflow-hidden shadow-2xs">
+                    <div class="bg-hospital-900 text-white px-2.5 py-1.5">
+                        <div class="text-[10px] font-extrabold uppercase tracking-wide leading-tight">${title}</div>
+                        ${subtitle ? `<div class="text-[9px] text-sky-100 mt-0.5 leading-tight">${subtitle}</div>` : ''}
+                    </div>
+                    <div class="p-2 space-y-1">${body}</div>
+                </div>`;
+
+            // Scala orizzontale: righe di valori (agli estremi delle zone o centrati nelle zone),
+            // barra colorata con le azioni e, sotto ogni zona, il prossimo controllo.
+            const buildScale = ({ rows, zones }) => {
+                const total = zones.reduce((a, z) => a + z.w, 0);
+                let acc = 0;
+                const bounds = zones.slice(0, -1).map(z => { acc += z.w; return (acc / total) * 100; });
+
+                const rowsHtml = rows.map(r => {
+                    let inner;
+                    if (r.bounds) {
+                        inner = r.bounds.map((v, i) =>
+                            `<span class="absolute whitespace-nowrap" style="left:${bounds[i]}%;transform:translateX(-50%)">${v}</span>`).join('');
+                    } else {
+                        inner = `<div class="flex w-full">${zones.map((z, i) =>
+                            `<span class="text-center whitespace-nowrap" style="flex:${z.w} 1 0%;min-width:0">${r.zoneLabels[i]}</span>`).join('')}</div>`;
+                    }
+                    return `<div class="relative h-4 text-[10px] font-bold text-slate-700 leading-4">
+                        <span class="absolute left-0 top-0 text-[8px] font-bold text-slate-400 leading-4">${r.unit}</span>${inner}</div>`;
+                }).join('');
+
+                const ticks = `<div class="relative h-2">${bounds.map(b =>
+                    `<span class="absolute top-0 h-2 border-l border-slate-400" style="left:${b}%"></span>`).join('')}</div>`;
+
+                const bar = `<div class="flex border-y border-slate-300">${zones.map((z, i) => `
+                    <div class="${z.bg} ${i > 0 ? 'border-l border-slate-300' : ''} px-0.5 py-2 text-center flex flex-col items-center justify-center text-slate-900" style="flex:${z.w} 1 0%;min-width:0">${z.main}${z.sub || ''}</div>`).join('')}</div>`;
+
+                const next = `<div class="flex">${zones.map(z => `
+                    <div class="text-center px-0.5" style="flex:${z.w} 1 0%;min-width:0">
+                        <div class="text-[8px] text-slate-400 leading-none">▼</div>
+                        <div class="text-[8px] font-semibold text-slate-600 leading-tight">Prossimo controllo ${z.next}</div>
+                    </div>`).join('')}</div>`;
+
+                return `<div>${rowsHtml}${ticks}${bar}${next}</div>`;
+            };
+
+            // 1) Monitoraggio consigliato
+            const monitor = card(
+                'Conduzione del trattamento',
+                'Monitoraggio consigliato durante il trattamento (con controllo ci si riferisce all’emogasanalisi)',
+                `<div class="rounded-lg border border-slate-200 overflow-hidden">
+                    <div class="bg-sky-50 px-2 py-1.5">
+                        <div class="text-xs font-extrabold text-hospital-900">Calcio ionizzato sistemico</div>
+                        <div class="text-[10px] text-slate-600">Range: 1,00 – 1,20 mmol/L o 4,00 – 4,80 mg/dL</div>
+                    </div>
+                    <div class="grid grid-cols-3 divide-x divide-slate-200 text-center text-[10px] font-bold text-slate-800 border-t border-slate-200">
+                        <div class="px-1 py-1.5">Entro i primi 30 min</div>
+                        <div class="px-1 py-1.5">A 2 ore dalla partenza</div>
+                        <div class="px-1 py-1.5">Almeno ogni 6 ore <span class="font-normal text-slate-500">(vedi schema)</span></div>
+                    </div>
+                </div>
+                <div class="rounded-lg border border-slate-200 overflow-hidden">
+                    <div class="bg-sky-50 px-2 py-1.5">
+                        <div class="text-xs font-extrabold text-hospital-900">Calcio ionizzato post filtro</div>
+                        <div class="text-[10px] text-slate-600">Range: 0,25 – 0,50 mmol/L o 1,00 – 2,00 mg/dL</div>
+                    </div>
+                    <div class="grid grid-cols-2 divide-x divide-slate-200 text-center text-[10px] font-bold text-slate-800 border-t border-slate-200">
+                        <div class="px-1 py-1.5">Entro i primi 30 min</div>
+                        <div class="px-1 py-1.5">Almeno ogni 24 ore <span class="font-normal text-slate-500">(vedi schema)</span></div>
+                    </div>
+                </div>`);
+
+            // 2) Compensazione % della calcemia (siringa Prismaflex)
+            const compens = card(
+                'Compensazione % della calcemia paziente tramite siringa Prismaflex',
+                'Le variazioni si intendono rispetto al valore attualmente impostato',
+                buildScale({
+                    rows: [
+                        { unit: 'mg/dL', bounds: ['3,2', '3,6', '4,0', '4,8', '5,4'] },
+                        { unit: 'mmol/L', bounds: ['0,8', '0,9', '1,0', '1,2', '1,35'] }
+                    ],
+                    zones: [
+                        { w: 1, bg: 'bg-rose-200', main: pct('+30%'), next: 'dopo 1 ora' },
+                        { w: 1, bg: 'bg-orange-200', main: pct('+20%'), next: 'dopo 2 ore' },
+                        { w: 1, bg: 'bg-amber-100', main: pct('+10%'), next: 'dopo 4 ore' },
+                        { w: 2, bg: 'bg-emerald-100', main: lblUp('Compensazione adeguata'), sub: sub('NESSUNA MODIFICA'), next: 'dopo 6 ore' },
+                        { w: 1, bg: 'bg-sky-100', main: pct('−10%'), next: 'dopo 4 ore' },
+                        { w: 1, bg: 'bg-sky-200', main: pct('−20%'), next: 'dopo 2 ore' }
+                    ]
+                }) + `
+                <div class="text-[9px] italic text-slate-600 text-center pt-1">(dopo la seconda ora dall’inizio del trattamento o su richiesta del sistema Prismaflex)</div>
+                <div class="text-[10px] text-amber-900 bg-amber-50 border border-amber-200 rounded-md px-2 py-1 mt-1">In caso di grave ipocalcemia si suggerisce di valutare un’ipotetica intolleranza mediante il rapporto Ca Tot. / ${caPP}</div>`);
+
+            // 3) Aggiustamento calcio ionizzato post filtro
+            const postFilter = card(
+                'Aggiustamento del calcio ionizzato post filtro',
+                '',
+                buildScale({
+                    rows: [
+                        { unit: 'mg/dL', zoneLabels: ['&lt; 1,00', '1,00 – 2,00', '&gt; 2,00'] },
+                        { unit: 'mmol/L', zoneLabels: ['&lt; 0,25', '0,25 – 0,50', '&gt; 0,50'] }
+                    ],
+                    zones: [
+                        { w: 1, bg: 'bg-sky-100', main: lbl('Impostare<br>Dose Citrato = 2,7 mmol/L'), next: 'dopo 6 ore' },
+                        { w: 1, bg: 'bg-emerald-100', main: lblUp('Nessuna modifica'), next: 'dopo 24 ore' },
+                        { w: 1, bg: 'bg-amber-100', main: lbl('Impostare<br>Dose Citrato = 3,3 mmol/L (*)'), next: 'dopo 6 ore' }
+                    ]
+                }) + `
+                <div class="text-[9px] text-slate-600 text-right pt-1">(*) Da impostare solo se ${hco3} &lt; 28 mmol/L</div>`);
+
+            // 4) Aggiustamento bicarbonati
+            const bicarb = card(
+                'Eventuale aggiustamento bicarbonati (dopo 6 ore dalla partenza)',
+                'Applicare possibilmente entrambe le modifiche',
+                buildScale({
+                    rows: [{ unit: `${hco3} mmol/L`, bounds: ['22', '28'] }],
+                    zones: [
+                        { w: 1, bg: 'bg-sky-100', main: lbl('DIALISATO: −300 mL/h'), sub: sub('FLUSSO SANGUE: +10 mL/min'), next: 'dopo 6 ore' },
+                        { w: 1, bg: 'bg-emerald-100', main: lblUp('Nessuna modifica'), next: 'dopo 12 ore' },
+                        { w: 1, bg: 'bg-amber-100', main: lbl('DIALISATO: +300 mL/h'), sub: sub('FLUSSO SANGUE: −10 mL/min'), next: 'dopo 6 ore' }
+                    ]
+                }) + `
+                <div class="text-[10px] text-slate-800 bg-slate-50 border border-slate-200 rounded-md px-2 py-1 mt-1">
+                    <span class="font-extrabold">Range consigliati:</span> DIALISATO (900 – 1800) mL/h – FLUSSO SANGUE (100 – 170) mL/min
+                </div>`);
+
+            // 5) Controllo giornaliero
+            const daily = `
+                <div class="bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-2 text-[10px] text-amber-950 space-y-1">
+                    <div><span class="font-extrabold underline">Controllare una volta al giorno:</span> Calcio totale / Ca ionizzato (Range: &lt; 2,5) e Mg; Na; K</div>
+                    <div>Se il rapporto Ca Tot. / ${caPP} &gt; 2,5, per diminuire il carico di citrato al paziente si suggerisce di agire abbassando il FLUSSO SANGUE e/o la DOSE CITRATO.</div>
+                </div>`;
+
+            return `<div class="space-y-2">${monitor}${compens}${postFilter}${bicarb}${daily}</div>`;
+        }
+
         function openProtocolViewer(protoId) {
             const proto = protocolsDatabase.find(p => p.id === protoId);
             if (!proto) return;
@@ -4634,18 +4796,24 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             document.getElementById('viewerProtocolCategory').textContent = proto.category;
             document.getElementById('viewerProtocolCode').textContent = proto.code || '';
             document.getElementById('viewerProtocolTitle').textContent = proto.title;
-            const diagramHtml = proto.visualDiagram === 'nutrizione_flowchart'
-                ? renderNutritionFlowchartDiagram()
-                : '';
+            const diagramKey = getProtocolDiagramKey(proto);
+            const diagramHtml = renderProtocolDiagram(diagramKey);
+            const textCollapsed = PROTOCOL_DIAGRAMS_REPLACING_TEXT.includes(diagramKey);
+            const contentBox = textCollapsed
+                ? `<details class="bg-white rounded-lg border border-slate-200">
+                        <summary class="px-3 py-2 text-[11px] font-bold text-slate-600 cursor-pointer">Versione testuale (tabelle)</summary>
+                        <div class="p-3 pt-1 space-y-1">${formatProtocolContentHtml(proto.content)}</div>
+                   </details>`
+                : `<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                        ${formatProtocolContentHtml(proto.content)}
+                   </div>`;
 
             document.getElementById('viewerProtocolBody').innerHTML = `
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700">
                     ${escapeHtml(proto.summary)}
                 </div>
                 ${diagramHtml}
-                <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
-                    ${formatProtocolContentHtml(proto.content)}
-                </div>
+                ${contentBox}
             `;
 
             updateProtoAdminUI();
