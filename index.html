@@ -1025,15 +1025,22 @@
     </div>
 
     <!-- MODAL LIGHTBOX: INGRANDIMENTO FOTO ORIGINALE TURNI -->
-    <div id="shiftPhotoLightboxModal" class="hidden fixed inset-0 bg-slate-950/90 z-50 flex flex-col">
-        <div class="px-4 py-3 flex items-center justify-between text-white bg-slate-900/80 border-b border-white/10">
+    <div id="shiftPhotoLightboxModal" class="hidden fixed inset-0 bg-slate-950 z-[70] flex flex-col" style="height:100dvh;touch-action:pan-x pan-y" role="dialog" aria-modal="true" aria-label="Foglio turni ingrandito">
+        <div class="shrink-0 flex items-center justify-between text-white bg-slate-900 border-b border-white/10" style="padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px 12px">
             <span class="font-bold text-xs sm:text-sm"><i class="fa-solid fa-image mr-1.5 text-sky-400"></i>Foglio Turni Originale</span>
-            <button type="button" onclick="closeShiftPhotoLightbox()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center">
-                <i class="fa-solid fa-xmark text-lg"></i>
+            <button type="button" onclick="closeShiftPhotoLightbox()" class="h-11 px-3.5 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition text-white flex items-center gap-1.5 font-bold text-xs" aria-label="Chiudi">
+                <i class="fa-solid fa-xmark text-base"></i>
+                <span>Chiudi</span>
             </button>
         </div>
-        <div class="flex-1 overflow-auto p-2 flex items-center justify-center">
-            <img id="lightboxShiftPhotoImg" src="" alt="Foglio turni ingrandito" class="max-w-none sm:max-w-full max-h-full object-contain">
+        <!-- Area scorrevole: la foto non viene mai centrata con flex-center (che taglierebbe i bordi) ma con margin:auto -->
+        <div id="shiftPhotoStage" class="flex-1 min-h-0 overflow-auto flex" style="touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain">
+            <img id="lightboxShiftPhotoImg" src="" alt="Foglio turni ingrandito" draggable="false" style="flex:none;margin:auto;max-width:none;width:100%;height:auto;-webkit-user-select:none;user-select:none;-webkit-user-drag:none">
+        </div>
+        <div class="shrink-0 flex items-center justify-center gap-2 bg-slate-900 border-t border-white/10 px-3 pt-2" style="padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 8px)">
+            <button type="button" onclick="zoomShiftPhoto(-0.5)" class="h-10 w-12 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 transition text-white text-lg font-bold" aria-label="Riduci">−</button>
+            <button type="button" id="shiftPhotoZoomLabel" onclick="resetShiftPhotoZoom()" class="h-10 min-w-[84px] px-3 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 transition text-white text-xs font-bold" aria-label="Adatta allo schermo">Adatta</button>
+            <button type="button" onclick="zoomShiftPhoto(0.5)" class="h-10 w-12 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 transition text-white text-lg font-bold" aria-label="Ingrandisci">+</button>
         </div>
     </div>
 
@@ -2072,15 +2079,155 @@
             }
         }
 
+        // ------------------------------------------
+        // LIGHTBOX FOTO TURNI (zoom, scorrimento e chiusura affidabile)
+        // ------------------------------------------
+        let shiftPhotoZoom = 1;
+        let shiftLightboxOpen = false;
+        let shiftLightboxHistoryPushed = false;
+        let shiftLightboxBound = false;
+
+        function applyShiftPhotoZoom() {
+            const stage = document.getElementById('shiftPhotoStage');
+            const img = document.getElementById('lightboxShiftPhotoImg');
+            const label = document.getElementById('shiftPhotoZoomLabel');
+            if (!stage || !img || !img.naturalWidth) return;
+            // "Adatta": l'intera foto sta nello schermo senza tagli
+            const fit = Math.min(stage.clientWidth / img.naturalWidth, stage.clientHeight / img.naturalHeight);
+            img.style.width = Math.round(img.naturalWidth * fit * shiftPhotoZoom) + 'px';
+            img.style.height = 'auto';
+            if (label) label.textContent = shiftPhotoZoom <= 1.001 ? 'Adatta' : Math.round(shiftPhotoZoom * 100) + '%';
+        }
+
+        // Cambia zoom mantenendo fermo il punto (cx, cy) sotto le dita
+        function setShiftPhotoZoom(newZoom, cx, cy) {
+            const stage = document.getElementById('shiftPhotoStage');
+            const img = document.getElementById('lightboxShiftPhotoImg');
+            if (!stage || !img) return;
+            newZoom = Math.max(1, Math.min(6, newZoom));
+            const before = img.getBoundingClientRect();
+            const sRect = stage.getBoundingClientRect();
+            if (cx === undefined) { cx = sRect.left + sRect.width / 2; cy = sRect.top + sRect.height / 2; }
+            const fx = before.width ? Math.max(0, Math.min(1, (cx - before.left) / before.width)) : 0.5;
+            const fy = before.height ? Math.max(0, Math.min(1, (cy - before.top) / before.height)) : 0.5;
+            shiftPhotoZoom = newZoom;
+            applyShiftPhotoZoom();
+            const after = img.getBoundingClientRect();
+            stage.scrollLeft += (after.left + fx * after.width) - cx;
+            stage.scrollTop += (after.top + fy * after.height) - cy;
+        }
+
+        function zoomShiftPhoto(delta) {
+            setShiftPhotoZoom(shiftPhotoZoom + delta);
+        }
+
+        function resetShiftPhotoZoom() {
+            shiftPhotoZoom = 1;
+            applyShiftPhotoZoom();
+            const stage = document.getElementById('shiftPhotoStage');
+            if (stage) { stage.scrollLeft = 0; stage.scrollTop = 0; }
+        }
+
+        function bindShiftPhotoLightbox() {
+            if (shiftLightboxBound) return;
+            shiftLightboxBound = true;
+            const modal = document.getElementById('shiftPhotoLightboxModal');
+            const stage = document.getElementById('shiftPhotoStage');
+
+            // Pizzico con due dita (zoom controllato dall'app, senza zoomare l'intera pagina)
+            const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+            let pinch = null;
+            let lastTap = { t: 0, x: 0, y: 0 };
+            let touchMoved = false;
+            let touchStart = null;
+
+            stage.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    pinch = { d: dist(e.touches), z: shiftPhotoZoom };
+                } else if (e.touches.length === 1) {
+                    touchMoved = false;
+                    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            }, { passive: true });
+
+            stage.addEventListener('touchmove', (e) => {
+                if (pinch && e.touches.length === 2) {
+                    e.preventDefault();
+                    const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                    setShiftPhotoZoom(pinch.z * dist(e.touches) / pinch.d, cx, cy);
+                } else if (touchStart && e.touches.length === 1) {
+                    if (Math.hypot(e.touches[0].clientX - touchStart.x, e.touches[0].clientY - touchStart.y) > 10) touchMoved = true;
+                }
+            }, { passive: false });
+
+            stage.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) pinch = null;
+                // Doppio tocco: alterna tra "Adatta" e ingrandimento 2,5x
+                if (e.touches.length === 0 && !touchMoved && e.changedTouches.length === 1) {
+                    const t = e.changedTouches[0];
+                    const now = Date.now();
+                    if (now - lastTap.t < 320 && Math.hypot(t.clientX - lastTap.x, t.clientY - lastTap.y) < 30) {
+                        setShiftPhotoZoom(shiftPhotoZoom > 1.01 ? 1 : 2.5, t.clientX, t.clientY);
+                        lastTap = { t: 0, x: 0, y: 0 };
+                    } else {
+                        lastTap = { t: now, x: t.clientX, y: t.clientY };
+                    }
+                }
+            }, { passive: true });
+
+            // Safari iOS: impedisce lo zoom nativo della pagina mentre il lightbox è aperto
+            modal.addEventListener('gesturestart', (e) => e.preventDefault());
+
+            // Tasto Esc
+            document.addEventListener('keydown', (e) => {
+                if (shiftLightboxOpen && e.key === 'Escape') closeShiftPhotoLightbox();
+            });
+
+            // Tasto/gesto "indietro" del telefono: chiude la foto invece di uscire dall'app
+            window.addEventListener('popstate', () => {
+                if (shiftLightboxOpen) {
+                    shiftLightboxHistoryPushed = false;
+                    closeShiftPhotoLightbox();
+                }
+            });
+
+            // Rotazione schermo / ridimensionamento
+            window.addEventListener('resize', () => { if (shiftLightboxOpen) applyShiftPhotoZoom(); });
+        }
+
         function openShiftPhotoLightbox() {
             const photoData = shiftPhotosMap[selectedShiftMonth];
             if (!photoData) return;
-            document.getElementById('lightboxShiftPhotoImg').src = photoData;
+            bindShiftPhotoLightbox();
+
+            const img = document.getElementById('lightboxShiftPhotoImg');
+            const stage = document.getElementById('shiftPhotoStage');
+            shiftPhotoZoom = 1;
+            img.onload = () => { applyShiftPhotoZoom(); stage.scrollLeft = 0; stage.scrollTop = 0; };
+            img.src = photoData;
+
             document.getElementById('shiftPhotoLightboxModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            shiftLightboxOpen = true;
+            requestAnimationFrame(applyShiftPhotoZoom);
+
+            try {
+                history.pushState({ shiftLightbox: true }, '');
+                shiftLightboxHistoryPushed = true;
+            } catch (e) { shiftLightboxHistoryPushed = false; }
         }
 
         function closeShiftPhotoLightbox() {
+            if (!shiftLightboxOpen) return;
+            shiftLightboxOpen = false;
             document.getElementById('shiftPhotoLightboxModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            document.getElementById('lightboxShiftPhotoImg').removeAttribute('src');
+            if (shiftLightboxHistoryPushed) {
+                shiftLightboxHistoryPushed = false;
+                try { history.back(); } catch (e) {}
+            }
         }
 
         function setShiftQueryToday() {
