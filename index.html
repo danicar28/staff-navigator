@@ -4865,6 +4865,11 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
         const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema', 'proto_ecs_coagulazione': 'ecs_algoritmo' };
         const PROTOCOL_DIAGRAMS_REPLACING_TEXT = ['citrato_schema', 'ecs_algoritmo'];
 
+        // Collegamenti esterni mostrati in cima a un protocollo (si aprono in una nuova finestra)
+        const PROTOCOL_EXTERNAL_LINKS = {
+            'proto_uoc_nutrizione': { url: 'https://danicar28.github.io/nutricalc/', label: 'Calcolo Nutrizione Artificiale', icon: 'fa-calculator' }
+        };
+
         function getProtocolDiagramKey(proto) {
             return (proto && (proto.visualDiagram || PROTOCOL_DIAGRAM_BY_ID[proto.id])) || '';
         }
@@ -5229,7 +5234,13 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                         ${formatProtocolContentHtml(proto.content)}
                    </div>`;
 
+            const ext = PROTOCOL_EXTERNAL_LINKS[proto.id];
+            const externalLinkHtml = ext
+                ? `<a href="${ext.url}" target="_blank" rel="noopener noreferrer" class="w-full rounded-xl text-white py-3 px-3 flex items-center justify-center gap-2 font-extrabold text-sm shadow-md active:scale-[0.99] transition" style="background:linear-gradient(135deg,#15803d,#0d9488)"><i class="fa-solid ${ext.icon} text-lg"></i><span>Apri ${ext.label}</span><i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-80"></i></a>`
+                : '';
+
             document.getElementById('viewerProtocolBody').innerHTML = `
+                ${externalLinkHtml}
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700">
                     ${escapeHtml(proto.summary)}
                 </div>
