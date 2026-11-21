@@ -1024,6 +1024,23 @@
         </div>
     </div>
 
+    <!-- MODAL: GUIDA PASSO-PASSO PROTOCOLLO ECS -->
+    <div id="ecsWizardModal" class="hidden fixed inset-0 bg-slate-100 z-[75] flex flex-col" style="height:100dvh" role="dialog" aria-modal="true" aria-label="Guida protocollo ECS">
+        <div class="shrink-0 text-white flex items-center justify-between gap-2" style="background:#7b2342;padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px 12px">
+            <div class="min-w-0">
+                <div class="text-[9px] uppercase tracking-wide opacity-80">Protocollo ECS · guida passo-passo</div>
+                <div id="ecsStage" class="font-bold text-xs truncate"></div>
+            </div>
+            <button type="button" onclick="closeEcsWizard()" class="h-11 px-3.5 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition text-white flex items-center gap-1.5 font-bold text-xs shrink-0" aria-label="Chiudi"><i class="fa-solid fa-xmark text-base"></i><span>Chiudi</span></button>
+        </div>
+        <div id="ecsTrail" class="shrink-0 flex gap-1 overflow-x-auto bg-white border-b border-slate-200 px-2 py-1.5"></div>
+        <div id="ecsBody" class="flex-1 min-h-0 overflow-y-auto p-3 space-y-3"></div>
+        <div class="shrink-0 flex gap-2 bg-white border-t border-slate-200 px-3 pt-2" style="padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 8px)">
+            <button type="button" id="ecsBackBtn" onclick="ecsBack()" class="flex-1 h-11 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs active:scale-95 transition disabled:opacity-40"><i class="fa-solid fa-arrow-left mr-1"></i>Indietro</button>
+            <button type="button" onclick="ecsRestart()" class="flex-1 h-11 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs active:scale-95 transition"><i class="fa-solid fa-rotate-left mr-1"></i>Ricomincia</button>
+        </div>
+    </div>
+
     <!-- MODAL LIGHTBOX: INGRANDIMENTO FOTO ORIGINALE TURNI -->
     <div id="shiftPhotoLightboxModal" class="hidden fixed inset-0 bg-slate-950 z-[70] flex flex-col" style="height:100dvh;touch-action:pan-x pan-y" role="dialog" aria-modal="true" aria-label="Foglio turni ingrandito">
         <div class="shrink-0 flex items-center justify-between text-white bg-slate-900 border-b border-white/10" style="padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px 12px">
@@ -4211,6 +4228,71 @@ Range consigliati:
 5. CONTROLLO UNA VOLTA AL GIORNO
 - Calcio totale / Ca ionizzato (range: < 2,5), Mg, Na, K.
 - Se il rapporto Ca Tot. / Ca++ è > 2,5, per diminuire il carico di citrato al paziente si suggerisce di abbassare il flusso sangue e/o la dose citrato.`
+            },
+            {
+                id: 'proto_ecs_coagulazione',
+                addedLater: true,
+                title: 'Early Coagulation Support (ECS) Protocol',
+                category: 'Emostasi / Trasfusioni',
+                code: 'TUN-ECS',
+                summary: 'Trauma Update Network: algoritmo decisionale per emorragia significativa, antagonizzazione, attivazione ECS e terapia guidata dal ROTEM.',
+                visualDiagram: 'ecs_algoritmo',
+                isCustom: false,
+                content: `1. VALUTAZIONE INIZIALE
+- Il paziente presenta emorragia significativa? NO: No ECS. SÌ: procedere.
+- Prelievo per: emocromo con piastrine; coag (PT-INR, PTT, FIB); EGA con lattati; gruppo sanguigno; ROTEM/TEG (prelievo in provetta da coagulazione da consegnare all’anestesista, identificarla come BASALE).
+- Acido tranexamico (1 g e.v. + 1 g in 8 h).
+- Assume anticoagulanti/antiaggreganti? SÌ: antagonizzare (tabella seguente). NO: criterio successivo.
+
+2. ANTAGONIZZAZIONE
+| Farmaco assunto | Trattamento |
+| Anti-vitamina K (warfarin) – INR non noto | PCC 25 U/kg + vit. K |
+| INR = 1,5-2,0 | PCC 20 U/kg + vit. K |
+| INR = 2,1-3,9 | PCC 30 U/kg + vit. K |
+| INR = 4,0-5,9 | PCC 40 U/kg + vit. K |
+| INR > 6,0 | PCC 50 U/kg + vit. K |
+| Anti-fattore X (rivaroxaban, edoxaban) | PCC 25-50 U/kg |
+| Anti-trombina (dabigatran) | Considera dialisi |
+| Antiaggreganti (clopidogrel, ticlopidina) | PLT 10 U (2 U da aferesi). Considera desmopressina 0,3 µg/kg* |
+| Antiaggreganti (ASA) – solo se emorragia cerebrale da sottoporre a intervento NCH | PLT 5 U (1 U da aferesi) |
+
+3. CRITERI DI ATTIVAZIONE
+- Emorragia massiva (non controllabile) + almeno uno dei seguenti segni: PAS < 100 mmHg; BE ≤ -6 o pH < 7,2; lattati ≥ 5 mmol/l o 45 mg/l; FAST ++++; (INR > 1,5).
+- NO: trattamento standard. SÌ: attivare protocollo ECS.
+
+4. PROTOCOLLO ECS
+- Verificare l’avvenuta somministrazione di acido tranexamico.
+- Iniziare sangue 0 neg (4 unità).
+- Somministrare fibrinogeno 2 g.
+- Richiedere: emazie senza prove di compatibilità (4 U); plasma (4 unità) senza farlo scongelare.
+- Controllare i risultati ROTEM/TEG basale. Ripetere ROTEM/TEG 60’ dopo fibrinogeno.
+- Il paziente continua a sanguinare? SÌ: far scongelare il plasma, preparare PLT, monitorare la coagulazione (ripetere INR, PTT, FIB, PLT e ROTEM/TEG ogni 120’). NO: tenere il plasma congelato, monitorare la coagulazione, seguire l’algoritmo.
+- ROTEM/TEG disponibile? SÌ: terapia guidata dal ROTEM. NO: algoritmo standard (trasfusione fino a rapporto plasma/emazie ≥ 1:1,5; mantenere PLT > 100.000; monitorare frequentemente FIB e PLT per guidare il trattamento).
+
+5. TERAPIA GUIDATA DAL ROTEM
+- Eseguire il prelievo di base (per: Extem, Fibtem, Aptem, Intem) prima di qualsiasi terapia.
+
+A partire dal problema:
+| Attenzione a | Verifica | Terapia |
+| Fibrinolisi | CT Extem > CT Aptem o ML > 15% | Acido tranexamico |
+| Fibrinogeno | A10 Fibtem < 7 mm | Fibrinogeno 2-4 g |
+| Tempo di generazione trombina | CT Extem > 80" | Plasma (o PCC) |
+| Piastrine | A10 Extem < 40 mm; A10 Fibtem > 7 mm; piastrine ≤ 100.000 | PLT da aferesi |
+| Difetto severo globale | A10 Extem < 30 mm → considera ipotermia | Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi |
+| Esposizione eparina (cell-saver) | CT Heptem < CT Intem | Protamina 1.000-2.000 U |
+
+A partire dal risultato del test:
+| Problema | Ipotesi | Verifica | Terapia |
+| CT lungo (> 80" in EXTEM) – alterata generazione della trombina | Fibrinolisi | CT Extem > CT Aptem | Acido tranexamico |
+| CT lungo (> 80" in EXTEM) | Anti-vit. K per os | Anamnesi/età | PCC 25 U/kg |
+| CT lungo (> 80" in EXTEM) | Deficit fattori | Emodiluizione massiva? Acidosi severa? | Plasma (+ fibrinogeno se A10 < 7 mm) |
+| A10 (o MCF) ridotto (< 40 mm in Extem) – alterata struttura del coagulo | Deficit fibrinogeno | A10 Fibtem < 7 mm | Fibrinogeno 2-4 g |
+| A10 (o MCF) ridotto (< 40 mm in Extem) | Difetto piastrine | A10 Extem < 40 mm; A10 Fibtem normale | PLT da aferesi (a 100.000) |
+| A10 Extem < 30 mm | Difetto severo globale → considera ipotermia | — | Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi |
+| ML aumentato | Fibrinolisi | ML > 15% in Extem, Intem e Fibtem, ma normali in Aptem | Acido tranexamico |
+| CT lungo in test successivi | Esposizione all’eparina (cell saver) | CT Heptem < CT Intem | Protamina 1.000-2.000 U |
+
+Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entro 60’) e successivamente dopo ogni 4 unità di emazie (o ogni 2 ore se il sanguinamento non si arresta). In caso di reinfusione da cell-saver o eparinizzazione eseguire anche Heptem e Intem.`
             }
         ];
 
@@ -4780,8 +4862,8 @@ Range consigliati:
         // ------------------------------------------
         // Per i protocolli sotto elencati lo schema grafico viene mostrato in evidenza e il testo
         // (tabelle) resta consultabile in una sezione richiudibile.
-        const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema' };
-        const PROTOCOL_DIAGRAMS_REPLACING_TEXT = ['citrato_schema'];
+        const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema', 'proto_ecs_coagulazione': 'ecs_algoritmo' };
+        const PROTOCOL_DIAGRAMS_REPLACING_TEXT = ['citrato_schema', 'ecs_algoritmo'];
 
         function getProtocolDiagramKey(proto) {
             return (proto && (proto.visualDiagram || PROTOCOL_DIAGRAM_BY_ID[proto.id])) || '';
@@ -4790,6 +4872,7 @@ Range consigliati:
         function renderProtocolDiagram(key) {
             if (key === 'nutrizione_flowchart') return renderNutritionFlowchartDiagram();
             if (key === 'citrato_schema') return renderCitrateSchemaDiagram();
+            if (key === 'ecs_algoritmo') return renderEcsAlgorithmDiagram();
             return '';
         }
 
@@ -4935,6 +5018,197 @@ Range consigliati:
             return `<div class="space-y-2">${monitor}${compens}${postFilter}${bicarb}${daily}</div>`;
         }
 
+        // ------------------------------------------
+        // PROTOCOLLO ECS: algoritmo grafico + guida passo-passo
+        // ------------------------------------------
+        function renderEcsAlgorithmDiagram() {
+            const C = '#7b2342';
+            const B = (h, c = '') => `<div class="rounded-lg border-2 bg-white px-2 py-1.5 text-[10px] leading-snug text-slate-800 text-left ${c}" style="border-color:${C}">${h}</div>`;
+            const A = '<div class="text-center text-sm leading-none py-0.5" style="color:#7b8a2a">▼</div>';
+            const P = (y) => `<span class="inline-block rounded-full text-white text-[9px] font-extrabold px-2 py-0.5" style="background:${y ? '#3f7d3a' : C}">${y ? 'SÌ' : 'NO'}</span>`;
+            const L = (a) => `<ul class="list-disc pl-3.5 mt-0.5">${a.map(x => `<li>${x}</li>`).join('')}</ul>`;
+            const S = (t, body) => `<div class="rounded-lg overflow-hidden border border-slate-300 bg-white"><div class="text-white text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1.5" style="background:${C}">${t}</div><div class="p-2">${body}</div></div>`;
+            const row2 = (l, r, cols = '1fr 1fr') => `<div class="grid gap-1.5" style="grid-template-columns:${cols}">${l}${r}</div>`;
+            const br = (y, box) => `<div class="text-center">${P(y)}${A}${box}</div>`;
+            const T = (h, rows) => `<div class="overflow-x-auto rounded-md border border-slate-300 my-0.5"><table class="w-full text-left border-collapse text-[9.5px] leading-snug"><thead class="text-white" style="background:${C}"><tr>${h.map(x => `<th class="px-1.5 py-1 font-extrabold">${x}</th>`).join('')}</tr></thead><tbody>${rows.map((r, i) => r.g
+                ? `<tr><td colspan="${h.length}" class="px-1.5 py-1 font-extrabold" style="background:#f3e6ea;color:${C}">${r.g}</td></tr>`
+                : `<tr class="${i % 2 ? 'bg-slate-50' : 'bg-white'} border-t border-slate-200">${r.map((c, j) => `<td class="px-1.5 py-1 ${j === 0 ? 'font-bold' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+            const c = 'text-center font-bold';
+
+            const s1 = S('Valutazione iniziale e antagonizzazione',
+                B('Il paziente presenta emorragia significativa?', c) +
+                row2(br(1, B('<b>Prelievo per:</b>' + L(['Emocromo con piastrine', 'Coag (PT-INR, PTT, FIB)', 'EGA con lattati', 'Gruppo sanguigno', '<b>ROTEM/TEG</b> → prelievo in provetta da coagulazione da consegnare all’anestesista. Identificarla come BASALE']))), br(0, B('No ECS', c)), '2.4fr 1fr') +
+                A + B('Acido tranexamico (1 g e.v. + 1 g in 8 h)', 'text-center') + A +
+                B('Assume anticoagulanti/antiaggreganti?', c) +
+                `<div class="grid" style="grid-template-columns:1fr 60px"><div>` + br(1, B('Antagonizzare', c)) + A + T(['Farmaco assunto', 'Trattamento'], [
+                    ['Anti-vitamina K (warfarin) – INR non noto', 'PCC 25 U/kg + vit. K'], ['INR = 1,5-2,0', 'PCC 20 U/kg + vit. K'], ['INR = 2,1-3,9', 'PCC 30 U/kg + vit. K'],
+                    ['INR = 4,0-5,9', 'PCC 40 U/kg + vit. K'], ['INR &gt; 6,0', 'PCC 50 U/kg + vit. K'],
+                    ['Anti-fattore X (rivaroxaban, edoxaban)', 'PCC 25-50 U/kg'], ['Anti-trombina (dabigatran)', 'Considera dialisi'],
+                    ['Antiaggreganti (clopidogrel, ticlopidina)', 'PLT 10 U (2 U da aferesi). Considera desmopressina 0,3 µg/kg*'],
+                    ['Antiaggreganti (ASA) – solo se emorragia cerebrale da sottoporre a intervento NCH', 'PLT 5 U (1 U da aferesi)']]) + A + `</div><div class="flex flex-col items-center"><div class="text-center">${P(0)}</div><div class="text-[8px] text-slate-500 text-center leading-tight mt-0.5">Si salta<br>la tabella</div><div class="flex-1 my-0.5" style="width:3px;min-height:16px;background:#7b8a2a"></div>${A}</div></div>` +
+                B('<b>Presenta un’emorragia massiva (non controllabile) + almeno uno dei seguenti segni:</b>' + L(['PAS &lt; 100 mmHg', 'BE ≤ -6 o pH &lt; 7,2', 'Lattati ≥ 5 mmol/l o 45 mg/l', 'FAST ++++', '(INR &gt; 1,5)'])) +
+                row2(br(0, B('Trattamento standard', c)), br(1, B('Attiva protocollo ECS', c))));
+
+            const s2 = S('Protocollo ECS',
+                B('Verificare l’avvenuta somministrazione di acido tranexamico', 'text-center') + A + B('Iniziare sangue 0 neg (4 unità)', 'text-center') + A +
+                B('Somministrare fibrinogeno 2 g', 'text-center') + A +
+                B('<b>Richiedere:</b>' + L(['Emazie senza prove di compatibilità (4 U)', 'Plasma (4 unità) senza farlo scongelare'])) + A +
+                B('Controllare i risultati ROTEM/TEG basale. Ripetere ROTEM/TEG 60’ dopo fibrinogeno', 'text-center') + A +
+                B('Il paziente continua a sanguinare?', c) +
+                row2(br(1, B(L(['Far scongelare il plasma', 'Preparare PLT', 'Monitorare la coagulazione. Ripetere INR, PTT, FIB, PLT e ROTEM/TEG ogni 120’']))), br(0, B(L(['Tenere il plasma congelato', 'Monitorare la coagulazione', 'Seguire l’algoritmo'])))) + A +
+                B('ROTEM/TEG disponibile?', c) +
+                row2(br(1, B('Intraprendere terapia guidata dal ROTEM', c)), br(0, B('<b>Seguire l’algoritmo standard:</b>' + L(['trasfusione fino a rapporto plasma/emazie ≥ 1:1,5', 'mantenere PLT &gt; 100.000', 'monitorare frequentemente FIB e PLT per guidare il trattamento'])))));
+
+            const s3 = S('Terapia guidata dal ROTEM',
+                B('Eseguire il prelievo di base (per: Extem, Fibtem, Aptem, Intem) prima di qualsiasi terapia', c) + A +
+                B('A partire dal problema', c) +
+                T(['Attenzione a', 'Verifica', 'Terapia'], [
+                    ['Fibrinolisi', 'CT Extem &gt; CT Aptem o ML &gt; 15%', 'Acido tranexamico'], ['Fibrinogeno', 'A10 Fibtem &lt; 7 mm', 'Fibrinogeno 2-4 g'],
+                    ['Tempo di generazione trombina', 'CT Extem &gt; 80"', 'Plasma (o PCC)'], ['Piastrine', 'A10 Extem &lt; 40 mm; A10 Fibtem &gt; 7 mm; Piastrine ≤ 100.000', 'PLT da aferesi'],
+                    ['Difetto severo globale', 'A10 Extem &lt; 30 mm → considera ipotermia', 'Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi'],
+                    ['Esposizione eparina (cell-saver)', 'CT Heptem &lt; CT Intem', 'Protamina 1.000-2.000 U']]) +
+                '<div class="h-1.5"></div>' + B('A partire dal risultato del test', c) +
+                T(['Ipotesi', 'Verifica', 'Terapia'], [
+                    { g: 'CT lungo (&gt; 80" in EXTEM) – alterata generazione della trombina' },
+                    ['Fibrinolisi', 'CT Extem &gt; CT Aptem', 'Acido tranexamico'], ['Anti-vit. K per os', 'Anamnesi/età', 'PCC 25 U/kg'],
+                    ['Deficit fattori', 'Emodiluizione massiva? Acidosi severa?', 'Plasma (+ fibrinogeno se A10 &lt; 7 mm)'],
+                    { g: 'A10 (o MCF) ridotto (&lt; 40 mm in Extem) – alterata struttura del coagulo' },
+                    ['Deficit fibrinogeno', 'A10 Fibtem &lt; 7 mm', 'Fibrinogeno 2-4 g'], ['Difetto piastrine', 'A10 Extem &lt; 40 mm; A10 Fibtem normale', 'PLT da aferesi (a 100.000)'],
+                    { g: 'A10 Extem &lt; 30 mm' }, ['Difetto severo globale → considera ipotermia', '', 'Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi'],
+                    { g: 'ML aumentato' }, ['Fibrinolisi', 'ML &gt; 15% in Extem, Intem e Fibtem, ma normali in Aptem', 'Acido tranexamico'],
+                    { g: 'CT lungo in test successivi' }, ['Esposizione all’eparina (cell saver)', 'CT Heptem &lt; CT Intem', 'Protamina 1.000-2.000 U']]) +
+                `<div class="text-[9.5px] text-slate-600 mt-1">${ECS_NOTE}</div>`);
+
+            return `<div class="space-y-2">
+                <div class="rounded-lg text-white px-2.5 py-2" style="background:${C}"><div class="text-[10px] font-bold" style="color:#d9e08a">Trauma Update Network</div><div class="text-sm font-extrabold leading-tight">Early Coagulation Support (ECS) protocol</div><div class="text-[10px] opacity-90">Algoritmo decisionale</div></div>
+                ${s1}${s2}${s3}</div>`;
+        }
+
+        const ECS_NOTE = 'Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entro 60’) e successivamente dopo ogni 4 unità di emazie (o ogni 2 ore se il sanguinamento non si arresta). In caso di reinfusione da cell-saver o eparinizzazione eseguire anche Heptem e Intem.';
+        const ecsAct = (title, items, next, o = {}) => ({ type: 'a', title, items, next, ...o });
+        const ecsRes = (title, rows, o = {}) => ({ type: 'r', title, rows, rotem: true, ...o });
+        const ecsAnt = (title, items) => ecsAct('Antagonizzazione: ' + title, items, 'massiva', { extra: [['Altro farmaco assunto', 'farmaco', 'n']] });
+        const ECS = {
+            start: { type: 'q', stage: 'Valutazione iniziale', short: 'Emorragia significativa', title: 'Il paziente presenta emorragia significativa?', opts: [['Sì', 'prelievo', 'yes'], ['No', 'noEcs', 'no']] },
+            noEcs: { type: 'r', tone: 'end', title: 'No ECS', items: ['Il protocollo ECS non viene attivato.'] },
+            prelievo: ecsAct('Prelievo per:', ['Emocromo con piastrine', 'Coag (PT-INR, PTT, FIB)', 'EGA con lattati', 'Gruppo sanguigno', 'ROTEM/TEG → prelievo in provetta da coagulazione da consegnare all’anestesista. Identificarla come BASALE'], 'tranex'),
+            tranex: ecsAct('Acido tranexamico', ['1 g e.v. + 1 g in 8 h'], 'anticoag'),
+            anticoag: { type: 'q', short: 'Anticoagulanti/antiaggreganti', title: 'Assume anticoagulanti/antiaggreganti?', opts: [['Sì', 'farmaco', 'yes'], ['No', 'massiva', 'no']] },
+            farmaco: { type: 'q', stage: 'Antagonizzare', short: 'Farmaco', title: 'Quale farmaco assume?', opts: [
+                ['Anti-vitamina K', 'avk', 'n', 'warfarin'], ['Anti-fattore X', 'antiXa', 'n', 'rivaroxaban, edoxaban'], ['Anti-trombina', 'dabi', 'n', 'dabigatran'],
+                ['Antiaggreganti', 'p2y12', 'n', 'clopidogrel, ticlopidina'], ['Antiaggreganti – ASA', 'asa', 'n', 'solo se emorragia cerebrale da sottoporre a intervento NCH']] },
+            avk: { type: 'q', short: 'INR', title: 'Anti-vitamina K (warfarin): qual è l’INR?', opts: [['INR non noto', 'a0'], ['INR = 1,5-2,0', 'a1'], ['INR = 2,1-3,9', 'a2'], ['INR = 4,0-5,9', 'a3'], ['INR > 6,0', 'a4']] },
+            a0: ecsAnt('anti-vitamina K, INR non noto', ['PCC 25 U/kg + vit. K']), a1: ecsAnt('anti-vitamina K, INR 1,5-2,0', ['PCC 20 U/kg + vit. K']),
+            a2: ecsAnt('anti-vitamina K, INR 2,1-3,9', ['PCC 30 U/kg + vit. K']), a3: ecsAnt('anti-vitamina K, INR 4,0-5,9', ['PCC 40 U/kg + vit. K']),
+            a4: ecsAnt('anti-vitamina K, INR > 6,0', ['PCC 50 U/kg + vit. K']),
+            antiXa: ecsAnt('anti-fattore X', ['PCC 25-50 U/kg']), dabi: ecsAnt('anti-trombina (dabigatran)', ['Considera dialisi']),
+            p2y12: ecsAnt('antiaggreganti (clopidogrel, ticlopidina)', ['PLT 10 U (2 U da aferesi)', 'Considera desmopressina 0,3 µg/kg*']),
+            asa: ecsAnt('antiaggreganti (ASA)', ['PLT 5 U (1 U da aferesi)', 'Solo se emorragia cerebrale da sottoporre a intervento NCH']),
+            massiva: { type: 'q', stage: 'Criteri di attivazione', short: 'Emorragia massiva + segni', title: 'Presenta un’emorragia massiva (non controllabile) + almeno uno dei seguenti segni?',
+                bullets: ['PAS < 100 mmHg', 'BE ≤ -6 o pH < 7,2', 'Lattati ≥ 5 mmol/l o 45 mg/l', 'FAST ++++', '(INR > 1,5)'], opts: [['Sì', 'attiva', 'yes'], ['No', 'standard', 'no']] },
+            standard: { type: 'r', tone: 'end', title: 'Trattamento standard', items: ['Il protocollo ECS non viene attivato.'] },
+            attiva: ecsAct('Attiva protocollo ECS', ['Verificare l’avvenuta somministrazione di acido tranexamico', 'Iniziare sangue 0 neg (4 unità)', 'Somministrare fibrinogeno 2 g', 'Richiedere: emazie senza prove di compatibilità (4 U) e plasma (4 unità) senza farlo scongelare', 'Controllare i risultati ROTEM/TEG basale. Ripetere ROTEM/TEG 60’ dopo fibrinogeno'], 'sanguina', { stage: 'Protocollo ECS', num: true }),
+            sanguina: { type: 'q', short: 'Continua a sanguinare', title: 'Il paziente continua a sanguinare?', opts: [['Sì', 'sangSi', 'yes'], ['No', 'sangNo', 'no']] },
+            sangSi: ecsAct('Il paziente continua a sanguinare', ['Far scongelare il plasma', 'Preparare PLT', 'Monitorare la coagulazione. Ripetere INR, PTT, FIB, PLT e ROTEM/TEG ogni 120’'], 'rotemDisp'),
+            sangNo: ecsAct('Il paziente non sanguina più', ['Tenere il plasma congelato', 'Monitorare la coagulazione', 'Seguire l’algoritmo'], 'rotemDisp'),
+            rotemDisp: { type: 'q', short: 'ROTEM/TEG disponibile', title: 'ROTEM/TEG disponibile?', opts: [['Sì', 'rotemBase', 'yes'], ['No', 'algoStd', 'no']] },
+            algoStd: { type: 'r', tone: 'end', title: 'Seguire l’algoritmo standard', items: ['trasfusione fino a rapporto plasma/emazie ≥ 1:1,5', 'mantenere PLT > 100.000', 'monitorare frequentemente FIB e PLT per guidare il trattamento'] },
+            rotemBase: ecsAct('Intraprendere terapia guidata dal ROTEM', ['Eseguire il prelievo di base (per: Extem, Fibtem, Aptem, Intem) prima di qualsiasi terapia'], 'via', { stage: 'Terapia guidata dal ROTEM' }),
+            via: { type: 'q', short: 'Percorso', title: 'Come vuoi procedere?', opts: [['A partire dal problema', 'prob', 'n'], ['A partire dal risultato del test', 'test', 'n']] },
+            prob: { type: 'q', short: 'Problema', title: 'Da quale problema parti? (Attenzione a)', opts: [['Fibrinolisi', 'p1'], ['Fibrinogeno', 'p2'], ['Tempo di generazione trombina', 'p3'], ['Piastrine', 'p4'], ['Difetto severo globale', 'p5'], ['Esposizione eparina (cell-saver)', 'p6']] },
+            p1: ecsRes('Fibrinolisi', [['Verifica', 'CT Extem > CT Aptem o ML > 15%'], ['Terapia', 'Acido tranexamico']], { again: 'prob' }),
+            p2: ecsRes('Fibrinogeno', [['Verifica', 'A10 Fibtem < 7 mm'], ['Terapia', 'Fibrinogeno 2-4 g']], { again: 'prob' }),
+            p3: ecsRes('Tempo di generazione trombina', [['Verifica', 'CT Extem > 80"'], ['Terapia', 'Plasma (o PCC)']], { again: 'prob' }),
+            p4: ecsRes('Piastrine', [['Verifica', 'A10 Extem < 40 mm; A10 Fibtem > 7 mm; Piastrine ≤ 100.000'], ['Terapia', 'PLT da aferesi']], { again: 'prob' }),
+            p5: ecsRes('Difetto severo globale', [['Verifica', 'A10 Extem < 30 mm → considera ipotermia'], ['Terapia', 'Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi']], { again: 'prob' }),
+            p6: ecsRes('Esposizione eparina (cell-saver)', [['Verifica', 'CT Heptem < CT Intem'], ['Terapia', 'Protamina 1.000-2.000 U']], { again: 'prob' }),
+            test: { type: 'q', short: 'Risultato test', title: 'Quale risultato mostra il test?', opts: [
+                ['CT lungo (> 80" in EXTEM)', 't1', 'n', 'alterata generazione della trombina'], ['A10 (o MCF) ridotto (< 40 mm in Extem)', 't2', 'n', 'alterata struttura del coagulo'],
+                ['A10 Extem < 30 mm', 't3'], ['ML aumentato', 't4'], ['CT lungo in test successivi', 't5']] },
+            t1: { type: 'q', short: 'Ipotesi', title: 'CT lungo: quale ipotesi vuoi verificare?', opts: [['Fibrinolisi', 'r11', 'n', 'CT Extem > CT Aptem'], ['Anti-vit. K per os', 'r12', 'n', 'anamnesi/età'], ['Deficit fattori', 'r13', 'n', 'emodiluizione massiva? acidosi severa?']] },
+            r11: ecsRes('Ipotesi: fibrinolisi', [['Verifica', 'CT Extem > CT Aptem'], ['Terapia', 'Acido tranexamico']], { again: 'test' }),
+            r12: ecsRes('Ipotesi: anti-vit. K per os', [['Verifica', 'Anamnesi/età'], ['Terapia', 'PCC 25 U/kg']], { again: 'test' }),
+            r13: ecsRes('Ipotesi: deficit fattori', [['Verifica', 'Emodiluizione massiva? Acidosi severa?'], ['Terapia', 'Plasma (+ fibrinogeno se A10 < 7 mm)']], { again: 'test' }),
+            t2: { type: 'q', short: 'Ipotesi', title: 'A10 ridotto: quale ipotesi vuoi verificare?', opts: [['Deficit fibrinogeno', 'r21', 'n', 'A10 Fibtem < 7 mm'], ['Difetto piastrine', 'r22', 'n', 'A10 Extem < 40 mm; A10 Fibtem normale']] },
+            r21: ecsRes('Ipotesi: deficit fibrinogeno', [['Verifica', 'A10 Fibtem < 7 mm'], ['Terapia', 'Fibrinogeno 2-4 g']], { again: 'test' }),
+            r22: ecsRes('Ipotesi: difetto piastrine', [['Verifica', 'A10 Extem < 40 mm; A10 Fibtem normale'], ['Terapia', 'PLT da aferesi (a 100.000)']], { again: 'test' }),
+            t3: ecsRes('Difetto severo globale', [['Verifica', 'A10 Extem < 30 mm → considera ipotermia'], ['Terapia', 'Acido tranexamico + fibrinogeno 2-4 g + plasma + PLT da aferesi']], { again: 'test' }),
+            t4: ecsRes('Ipotesi: fibrinolisi (ML aumentato)', [['Verifica', 'ML > 15% in Extem, Intem e Fibtem, ma normali in Aptem'], ['Terapia', 'Acido tranexamico']], { again: 'test' }),
+            t5: ecsRes('Ipotesi: esposizione all’eparina (cell saver)', [['Verifica', 'CT Heptem < CT Intem'], ['Terapia', 'Protamina 1.000-2.000 U']], { again: 'test' })
+        };
+
+        let ecsCur = 'start', ecsHist = [], ecsOpen = false, ecsPushed = false, ecsBound = false;
+
+        function ecsOpts(n) {
+            if (n.type === 'q') return n.opts;
+            if (n.type === 'a') return [['Continua', n.next, 'go'], ...(n.extra || [])];
+            return [...(n.again ? [['Valuta un altro caso', n.again, 'n']] : []), ['Ricomincia dall’inizio', 'start', 'restart']];
+        }
+
+        function ecsRender() {
+            const n = ECS[ecsCur];
+            const stageId = [...ecsHist.map(h => h.id), ecsCur].reverse().find(id => ECS[id].stage);
+            document.getElementById('ecsStage').textContent = stageId ? ECS[stageId].stage : '';
+            document.getElementById('ecsTrail').innerHTML = ecsHist.filter(h => h.a).map(h =>
+                `<span class="shrink-0 rounded-full bg-slate-100 border border-slate-200 text-[10px] text-slate-700 px-2 py-0.5 whitespace-nowrap"><b>${escapeHtml(ECS[h.id].short)}:</b> ${escapeHtml(h.a)}</span>`).join('')
+                || '<span class="text-[10px] text-slate-400">Le tue risposte compariranno qui</span>';
+            document.getElementById('ecsBackBtn').disabled = ecsHist.length === 0;
+
+            const tone = { yes: 'border-emerald-400 bg-emerald-50 text-emerald-900', no: 'border-rose-300 bg-rose-50 text-rose-900', go: 'text-white border-[#7b2342] bg-[#7b2342]', restart: 'border-slate-300 bg-white text-slate-600', n: 'border-slate-300 bg-white text-slate-900' };
+            const btns = ecsOpts(n).map((o, i) => `<button type="button" onclick="ecsPick(${i})" class="w-full min-h-[52px] rounded-xl border-2 px-3 py-2 text-left active:scale-[0.99] transition ${tone[o[2] || 'n']}"><div class="text-sm font-extrabold">${escapeHtml(o[0])}</div>${o[3] ? `<div class="text-[11px] opacity-80">${escapeHtml(o[3])}</div>` : ''}</button>`).join('');
+            const list = (a, num) => `<${num ? 'ol' : 'ul'} class="${num ? 'list-decimal' : 'list-disc'} pl-5 space-y-1.5 text-sm text-slate-800">${a.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</${num ? 'ol' : 'ul'}>`;
+            let card;
+            if (n.type === 'q') {
+                card = `<div class="bg-white rounded-xl border border-slate-200 p-3 space-y-2"><div class="text-base font-extrabold text-slate-900 leading-snug">${escapeHtml(n.title)}</div>${n.bullets ? list(n.bullets) : ''}</div>`;
+            } else if (n.type === 'a') {
+                card = `<div class="bg-white rounded-xl border-2 p-3 space-y-2" style="border-color:#7b2342"><div class="text-base font-extrabold" style="color:#7b2342">${escapeHtml(n.title)}</div>${list(n.items, n.num)}</div>`;
+            } else {
+                const end = n.tone === 'end';
+                card = `<div class="rounded-xl border-2 p-3 space-y-2 ${end ? 'bg-slate-50 border-slate-300' : 'bg-emerald-50 border-emerald-400'}"><div class="text-base font-extrabold text-slate-900">${escapeHtml(n.title)}</div>
+                    ${n.items ? list(n.items) : ''}
+                    ${(n.rows || []).map(r => `<div><div class="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">${r[0]}</div><div class="text-sm font-bold text-slate-900">${escapeHtml(r[1])}</div></div>`).join('')}
+                    ${n.rotem ? `<div class="text-[11px] text-slate-600 border-t border-slate-200 pt-2">${ECS_NOTE}</div>` : ''}</div>`;
+            }
+            const body = document.getElementById('ecsBody');
+            body.innerHTML = card + `<div class="space-y-2">${btns}</div>`;
+            body.scrollTop = 0;
+        }
+
+        function ecsPick(i) {
+            const n = ECS[ecsCur];
+            const o = ecsOpts(n)[i];
+            if (!o) return;
+            if (o[2] === 'restart') { ecsHist = []; ecsCur = 'start'; }
+            else { ecsHist.push({ id: ecsCur, a: n.type === 'q' ? o[0] : null }); ecsCur = o[1]; }
+            ecsRender();
+        }
+
+        function ecsBack() {
+            const h = ecsHist.pop();
+            if (h) { ecsCur = h.id; ecsRender(); }
+        }
+
+        function ecsRestart() { ecsHist = []; ecsCur = 'start'; ecsRender(); }
+
+        function openEcsWizard() {
+            if (!ecsBound) {
+                ecsBound = true;
+                window.addEventListener('popstate', () => { if (ecsOpen) { ecsPushed = false; closeEcsWizard(); } });
+                document.addEventListener('keydown', (e) => { if (ecsOpen && e.key === 'Escape') closeEcsWizard(); });
+            }
+            ecsHist = []; ecsCur = 'start'; ecsOpen = true;
+            document.getElementById('ecsWizardModal').classList.remove('hidden');
+            ecsRender();
+            try { history.pushState({ ecs: true }, ''); ecsPushed = true; } catch (e) { ecsPushed = false; }
+        }
+
+        function closeEcsWizard() {
+            if (!ecsOpen) return;
+            ecsOpen = false;
+            document.getElementById('ecsWizardModal').classList.add('hidden');
+            if (ecsPushed) { ecsPushed = false; try { history.back(); } catch (e) {} }
+        }
+
         function openProtocolViewer(protoId) {
             const proto = protocolsDatabase.find(p => p.id === protoId);
             if (!proto) return;
@@ -4959,6 +5233,7 @@ Range consigliati:
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700">
                     ${escapeHtml(proto.summary)}
                 </div>
+                ${diagramKey === 'ecs_algoritmo' ? `<button type="button" onclick="openEcsWizard()" class="w-full rounded-xl text-white py-3 px-3 flex items-center justify-center gap-2 font-extrabold text-sm shadow-sm active:scale-[0.99] transition" style="background:#7b2342"><i class="fa-solid fa-route"></i><span>Guida passo-passo (domande)</span></button>` : ''}
                 ${diagramHtml}
                 ${contentBox}
             `;
