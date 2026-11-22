@@ -820,6 +820,7 @@
                 <div>
                     <label class="block text-[10px] font-extrabold uppercase text-slate-700 mb-1">Contenuto Operativo / Passaggi *</label>
                     <textarea id="protoContentInput" required rows="7" placeholder="Inserisci i passaggi clinici, i dosaggi e le note operative..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 leading-relaxed focus:outline-none focus:ring-2 focus:ring-hospital-500"></textarea>
+                    <div class="mt-1 text-[10px] text-slate-500 leading-snug"><b>Formattazione:</b> **testo** = grassetto · - voce = elenco puntato · [ ] voce = casella spuntabile · 1. TITOLO (maiuscolo) = intestazione di sezione · | a | b | = tabella (la prima riga è l’intestazione)</div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
                     <button type="button" onclick="closeProtocolEditorModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-lg">Annulla</button>
@@ -4393,6 +4394,40 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
 | Adulti | 0,5 mL/kg/h (circa 30-50 mL/h) |
 | Bambini (peso < 30 kg) | 1,0 mL/kg/h |
 | Ustioni elettriche ad alto voltaggio / rabdomiolisi | 1,0-1,5 mL/kg/h (fino a schiarimento delle urine) |`
+            },
+            {
+                id: 'proto_uoc_donatore',
+                addedLater: true,
+                title: 'Esami potenziale donatore',
+                category: 'Terapia Intensiva',
+                code: 'UOC-AR-06',
+                summary: 'Esami da richiedere per il paziente in morte cerebrale candidato al prelievo d’organi',
+                isCustom: false,
+                content: `(Con le diciture del nostro applicativo di laboratorio)
+
+**Nuova Richiesta > Laboratorio Analisi > Richiesta Esami Routine RIANIM**
+[ ] TPHA
+[ ] HBsAg
+[ ] Anti HBC
+[ ] HCVnext
+[ ] Citom. IgG
+[ ] HSV 1 IgG
+[ ] HSV 2 IgG
+[ ] EBV Ab E. Barr
+[ ] Anti Varicella IgG
+[ ] Toxo IgG
+
+**Nuova Richiesta > Laboratorio Analisi > Richiesta esame HIV Routine**
+[ ] Anticorpi anti HIV 1/2/Ag
+
+**Nuova Richiesta > Laboratorio Analisi > Modulo Richiesta Esame Test Antigenico III Generazione COVID**
+[ ] Sars-cov-2 BAL **(SPECIFICARE BAL TRA LE NOTE)**
+
+**Nuova Richiesta > Laboratorio Analisi > Richiesta esami Microbiologia**
+[ ] Urinocoltura
+[ ] Emocoltura Arobi, Anaerobi, Miceti
+[ ] Broncoaspirato
+[ ] Tampone rettale`
             }
         ];
 
@@ -4531,6 +4566,8 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
 
         function formatProtocolContentHtml(text) {
             const lines = (text || '').split('\n');
+            // **testo** = grassetto (il resto del testo viene sempre reso innocuo)
+            const fmtInline = (t) => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
             let html = '';
             let tableRows = [];
 
@@ -4539,9 +4576,9 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                 html += `<div class="overflow-x-auto my-2 rounded-lg border border-slate-200"><table class="w-full text-left border-collapse text-[11px]">`;
                 tableRows.forEach((cells, rowIdx) => {
                     if (rowIdx === 0) {
-                        html += `<thead class="bg-hospital-900 text-white"><tr>${cells.map(c => `<th class="px-2.5 py-1.5 font-extrabold">${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>`;
+                        html += `<thead class="bg-hospital-900 text-white"><tr>${cells.map(c => `<th class="px-2.5 py-1.5 font-extrabold">${fmtInline(c)}</th>`).join('')}</tr></thead><tbody>`;
                     } else {
-                        html += `<tr class="${rowIdx % 2 === 1 ? 'bg-white' : 'bg-slate-50'} border-t border-slate-200">${cells.map((c, colIdx) => `<td class="px-2.5 py-1.5 ${colIdx === 0 ? 'font-extrabold text-hospital-900' : 'text-slate-800'}">${escapeHtml(c)}</td>`).join('')}</tr>`;
+                        html += `<tr class="${rowIdx % 2 === 1 ? 'bg-white' : 'bg-slate-50'} border-t border-slate-200">${cells.map((c, colIdx) => `<td class="px-2.5 py-1.5 ${colIdx === 0 ? 'font-extrabold text-hospital-900' : 'text-slate-800'}">${fmtInline(c)}</td>`).join('')}</tr>`;
                     }
                 });
                 html += '</tbody></table></div>';
@@ -4563,12 +4600,16 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                     return;
                 }
                 flushTable();
-                if (/^\d+\.\s+[A-ZÀ-Ü0-9]/.test(trimmed)) {
+                // [ ] voce = casella spuntabile (le spunte non vengono salvate)
+                if (/^\[\s?\]\s+/.test(trimmed)) {
+                    const label = trimmed.replace(/^\[\s?\]\s+/, '');
+                    html += `<label class="flex items-start gap-2.5 py-1.5 px-1 rounded-md cursor-pointer active:bg-slate-100 text-slate-800"><input type="checkbox" class="mt-0.5 w-5 h-5 shrink-0 accent-teal-600" onchange="this.closest('label').classList.toggle('line-through', this.checked); this.closest('label').classList.toggle('opacity-60', this.checked)"><span>${fmtInline(label)}</span></label>`;
+                } else if (/^\d+\.\s+[A-ZÀ-Ü0-9]/.test(trimmed)) {
                     html += `<div class="font-extrabold text-hospital-900 text-xs uppercase tracking-wide pt-1.5 pb-0.5 border-b border-slate-200">${escapeHtml(trimmed)}</div>`;
                 } else if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-                    html += `<div class="pl-3 relative text-slate-800"><span class="absolute left-0 text-hospital-600 font-bold">•</span>${escapeHtml(trimmed.slice(1).trim())}</div>`;
+                    html += `<div class="pl-3 relative text-slate-800"><span class="absolute left-0 text-hospital-600 font-bold">•</span>${fmtInline(trimmed.slice(1).trim())}</div>`;
                 } else {
-                    html += `<div class="text-slate-800">${escapeHtml(trimmed)}</div>`;
+                    html += `<div class="text-slate-800">${fmtInline(trimmed)}</div>`;
                 }
             });
             flushTable();
@@ -5596,7 +5637,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
         function copyCurrentProtocolText() {
             const proto = protocolsDatabase.find(p => p.id === viewingProtocolId);
             if (!proto) return;
-            const fullText = `${proto.title} (${proto.code || proto.category})\n\n${proto.content}`;
+            const fullText = `${proto.title} (${proto.code || proto.category})\n\n${proto.content.replace(/\*\*/g, '').replace(/^\[\s?\]\s+/gm, '☐ ')}`;
             copyText(fullText);
         }
 
