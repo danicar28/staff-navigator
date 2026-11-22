@@ -1041,6 +1041,24 @@
         </div>
     </div>
 
+    <!-- MODAL: MAPPA USTIONI (LUND E BROWDER) -->
+    <div id="burnMapModal" class="hidden fixed inset-0 bg-slate-100 z-[80] flex flex-col" style="height:100dvh" role="dialog" aria-modal="true" aria-label="Mappa ustioni">
+        <div class="shrink-0 text-white flex items-center justify-between gap-2" style="background:#c2410c;padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px 12px">
+            <div class="min-w-0"><div class="text-[9px] uppercase tracking-wide opacity-80">Lund e Browder</div><div class="font-bold text-xs">Calcolo % S.C. ustionata</div></div>
+            <button type="button" onclick="closeBurnMap()" class="h-11 px-3.5 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition text-white flex items-center gap-1.5 font-bold text-xs shrink-0" aria-label="Chiudi"><i class="fa-solid fa-xmark text-base"></i><span>Chiudi</span></button>
+        </div>
+        <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
+            <div class="text-[10px] text-slate-600">Segna solo ustioni di 2° e 3° grado (escluso l’eritema semplice). Un tocco = metà distretto (solo fronte o retro), due tocchi = intero, tre = azzera. I valori includono fronte e retro.</div>
+            <div id="burnModelBtns" class="flex gap-1.5 justify-center"></div>
+            <div id="burnMap" class="mx-auto" style="max-width:260px"></div>
+            <div id="burnExtras" class="flex gap-2 justify-center"></div>
+        </div>
+        <div class="shrink-0 flex gap-2 bg-white border-t border-slate-200 px-3 pt-2" style="padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 8px)">
+            <button type="button" onclick="burnReset()" class="h-12 px-4 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs active:scale-95 transition">Azzera</button>
+            <button type="button" id="burnMapUse" onclick="closeBurnMap()" class="flex-1 h-12 rounded-xl text-white font-extrabold text-sm active:scale-[0.99] transition" style="background:#c2410c">Chiudi</button>
+        </div>
+    </div>
+
     <!-- MODAL LIGHTBOX: INGRANDIMENTO FOTO ORIGINALE TURNI -->
     <div id="shiftPhotoLightboxModal" class="hidden fixed inset-0 bg-slate-950 z-[70] flex flex-col" style="height:100dvh;touch-action:pan-x pan-y" role="dialog" aria-modal="true" aria-label="Foglio turni ingrandito">
         <div class="shrink-0 flex items-center justify-between text-white bg-slate-900 border-b border-white/10" style="padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px 12px">
@@ -1564,9 +1582,10 @@
                     if (!protoInitial.metadata.fromCache && typeof window.getDefaultProtocols === 'function') {
                         let metaData = null;
                         const existingIds = new Set();
+                        const existingData = new Map();
                         protoInitial.forEach((d) => {
                             if (d.id === '_meta') metaData = d.data();
-                            else existingIds.add(d.id);
+                            else { existingIds.add(d.id); existingData.set(d.id, d.data()); }
                         });
                         const defs = window.getDefaultProtocols();
                         const alreadySeeded = Array.isArray(metaData?.seededIds)
@@ -1594,7 +1613,44 @@
                                 seeded: true,
                                 seededIds: [...alreadySeeded, ...pending.map(d => d.id)],
                                 updatedAt: Date.now()
-                            });
+                            }, { merge: true });
+                        }
+
+                        // Rinomine una tantum: ciascuna viene applicata una sola volta, poi il titolo
+                        // resta quello impostato dalla gestione. Non si ricrea un protocollo eliminato.
+                        const renames = typeof window.getProtocolRenames === 'function' ? window.getProtocolRenames() : [];
+                        const appliedRenames = Array.isArray(metaData?.appliedRenames) ? metaData.appliedRenames : [];
+                        const todoRenames = renames.filter(rn => !appliedRenames.includes(rn.key));
+                        if (todoRenames.length > 0) {
+                            for (const rn of todoRenames) {
+                                if (existingIds.has(rn.id)) {
+                                    await setDoc(doc(protocolsColRef, rn.id), { title: rn.title, updatedAt: Date.now() }, { merge: true });
+                                }
+                            }
+                            await setDoc(doc(protocolsColRef, '_meta'), {
+                                appliedRenames: [...appliedRenames, ...todoRenames.map(rn => rn.key)],
+                                updatedAt: Date.now()
+                            }, { merge: true });
+                        }
+
+                        // Correzioni di testo una tantum (applicate in sequenza sulla stessa copia del testo)
+                        const patches = typeof window.getProtocolPatches === 'function' ? window.getProtocolPatches() : [];
+                        const appliedPatches = Array.isArray(metaData?.appliedPatches) ? metaData.appliedPatches : [];
+                        const todoPatches = patches.filter(pt => !appliedPatches.includes(pt.key));
+                        if (todoPatches.length > 0) {
+                            for (const pt of todoPatches) {
+                                const entry = existingData.get(pt.id);
+                                if (!entry || typeof entry.content !== 'string') continue;
+                                const i = entry.content.indexOf(pt.from);
+                                const j = pt.to ? entry.content.indexOf(pt.to, Math.max(i, 0)) : entry.content.length;
+                                if (i < 0 || j < 0) { console.warn('Correzione protocollo non applicata (testo diverso):', pt.key); continue; }
+                                entry.content = entry.content.slice(0, i) + pt.text + entry.content.slice(j);
+                                await setDoc(doc(protocolsColRef, pt.id), { content: entry.content, updatedAt: Date.now() }, { merge: true });
+                            }
+                            await setDoc(doc(protocolsColRef, '_meta'), {
+                                appliedPatches: [...appliedPatches, ...todoPatches.map(pt => pt.key)],
+                                updatedAt: Date.now()
+                            }, { merge: true });
                         }
                     }
 
@@ -4107,7 +4163,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_potassiemia',
                 addedLater: true,
-                title: 'Correzione dell’Ipopotassiemia',
+                title: 'Ipopotassiemia',
                 category: 'Terapia Intensiva',
                 code: 'UOC-AR-01',
                 summary: 'Diluizione standard (1,2 mEq/ml), velocità di infusione per fasce di potassiemia e criteri di sicurezza renale.',
@@ -4133,7 +4189,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_insulina',
                 addedLater: true,
-                title: 'Monitoraggio Glicemico e Trattamento Insulinico',
+                title: 'Protocollo insulina',
                 category: 'Terapia Intensiva',
                 code: 'UOC-AR-02',
                 summary: 'Diluizione 50 U.I./50 ml (1:1), avvio infusione > 180 mg/dl e tabella di titolazione oraria.',
@@ -4163,7 +4219,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_nutrizione',
                 addedLater: true,
-                title: 'Protocollo di Terapia Nutrizionale (Enterale / Parenterale)',
+                title: 'Nutrizione Artificiale',
                 category: 'Terapia Intensiva',
                 code: 'UOC-AR-03',
                 summary: 'Algoritmo schematico OS / NE / NPT, progressione 15 ml/h ogni turno, segni di intolleranza e gestione SNG.',
@@ -4177,7 +4233,7 @@ CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
             {
                 id: 'proto_uoc_conduzione_citrato',
                 addedLater: true,
-                title: 'Conduzione del Trattamento CRRT con Citrato (Prismaflex)',
+                title: 'CRRT con Citrato',
                 category: 'Terapia Intensiva',
                 code: 'UOC-AR-04',
                 summary: 'Monitoraggio del calcio, compensazione % della calcemia (siringa Prismaflex), dose citrato post filtro e aggiustamento bicarbonati.',
@@ -4293,6 +4349,50 @@ A partire dal risultato del test:
 | CT lungo in test successivi | Esposizione all’eparina (cell saver) | CT Heptem < CT Intem | Protamina 1.000-2.000 U |
 
 Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entro 60’) e successivamente dopo ogni 4 unità di emazie (o ogni 2 ore se il sanguinamento non si arresta). In caso di reinfusione da cell-saver o eparinizzazione eseguire anche Heptem e Intem.`
+            },
+            {
+                id: 'proto_uoc_ustionati',
+                addedLater: true,
+                title: 'Ustionato',
+                category: 'Terapia Intensiva',
+                code: 'UOC-AR-05',
+                summary: 'Ringer lattato 2 mL/kg/% S.C. (adulto) o 3 mL/kg/% (pediatrico) nelle prime 24 h: 50% nelle prime 8 ore dall’ustione, 50% nelle successive 16. Calcolatore e mappa Lund-Browder.',
+                visualDiagram: 'ustioni_tool',
+                isCustom: false,
+                content: `1. INDICAZIONE
+- Formula di Brooke modificata: stima del fabbisogno iniziale di liquidi per la rianimazione volemica nelle prime 24 ore.
+- Ustioni estese: > 20% S.C. nell’adulto; > 10-15% S.C. nel paziente pediatrico.
+
+2. STIMA DELL’ESTENSIONE (% S.C. USTIONATA)
+- Includere SOLO ustioni di 2° grado (spessore parziale) e 3° grado (tutto spessore).
+- Escludere l’eritema semplice (1° grado).
+- Strumenti: regola del nove di Wallace (adulto) oppure tabella/mappa di Lund-Browder (preferibile, soprattutto in età pediatrica, per le proporzioni corporee).
+
+3. FABBISOGNO NELLE PRIME 24 ORE
+- Solo cristalloidi bilanciati (es. Ringer lattato).
+| Paziente | Criterio | Volume totale (24 h) |
+| Adulto | Età > 12 anni e peso > 30 kg | 2 mL × peso (kg) × % S.C. |
+| Pediatrico | Età ≤ 12 anni o peso ≤ 30 kg | 3 mL × peso (kg) × % S.C. |
+- Pediatrico: in parallelo, nelle prime 24 ore, soluzione di mantenimento glucosata al 5% (Holliday-Segar) per prevenire l’ipoglicemia da esaurimento del glicogeno: 4 mL/kg/h per i primi 10 kg; 2 mL/kg/h per i successivi 10 kg; 1 mL/kg/h per ogni kg aggiuntivo.
+
+4. MODALITÀ E TEMPI DI SOMMINISTRAZIONE
+- Il tempo si conta dall’ora esatta dell’ustione, non dall’arrivo in Pronto Soccorso.
+- I liquidi già infusi in fase pre-ospedaliera vanno sottratti dalla quota delle prime 8 ore.
+| Fase | Quota del volume totale |
+| Prime 8 ore dall’ustione | 50% |
+| Successive 16 ore (dalla 9ª alla 24ª ora) | 50% |
+
+5. SECONDE 24 ORE (ORE 24-48) – ADULTO
+- Cristalloidi (Ringer lattato): pari alla metà del volume delle prime 24 ore.
+- Colloidi (PPS 5%): 0,5 mL/kg/% S.C. ustionata.
+- Paziente pediatrico: PPS 5% non previsto.
+
+6. MONITORAGGIO E TITOLAZIONE
+- Il volume calcolato è solo una stima iniziale: titolare la velocità ogni ora in base alla risposta clinica ed emodinamica, con la diuresi oraria come parametro principale.
+| Popolazione | Target di diuresi oraria |
+| Adulti | 0,5 mL/kg/h (circa 30-50 mL/h) |
+| Bambini (peso < 30 kg) | 1,0 mL/kg/h |
+| Ustioni elettriche ad alto voltaggio / rabdomiolisi | 1,0-1,5 mL/kg/h (fino a schiarimento delle urine) |`
             }
         ];
 
@@ -4649,6 +4749,28 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
         // ------------------------------------------
         window.getDefaultProtocols = () => defaultProtocolsData;
 
+        // Rinomine applicate una sola volta ai protocolli già presenti su Firestore.
+        // Per una nuova rinomina in futuro basta aggiungere una riga [id, nuovo titolo].
+        const PROTOCOL_RENAMES = [
+            ['proto_uoc_potassiemia', 'Ipopotassiemia'],
+            ['proto_uoc_nutrizione', 'Nutrizione Artificiale'],
+            ['proto_uoc_insulina', 'Protocollo insulina'],
+            ['proto_uoc_conduzione_citrato', 'CRRT con Citrato'],
+            ['proto_uoc_ustionati', 'Ustionato']
+        ].map(([id, title]) => ({ key: id + '→' + title, id, title }));
+        window.getProtocolRenames = () => PROTOCOL_RENAMES;
+
+        // Correzioni di testo applicate una sola volta ai protocolli già presenti su Firestore:
+        // si sostituisce il tratto di testo tra "from" (incluso) e "to" (escluso). Se il testo è
+        // già stato modificato a mano e i riferimenti non si trovano, la correzione viene saltata.
+        const PROTOCOL_PATCHES = [
+            { key: 'ustionati-glucosata-24h', id: 'proto_uoc_ustionati', from: '- Pediatrico: in parallelo', to: '\n\n4. MODALITÀ',
+              text: '- Pediatrico: in parallelo, nelle prime 24 ore, soluzione di mantenimento glucosata al 5% (Holliday-Segar) per prevenire l’ipoglicemia da esaurimento del glicogeno: 4 mL/kg/h per i primi 10 kg; 2 mL/kg/h per i successivi 10 kg; 1 mL/kg/h per ogni kg aggiuntivo.' },
+            { key: 'ustionati-seconde-24h-v2', id: 'proto_uoc_ustionati', from: '5. SECONDE 24 ORE', to: '\n\n6. MONITORAGGIO',
+              text: '5. SECONDE 24 ORE (ORE 24-48) – ADULTO\n- Cristalloidi (Ringer lattato): pari alla metà del volume delle prime 24 ore.\n- Colloidi (PPS 5%): 0,5 mL/kg/% S.C. ustionata.\n- Paziente pediatrico: PPS 5% non previsto.' }
+        ];
+        window.getProtocolPatches = () => PROTOCOL_PATCHES;
+
         window.onCloudProtocols = function (list, fromCache) {
             // Uno snapshot vuoto dalla cache locale non è affidabile: lo ignoro
             if (fromCache && list.length === 0) return;
@@ -4862,7 +4984,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
         // ------------------------------------------
         // Per i protocolli sotto elencati lo schema grafico viene mostrato in evidenza e il testo
         // (tabelle) resta consultabile in una sezione richiudibile.
-        const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema', 'proto_ecs_coagulazione': 'ecs_algoritmo' };
+        const PROTOCOL_DIAGRAM_BY_ID = { 'proto_uoc_conduzione_citrato': 'citrato_schema', 'proto_ecs_coagulazione': 'ecs_algoritmo', 'proto_uoc_ustionati': 'ustioni_tool' };
         const PROTOCOL_DIAGRAMS_REPLACING_TEXT = ['citrato_schema', 'ecs_algoritmo'];
 
         // Collegamenti esterni mostrati in cima a un protocollo (si aprono in una nuova finestra)
@@ -4878,6 +5000,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             if (key === 'nutrizione_flowchart') return renderNutritionFlowchartDiagram();
             if (key === 'citrato_schema') return renderCitrateSchemaDiagram();
             if (key === 'ecs_algoritmo') return renderEcsAlgorithmDiagram();
+            if (key === 'ustioni_tool') return renderBurnTool();
             return '';
         }
 
@@ -5214,6 +5337,205 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             if (ecsPushed) { ecsPushed = false; try { history.back(); } catch (e) {} }
         }
 
+        // ------------------------------------------
+        // USTIONATI: calcolatore fluidi + mappa Lund-Browder
+        // ------------------------------------------
+        const BURN_MODELS = {
+            adult: { label: 'Adulto', v: { head: 7, neck: 2, trunk: 26, uarm: 4, farm: 3, hand: 3, thigh: 9.5, leg: 7, foot: 3.5 } },
+            c10: { label: '10 anni', v: { head: 13, neck: 2, trunk: 26, arm: 7, hand: 3, thigh: 9, leg: 6, foot: 3.5 } },
+            c1: { label: '1 anno', v: { head: 19, neck: 2, trunk: 26, uarm: 4, farm: 3, hand: 3, thigh: 6.5, leg: 5, foot: 3.5 } }
+        };
+        const BURN_EXTRA = { glutei: 5, inguine: 1 };
+        // [parte, forma, a, b, c, d, raggio, lato]  (ellisse: cx, cy, rx, ry — rettangolo: x, y, larghezza, altezza)
+        const BURN_GEO = [
+            ['head', 'e', 110, 30, 22, 26], ['neck', 'r', 102, 54, 16, 14, 4], ['trunk', 'r', 78, 70, 64, 110, 14],
+            ['uarm', 'r', 56, 72, 18, 56, 9, 'L'], ['uarm', 'r', 146, 72, 18, 56, 9, 'R'],
+            ['farm', 'r', 52, 130, 16, 52, 8, 'L'], ['farm', 'r', 152, 130, 16, 52, 8, 'R'],
+            ['hand', 'r', 50, 184, 16, 24, 8, 'L'], ['hand', 'r', 154, 184, 16, 24, 8, 'R'],
+            ['thigh', 'r', 80, 184, 30, 84, 12, 'L'], ['thigh', 'r', 112, 184, 30, 84, 12, 'R'],
+            ['leg', 'r', 82, 270, 26, 76, 10, 'L'], ['leg', 'r', 114, 270, 26, 76, 10, 'R'],
+            ['foot', 'r', 78, 348, 32, 16, 7, 'L'], ['foot', 'r', 112, 348, 32, 16, 7, 'R']
+        ];
+        let burn = { model: 'adult', sel: {}, w: '', pct: '', ped: false, t: '', pre: '' };
+
+        const burnKey = (m, part, side) => ((m.v.arm && (part === 'uarm' || part === 'farm')) ? 'arm' : part) + (side || '');
+        const burnVal = (m, key) => BURN_EXTRA[key] !== undefined ? BURN_EXTRA[key] : m.v[key.replace(/[LR]$/, '')];
+
+        // % S.C. dalla mappa: ogni distretto vale fronte+retro; 1 tocco = metà, 2 tocchi = intero. Massimo 100%.
+        function burnSum(modelKey, sel) {
+            const m = BURN_MODELS[modelKey];
+            let tot = 0;
+            for (const k in sel) tot += sel[k] * burnVal(m, k);
+            return Math.round(Math.min(100, tot) * 10) / 10;
+        }
+
+        // Brooke modificata: adulto 2 mL/kg/%, pediatrico (≤ 12 anni o ≤ 30 kg) 3 mL/kg/% + mantenimento Holliday-Segar
+        function burnCompute(w, pct, pedChecked, pre) {
+            const ped = pedChecked || w <= 30;
+            const V = (ped ? 3 : 2) * w * pct;
+            const hs = ped ? 4 * Math.min(w, 10) + 2 * Math.min(Math.max(w - 10, 0), 10) + Math.max(w - 20, 0) : 0;
+            return { ped, V, V8: V / 2, V16: V / 2, r1: V / 16, r2: V / 32, hs, rem: Math.max(0, V / 2 - pre) };
+        }
+
+        function renderBurnTool() {
+            const inp = 'w-full h-10 rounded-lg border border-slate-300 px-2 text-sm font-bold text-slate-900 bg-white';
+            const lab = 'text-[10px] font-extrabold uppercase tracking-wide text-slate-500 mb-0.5 leading-tight';
+            return `<div class="space-y-2">
+                <div class="bg-white rounded-lg border border-slate-300 overflow-hidden">
+                    <div class="text-white px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wide" style="background:#c2410c">Calcolatore fluidi</div>
+                    <div class="p-2.5 grid grid-cols-2 gap-x-2 gap-y-2">
+                        <div><div class="${lab}">Peso (kg)</div><input id="burnW" type="number" inputmode="decimal" min="0" step="0.1" class="${inp}" value="${burn.w}" oninput="burnCalc()"></div>
+                        <div><div class="${lab}">% S.C. ustionata</div>
+                            <div class="flex gap-1"><input id="burnPct" type="number" inputmode="decimal" min="0" max="100" step="0.5" class="${inp}" value="${burn.pct}" oninput="burnCalc()">
+                            <button type="button" onclick="openBurnMap()" class="shrink-0 w-10 h-10 rounded-lg text-white active:scale-95 flex items-center justify-center" style="background:#c2410c" title="Apri la mappa (omino)" aria-label="Apri la mappa per calcolare la % S.C."><i class="fa-solid fa-person"></i></button></div></div>
+                        <div class="col-span-2"><div class="${lab}">Data e ora dell’ustione</div>
+                            <div class="flex gap-1"><input id="burnT" type="datetime-local" class="${inp}" value="${burn.t}" oninput="burnCalc()"><button type="button" onclick="burnNow()" class="shrink-0 h-10 px-3 rounded-lg bg-slate-100 border border-slate-300 text-xs font-bold text-slate-700 active:scale-95">Adesso</button></div></div>
+                        <div><div class="${lab}">Liquidi già infusi (mL)</div><input id="burnPre" type="number" inputmode="numeric" min="0" placeholder="opzionale" class="${inp}" value="${burn.pre}" oninput="burnCalc()"></div>
+                        <label class="flex items-end gap-2 text-xs font-bold text-slate-800 pb-2.5"><input id="burnPed" type="checkbox" class="w-5 h-5 shrink-0" ${burn.ped ? 'checked' : ''} onchange="burnPedChanged()"><span class="leading-tight">Età ≤ 12 anni</span></label>
+                    </div>
+                </div>
+                <div id="burnResults"></div></div>`;
+        }
+
+        function burnInit() { burnRenderMap(); burnCalc(); }
+
+        let burnMapOpen = false, burnMapPushed = false, burnMapBound = false;
+        function openBurnMap() {
+            if (!burnMapBound) {
+                burnMapBound = true;
+                window.addEventListener('popstate', () => { if (burnMapOpen) { burnMapPushed = false; closeBurnMap(); } });
+                document.addEventListener('keydown', (e) => { if (burnMapOpen && e.key === 'Escape') closeBurnMap(); });
+            }
+            burnMapOpen = true;
+            burnRenderMap();
+            document.getElementById('burnMapModal').classList.remove('hidden');
+            try { history.pushState({ burnMap: true }, ''); burnMapPushed = true; } catch (e) { burnMapPushed = false; }
+        }
+        function closeBurnMap() {
+            if (!burnMapOpen) return;
+            burnMapOpen = false;
+            document.getElementById('burnMapModal').classList.add('hidden');
+            if (burnMapPushed) { burnMapPushed = false; try { history.back(); } catch (e) {} }
+        }
+
+        function burnRenderMap() {
+            const m = BURN_MODELS[burn.model];
+            const shapes = BURN_GEO.map(([part, t, a, b, c, d, r, side]) => {
+                const key = burnKey(m, part, side);
+                const st = burn.sel[key] || 0;
+                const fill = st === 1 ? '#dc2626' : st === 0.5 ? '#fca5a5' : '#a7d8cc';
+                const shape = t === 'e' ? `<ellipse cx="${a}" cy="${b}" rx="${c}" ry="${d}"/>` : `<rect x="${a}" y="${b}" width="${c}" height="${d}" rx="${r}"/>`;
+                const cx = t === 'e' ? a : a + c / 2, cy = t === 'e' ? b : b + d / 2;
+                const label = (m.v.arm && part === 'farm') ? '' : `<text x="${cx}" y="${cy + 3}" text-anchor="middle" font-size="9" font-weight="800" fill="${st === 1 ? '#fff' : '#134e4a'}" stroke="none" style="pointer-events:none">${burnVal(m, key)}</text>`;
+                return `<g onclick="burnTap('${key}')" style="cursor:pointer" fill="${fill}" stroke="#fff" stroke-width="2">${shape}${label}</g>`;
+            }).join('');
+            document.getElementById('burnMap').innerHTML = `<svg viewBox="0 0 220 372" class="w-full h-auto" role="img" aria-label="Mappa ustioni">${shapes}</svg>`;
+            document.getElementById('burnModelBtns').innerHTML = Object.keys(BURN_MODELS).map(k =>
+                `<button type="button" onclick="burnSetModel('${k}')" class="px-3 h-9 rounded-full text-xs font-bold border ${k === burn.model ? 'bg-orange-700 text-white border-orange-700' : 'bg-white text-slate-700 border-slate-300'}">${BURN_MODELS[k].label}</button>`).join('');
+            document.getElementById('burnExtras').innerHTML = [['glutei', 'Glutei'], ['inguine', 'Inguine/genitali']].map(([k, n]) => {
+                const st = burn.sel[k] || 0;
+                return `<button type="button" onclick="burnTap('${k}')" class="px-3 h-10 rounded-lg text-xs font-bold border-2 ${st === 1 ? 'bg-red-600 text-white border-red-600' : st === 0.5 ? 'bg-red-200 text-red-900 border-red-300' : 'bg-teal-100 text-teal-900 border-teal-200'}">${n} ${BURN_EXTRA[k]}%</button>`;
+            }).join('');
+            const tot = burnSum(burn.model, burn.sel);
+            document.getElementById('burnMapUse').textContent = tot ? `Usa ${tot}% S.C.` : 'Chiudi';
+        }
+
+        function burnTap(key) {
+            const s = burn.sel[key] || 0;
+            const n = s === 0 ? 0.5 : s === 0.5 ? 1 : 0;
+            if (n) burn.sel[key] = n; else delete burn.sel[key];
+            document.getElementById('burnPct').value = burnSum(burn.model, burn.sel) || '';
+            burnRenderMap();
+            burnCalc();
+        }
+
+        function burnSetModel(k) {
+            const had = Object.keys(burn.sel).length > 0;
+            burn.model = k; burn.sel = {};
+            if (had) document.getElementById('burnPct').value = '';
+            burnRenderMap();
+            burnCalc();
+        }
+        function burnReset() {
+            burn.sel = {};
+            document.getElementById('burnPct').value = '';
+            burnRenderMap();
+            burnCalc();
+        }
+        function burnPedChanged() {
+            const ped = document.getElementById('burnPed').checked;
+            if (ped && burn.model === 'adult') burnSetModel('c10');
+            else if (!ped && burn.model !== 'adult') burnSetModel('adult');
+            else burnCalc();
+        }
+        function burnNow() {
+            const d = new Date();
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            document.getElementById('burnT').value = d.toISOString().slice(0, 16);
+            burnCalc();
+        }
+
+        function burnCalc() {
+            const g = (id) => document.getElementById(id);
+            burn.w = g('burnW').value; burn.pct = g('burnPct').value; burn.ped = g('burnPed').checked; burn.t = g('burnT').value; burn.pre = g('burnPre').value;
+            const w = parseFloat(burn.w);
+            const pctRaw = parseFloat(burn.pct);
+            const pre = parseFloat(burn.pre) || 0;
+            const out = g('burnResults');
+            if (!(w > 0) || !(pctRaw > 0)) {
+                out.innerHTML = '<div class="text-[11px] text-slate-500 text-center py-2">Inserisci peso e % S.C. ustionata per calcolare i fluidi.</div>';
+                return;
+            }
+            const pct = Math.min(100, pctRaw);
+            const r = burnCompute(w, pct, burn.ped, pre);
+            const f = (n) => Math.round(n).toLocaleString('it-IT');
+            const fmt = (d) => d.toLocaleString('it-IT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+            const T = burn.t ? new Date(burn.t) : null;
+            const okT = T && !isNaN(T);
+            const at = (h) => new Date(+T + h * 36e5);
+            const t8 = okT ? at(8) : null, t24 = okT ? at(24) : null, t48 = okT ? at(48) : null;
+            const mlkg = r.ped ? 3 : 2;
+            const note = (txt, cls) => `<div class="text-[10px] rounded-md border px-2 py-1 ${cls}">${txt}</div>`;
+            const card = (title, sub, win, big, foot, cls) => `<div class="rounded-lg border-2 px-2.5 py-1.5 ${cls}">
+                <div class="flex items-center justify-between gap-2"><div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">${title}${sub ? ` <span class="font-bold normal-case opacity-75">· ${sub}</span>` : ''}</div><div class="text-xl font-extrabold leading-none shrink-0">${big}</div></div>
+                <div class="text-[11px] mt-0.5 leading-snug">${win}</div>
+                ${foot ? `<div class="text-[10px] font-semibold mt-0.5 leading-snug">${foot}</div>` : ''}</div>`;
+            const hm = (d) => d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+            let adj = '';
+            if (okT) {
+                const left = (t8 - Date.now()) / 36e5;
+                if (r.rem === 0 && pre > 0) adj = `I liquidi già infusi (${f(pre)} mL) coprono la quota delle prime 8 ore (${f(r.V8)} mL): passa alla fase 2 alle ${t8.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`;
+                else if ((pre > 0 || Date.now() - T > 10 * 6e4) && left > 0) adj = `Quota residua ore 0–8: ${f(r.rem)} mL da infondere entro le ${t8.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} (${left.toFixed(1)} h) → <b>${f(r.rem / Math.max(left, 0.25))} mL/h</b>`;
+                else if (left <= 0) adj = `Le prime 8 ore dall’ustione sono trascorse: verifica il volume già infuso (obiettivo ${f(r.V8)} mL) e prosegui con la fase 2.`;
+            } else if (pre > 0) adj = r.rem === 0 ? `I liquidi già infusi coprono la quota delle prime 8 ore (${f(r.V8)} mL).` : `Quota residua ore 0–8: ${f(r.rem)} mL (liquidi già infusi sottratti).`;
+
+            const warn = [];
+            if (pctRaw > 100) warn.push('% S.C. superiore a 100: calcolo limitato al 100%.');
+            if (!burn.ped && w <= 30) warn.push('Peso ≤ 30 kg: applicato lo schema pediatrico, come da protocollo.');
+            const volC = r.V / 2, volP = 0.5 * w * pct;
+            const second = `<div class="rounded-lg border-2 px-2.5 py-1.5 bg-sky-50 border-sky-400 text-sky-900">
+                <div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">Seconde 24 ore <span class="font-bold normal-case opacity-75">· ore 24–48</span></div>
+                <div class="text-[11px] mt-0.5 leading-snug">${okT ? `Dalle <b>${fmt(t24)}</b> alle <b>${fmt(t48)}</b>` : 'dall’ustione'}</div>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                    <div><div class="text-[10px] font-bold leading-tight">Cristalloidi · metà delle prime 24 h</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volC / 24)} mL/h</div><div class="text-[11px]">${f(volC)} mL</div></div>
+                    <div><div class="text-[10px] font-bold leading-tight">PPS 5% · 0,5 mL/kg/% S.C.</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volP / 24)} mL/h</div><div class="text-[11px]">${f(volP)} mL</div></div>
+                </div></div>`;
+            const lowAlert = r.ped ? pct < 15 : pct < 20;
+            const W = (a, b) => okT ? `Dalle <b>${fmt(a)}</b> alle <b>${fmt(b)}</b>` : 'dall’ustione';
+
+            out.innerHTML = `<div class="space-y-2">
+                <div class="text-[11px] text-slate-700 text-center">Ringer lattato nelle 24 h (${r.ped ? 'pediatrico' : 'adulto'}): <b>${f(r.V)} mL</b> = ${mlkg} mL × ${w} kg × ${pct}% S.C.</div>
+                ${lowAlert ? `<div class="rounded-lg border-2 border-rose-400 bg-rose-50 text-rose-900 px-2.5 py-1.5 text-[11px] leading-snug"><b>⚠ Attenzione:</b> con una superficie ustionata del ${pct}% (inferiore al ${r.ped ? '15% nel bambino' : '20% nell’adulto'}) la formula potrebbe sottostimare la fluidoterapia.</div>` : ''}
+                ${okT ? '' : note('Inserisci data e ora dell’ustione per vedere gli orari di ogni fase.', 'bg-amber-50 border-amber-300 text-amber-900')}
+                ${card('Prime 8 ore', `${f(r.V8)} mL`, W(T, t8), `${f(r.r1)} mL/h`, okT ? `→ alle <b>${hm(t8)}</b> cambia velocità a ${f(r.r2)} mL/h` : '', 'bg-orange-50 border-orange-400 text-orange-900')}
+                ${card('Successive 16 ore', `${f(r.V16)} mL`, W(t8, t24), `${f(r.r2)} mL/h`, okT ? `→ alle <b>${hm(t24)}</b> stop Ringer lattato` : '', 'bg-amber-50 border-amber-400 text-amber-900')}
+                ${r.ped ? card('Glucosata 5% in parallelo', `ore 0–24 · ${f(r.hs * 24)} mL`, W(T, t24), `${f(r.hs)} mL/h`, 'Holliday-Segar: previene l’ipoglicemia da esaurimento del glicogeno', 'bg-teal-50 border-teal-600 text-teal-900 ring-2 ring-teal-300') : second}
+                ${adj ? note(adj, 'bg-amber-50 border-amber-300 text-amber-900') : ''}
+                ${warn.map(x => note(x, 'bg-rose-50 border-rose-200 text-rose-900')).join('')}
+                <div class="text-[10px] text-slate-500 text-center">Stima iniziale: titolare la velocità ogni ora in base alla diuresi e alla risposta clinica.</div></div>`;
+        }
+
         function openProtocolViewer(protoId) {
             const proto = protocolsDatabase.find(p => p.id === protoId);
             if (!proto) return;
@@ -5249,6 +5571,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                 ${contentBox}
             `;
 
+            if (diagramKey === 'ustioni_tool') burnInit();
             updateProtoAdminUI();
             document.getElementById('protocolViewerModal').classList.remove('hidden');
         }
