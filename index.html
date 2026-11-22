@@ -5382,7 +5382,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             const lab = 'text-[10px] font-extrabold uppercase tracking-wide text-slate-500 mb-0.5 leading-tight';
             return `<div class="space-y-2">
                 <div class="bg-white rounded-lg border border-slate-300 overflow-hidden">
-                    <div class="text-white px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wide" style="background:#c2410c">Calcolatore fluidi</div>
+                    <div class="text-white pl-2.5 pr-1.5 py-1 flex items-center justify-between" style="background:#c2410c"><span class="text-[10px] font-extrabold uppercase tracking-wide">Calcolatore fluidi</span><button type="button" onclick="burnClearAll()" class="h-7 px-2.5 rounded-md bg-white/20 hover:bg-white/30 active:scale-95 text-[10px] font-bold flex items-center gap-1" aria-label="Azzera tutti i dati"><i class="fa-solid fa-rotate-left"></i>Azzera dati</button></div>
                     <div class="p-2.5 grid grid-cols-2 gap-x-2 gap-y-2">
                         <div><div class="${lab}">Peso (kg)</div><input id="burnW" type="number" inputmode="decimal" min="0" step="0.1" class="${inp}" value="${burn.w}" oninput="burnCalc()"></div>
                         <div><div class="${lab}">% S.C. ustionata</div>
@@ -5468,6 +5468,13 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             else if (!ped && burn.model !== 'adult') burnSetModel('adult');
             else burnCalc();
         }
+        function burnClearAll() {
+            burn = { model: 'adult', sel: {}, w: '', pct: '', ped: false, t: '', pre: '' };
+            ['burnW', 'burnPct', 'burnT', 'burnPre'].forEach(id => { document.getElementById(id).value = ''; });
+            document.getElementById('burnPed').checked = false;
+            burnRenderMap();
+            burnCalc();
+        }
         function burnNow() {
             const d = new Date();
             d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -5518,9 +5525,13 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             const second = `<div class="rounded-lg border-2 px-2.5 py-1.5 bg-sky-50 border-sky-400 text-sky-900">
                 <div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">Seconde 24 ore <span class="font-bold normal-case opacity-75">· ore 24–48</span></div>
                 <div class="text-[11px] mt-0.5 leading-snug">${okT ? `Dalle ${dt(t24)} alle ${dt(t48)}` : 'dall’ustione'}</div>
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                    <div><div class="text-[10px] font-bold leading-tight">Cristalloidi · metà delle prime 24 h</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volC / 24)} mL/h</div><div class="text-[11px]">${f(volC)} mL</div></div>
-                    <div><div class="text-[10px] font-bold leading-tight">PPS 5% · 0,5 mL/kg/% S.C.</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volP / 24)} mL/h</div><div class="text-[11px]">${f(volP)} mL</div></div>
+                <div class="flex items-center justify-between gap-2 border-t border-sky-300 mt-1 pt-1">
+                    <div><div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">Cristalloidi</div><div class="text-[10px] leading-tight">metà delle prime 24 h · ${f(volC)} mL</div></div>
+                    <div class="text-xl font-extrabold leading-none shrink-0">${f(volC / 24)} mL/h</div>
+                </div>
+                <div class="flex items-center justify-between gap-2 border-t border-sky-300 mt-1 pt-1">
+                    <div><div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">PPS 5%</div><div class="text-[10px] leading-tight">0,5 mL/kg/% S.C. · ${f(volP)} mL</div></div>
+                    <div class="text-xl font-extrabold leading-none shrink-0">${f(volP / 24)} mL/h</div>
                 </div></div>`;
             const lowAlert = r.ped ? pct < 15 : pct < 20;
             const W = (a, b) => okT ? `Dalle ${dt(a)} alle ${dt(b)}` : 'dall’ustione';
@@ -5530,7 +5541,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                 ${lowAlert ? `<div class="rounded-lg border-2 border-rose-400 bg-rose-50 text-rose-900 px-2.5 py-1.5 text-[11px] leading-snug"><b>⚠ Attenzione:</b> con una superficie ustionata del ${pct}% (inferiore al ${r.ped ? '15% nel bambino' : '20% nell’adulto'}) la formula potrebbe sottostimare la fluidoterapia.</div>` : ''}
                 ${okT ? '' : note('Inserisci data e ora dell’ustione per vedere gli orari di ogni fase.', 'bg-amber-50 border-amber-300 text-amber-900')}
                 ${card('Prime 8 ore', `${f(r.V8)} mL`, W(T, t8), `${f(r.r1)} mL/h`, okT ? `→ alle <b>${hm(t8)}</b> cambia velocità a ${f(r.r2)} mL/h` : '', 'bg-orange-50 border-orange-400 text-orange-900')}
-                ${card('Successive 16 ore', `${f(r.V16)} mL`, W(t8, t24), `${f(r.r2)} mL/h`, okT ? `→ alle <b>${hm(t24)}</b> stop Ringer lattato` : '', 'bg-amber-50 border-amber-400 text-amber-900')}
+                ${card('Successive 16 ore', `${f(r.V16)} mL`, W(t8, t24), `${f(r.r2)} mL/h`, okT ? `fino alle <b>${hm(t24)}</b>` : '', 'bg-amber-50 border-amber-400 text-amber-900')}
                 ${r.ped ? card('Glucosata 5% in parallelo', `ore 0–24 · ${f(r.hs * 24)} mL`, W(T, t24), `${f(r.hs)} mL/h`, 'Holliday-Segar: previene l’ipoglicemia da esaurimento del glicogeno', 'bg-teal-50 border-teal-600 text-teal-900 ring-2 ring-teal-300') : second}
                 ${adj ? note(adj, 'bg-amber-50 border-amber-300 text-amber-900') : ''}
                 ${warn.map(x => note(x, 'bg-rose-50 border-rose-200 text-rose-900')).join('')}
