@@ -5490,6 +5490,7 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             const r = burnCompute(w, pct, burn.ped, pre);
             const f = (n) => Math.round(n).toLocaleString('it-IT');
             const fmt = (d) => d.toLocaleString('it-IT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+            const dt = (d) => `<b>${d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</b> del <b>${d.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: '2-digit' }).replace(',', '')}</b>`;
             const T = burn.t ? new Date(burn.t) : null;
             const okT = T && !isNaN(T);
             const at = (h) => new Date(+T + h * 36e5);
@@ -5516,13 +5517,13 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             const volC = r.V / 2, volP = 0.5 * w * pct;
             const second = `<div class="rounded-lg border-2 px-2.5 py-1.5 bg-sky-50 border-sky-400 text-sky-900">
                 <div class="text-[11px] font-extrabold uppercase tracking-wide leading-tight">Seconde 24 ore <span class="font-bold normal-case opacity-75">· ore 24–48</span></div>
-                <div class="text-[11px] mt-0.5 leading-snug">${okT ? `Dalle <b>${fmt(t24)}</b> alle <b>${fmt(t48)}</b>` : 'dall’ustione'}</div>
+                <div class="text-[11px] mt-0.5 leading-snug">${okT ? `Dalle ${dt(t24)} alle ${dt(t48)}` : 'dall’ustione'}</div>
                 <div class="grid grid-cols-2 gap-2 mt-1">
                     <div><div class="text-[10px] font-bold leading-tight">Cristalloidi · metà delle prime 24 h</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volC / 24)} mL/h</div><div class="text-[11px]">${f(volC)} mL</div></div>
                     <div><div class="text-[10px] font-bold leading-tight">PPS 5% · 0,5 mL/kg/% S.C.</div><div class="text-xl font-extrabold leading-none mt-0.5">${f(volP / 24)} mL/h</div><div class="text-[11px]">${f(volP)} mL</div></div>
                 </div></div>`;
             const lowAlert = r.ped ? pct < 15 : pct < 20;
-            const W = (a, b) => okT ? `Dalle <b>${fmt(a)}</b> alle <b>${fmt(b)}</b>` : 'dall’ustione';
+            const W = (a, b) => okT ? `Dalle ${dt(a)} alle ${dt(b)}` : 'dall’ustione';
 
             out.innerHTML = `<div class="space-y-2">
                 <div class="text-[11px] text-slate-700 text-center">Ringer lattato nelle 24 h (${r.ped ? 'pediatrico' : 'adulto'}): <b>${f(r.V)} mL</b> = ${mlkg} mL × ${w} kg × ${pct}% S.C.</div>
