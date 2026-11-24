@@ -270,6 +270,10 @@
                             <i class="fa-solid fa-key text-amber-600"></i>
                             <span>Chiave AI</span>
                         </button>
+                        <button type="button" id="shiftAccountBtnEmpty" onclick="openShiftAccountModal()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-lg font-bold text-xs border border-slate-200 flex items-center justify-center gap-1">
+                            <i class="fa-brands fa-google text-sky-600"></i>
+                            <span>Accedi con Google</span>
+                        </button>
                         <button type="button" onclick="openShiftLegendModal()" class="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-2 px-2.5 rounded-lg font-bold text-xs border border-slate-200 flex items-center justify-center gap-1">
                             <i class="fa-solid fa-circle-info text-hospital-700"></i>
                             <span>Sigle</span>
@@ -280,7 +284,7 @@
                 <div id="shiftScanProgressEmpty" class="hidden bg-sky-50 border border-sky-200 rounded-lg p-2 flex items-center justify-center gap-2 text-left">
                     <div class="w-4 h-4 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
                     <div>
-                        <div class="text-[11px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
+                        <div id="shiftScanProgressTextEmpty" class="text-[11px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
                         <div class="text-[9px] text-sky-700">Estrazione tabella medici, turni e correzioni a penna</div>
                     </div>
                 </div>
@@ -324,6 +328,9 @@
                             <i class="fa-solid fa-key text-amber-600"></i>
                             <span>Key</span>
                         </button>
+                        <button type="button" id="shiftAccountBtn" onclick="openShiftAccountModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition py-1 px-1.5 rounded-md font-bold text-[10px] border border-slate-200 flex items-center justify-center shrink-0" title="Accedi con Google per salvare i turni sul tuo account">
+                            <i class="fa-brands fa-google text-sky-600"></i>
+                        </button>
                         <button type="button" onclick="openShiftLegendModal()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 transition text-slate-700 py-1 px-1.5 rounded-md font-bold text-[10px] border border-slate-200 flex items-center justify-center gap-1 shrink-0" title="Legenda sigle turni">
                             <i class="fa-solid fa-circle-info text-hospital-700"></i>
                             <span>Sigle</span>
@@ -340,7 +347,7 @@
                     <div id="shiftScanProgress" class="hidden bg-sky-50 border border-sky-200 rounded-md p-1 flex items-center gap-1.5">
                         <div class="w-3.5 h-3.5 rounded-full border-2 border-hospital-700 border-t-transparent animate-spin shrink-0"></div>
                         <div class="min-w-0 flex-1">
-                            <div class="text-[10px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
+                            <div id="shiftScanProgressText" class="text-[10px] font-extrabold text-hospital-900">Analisi foto turni con AI in corso...</div>
                         </div>
                     </div>
                 </div>
@@ -412,6 +419,10 @@
                         <span class="inline-flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>P</span>
                         <span class="inline-flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-indigo-700 inline-block"></span>N</span>
                         <span class="inline-flex items-center gap-0.5"><span class="w-2 h-2 rounded-full border border-red-500 border-dashed inline-block"></span>Cambio / Penna</span>
+                    </div>
+                    <div id="shiftFlagNote" class="hidden text-[9px] text-amber-700 font-semibold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>
+                        <span><span id="shiftFlagCount">0</span> celle da ricontrollare con la foto (la lettura AI era incerta)</span>
                     </div>
                 </div>
 
@@ -937,6 +948,80 @@
         </div>
     </div>
 
+    <!-- MODAL: ACCOUNT GOOGLE / SINCRONIZZAZIONE TURNI -->
+    <div id="shiftAccountModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-sky-300"></i>
+                    <h3 class="font-bold text-sm">Turni sul tuo account</h3>
+                </div>
+                <button type="button" onclick="closeShiftAccountModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3">
+                <div id="shiftAccountOut" class="space-y-3">
+                    <p class="text-xs text-slate-700 leading-snug">Accedi con Google per salvare i turni mensili sul tuo account e ritrovarli su qualsiasi dispositivo (le foto originali no: restano sul dispositivo). I turni sono <strong>privati</strong> (solo tu li vedi); la rubrica e i protocolli restano condivisi come sempre.</p>
+                    <button type="button" onclick="shiftCloudSignIn()" class="w-full bg-white hover:bg-slate-50 active:scale-[0.99] transition border border-slate-300 text-slate-800 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-xs">
+                        <i class="fa-brands fa-google text-sky-600"></i><span>Accedi con Google</span>
+                    </button>
+                    <div id="shiftAccountError" class="hidden text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 leading-snug"></div>
+                </div>
+                <div id="shiftAccountIn" class="hidden space-y-3">
+                    <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                        <img id="shiftAccountAvatar" alt="" referrerpolicy="no-referrer" class="hidden w-9 h-9 rounded-full">
+                        <div class="min-w-0">
+                            <div id="shiftAccountEmail" class="text-xs font-extrabold text-slate-900 truncate"></div>
+                            <div id="shiftAccountStatus" class="text-[11px] text-slate-600"></div>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-snug">Le modifiche ai turni (nuovi fogli, correzioni, eliminazioni) vengono salvate automaticamente e compaiono sugli altri dispositivi dove hai fatto lo stesso accesso. Le <strong>foto originali</strong> restano solo sul dispositivo in cui le hai caricate.</p>
+                    <div class="flex justify-between gap-2">
+                        <button type="button" onclick="shiftCloudSignOut()" class="px-3.5 py-2 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl">Esci</button>
+                        <button type="button" onclick="shiftCloudSyncNow()" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-xl shadow"><i class="fa-solid fa-rotate mr-1"></i>Sincronizza ora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RADDRIZZA E CONTROLLA FOTO TURNI -->
+    <div id="shiftStraightenModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full sm:max-w-3xl rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe flex flex-col" style="max-height:96dvh">
+            <div class="bg-hospital-900 text-white px-4 py-3 flex items-center justify-between shrink-0">
+                <div>
+                    <h3 class="font-bold text-sm">Raddrizza e controlla la foto</h3>
+                    <p class="text-[10px] text-sky-200">Le linee rosse devono seguire la griglia del foglio</p>
+                </div>
+                <button type="button" onclick="closeShiftStraightenModal()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-3 space-y-2 overflow-y-auto">
+                <div class="rounded-lg border border-slate-300 bg-slate-100 overflow-hidden">
+                    <canvas id="shiftStraightenCanvas" class="w-full h-auto block"></canvas>
+                </div>
+                <div id="shiftGridStatus" class="text-[11px] font-semibold text-slate-700 leading-snug"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-extrabold uppercase text-slate-500 shrink-0">Inclinazione</span>
+                    <input type="range" id="shiftAngleSlider" min="-15" max="15" step="0.1" value="0" oninput="onShiftAngleInput(this.value)" class="flex-1">
+                    <span id="shiftAngleLabel" class="w-14 text-right font-mono text-xs font-bold text-slate-800">0.0°</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" onclick="autoShiftAngle()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs active:scale-95"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Auto</button>
+                    <button type="button" onclick="rotateShiftQuarter(-1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs active:scale-95"><i class="fa-solid fa-rotate-left mr-1"></i>90°</button>
+                    <button type="button" onclick="rotateShiftQuarter(1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs active:scale-95"><i class="fa-solid fa-rotate-right mr-1"></i>90°</button>
+                    <button type="button" onclick="toggleShiftGridOverlay()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs active:scale-95"><i class="fa-solid fa-table-cells mr-1"></i>Griglia</button>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 px-3 py-2 border-t border-slate-100 shrink-0">
+                <button type="button" onclick="closeShiftStraightenModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-xl">Annulla</button>
+                <button type="button" onclick="confirmShiftStraighten()" class="px-4 py-2 text-xs font-bold bg-hospital-700 text-white rounded-xl shadow"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Analizza con AI</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: MODIFICA TURNO GIORNALIERO & CAMBIO TURNO FLESSIBILE -->
     <div id="editShiftModal" class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe">
@@ -999,13 +1084,13 @@
                     </div>
                     <div class="flex flex-wrap gap-1.5">
                         <button type="button" onclick="applyQuickShiftChip('M')" class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-900 font-bold text-xs active:scale-95">M</button>
-                        <button type="button" onclick="applyQuickShiftChip('M&#39;')" class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-900 font-bold text-xs active:scale-95">M'</button>
+                        <button type="button" onclick="applyQuickShiftChip(&quot;M'&quot;)" class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-900 font-bold text-xs active:scale-95">M'</button>
                         <button type="button" onclick="applyQuickShiftChip('P')" class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold text-xs active:scale-95">P</button>
-                        <button type="button" onclick="applyQuickShiftChip('P&#39;')" class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold text-xs active:scale-95">P'</button>
+                        <button type="button" onclick="applyQuickShiftChip(&quot;P'&quot;)" class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold text-xs active:scale-95">P'</button>
                         <button type="button" onclick="applyQuickShiftChip('N')" class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-900 font-bold text-xs active:scale-95">N</button>
-                        <button type="button" onclick="applyQuickShiftChip('N&#39;')" class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-900 font-bold text-xs active:scale-95">N'</button>
+                        <button type="button" onclick="applyQuickShiftChip(&quot;N'&quot;)" class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-900 font-bold text-xs active:scale-95">N'</button>
                         <button type="button" onclick="applyQuickShiftChip('MP')" class="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-900 font-bold text-xs active:scale-95">MP</button>
-                        <button type="button" onclick="applyQuickShiftChip('MP&#39;')" class="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-900 font-bold text-xs active:scale-95">MP'</button>
+                        <button type="button" onclick="applyQuickShiftChip(&quot;MP'&quot;)" class="px-2.5 py-1 rounded-lg bg-teal-100 text-teal-900 font-bold text-xs active:scale-95">MP'</button>
                         <button type="button" onclick="applyQuickShiftChip('CS')" class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 font-bold text-xs active:scale-95">CS</button>
                         <button type="button" onclick="applyQuickShiftChip('F')" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs active:scale-95">F</button>
                         <button type="button" onclick="applyQuickShiftChip('104')" class="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-800 font-bold text-xs active:scale-95">104</button>
@@ -1328,7 +1413,7 @@
     <!-- Integrazione Firebase Cloud Firestore per Rubrica Condivisa in Tempo Reale -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const customCannizzaroFirebaseConfig = {
@@ -1469,13 +1554,17 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try { if (auth.authStateReady) await auth.authStateReady(); } catch (e) {}
+                if (auth.currentUser) {
+                    currentUser = auth.currentUser;   // sessione già presente (es. account Google): non la sostituiamo
+                } else if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     const cred = await signInWithCustomToken(auth, __initial_auth_token);
                     currentUser = cred.user;
                 } else {
                     const cred = await signInAnonymously(auth);
                     currentUser = cred.user;
                 }
+                attachShiftAuthListener();
 
                 if (!currentUser) return;
 
@@ -1710,6 +1799,84 @@
             }
         }
 
+        // ---- Turni privati per account Google ----
+        let shiftsUnsub = null;
+        let authListenerAttached = false;
+
+        function currentGoogleUserInfo() {
+            const u = auth && auth.currentUser;
+            return (u && !u.isAnonymous) ? { uid: u.uid, email: u.email, name: u.displayName, photo: u.photoURL } : null;
+        }
+
+        function stopShiftsSync() {
+            if (shiftsUnsub) { try { shiftsUnsub(); } catch (e) {} shiftsUnsub = null; }
+        }
+
+        function startShiftsSync(user) {
+            stopShiftsSync();
+            const col = collection(db, 'artifacts', appId, 'users', user.uid, 'shifts');
+            shiftsUnsub = onSnapshot(col, (snap) => {
+                const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                window.dispatchEvent(new CustomEvent('cloud-shifts-snapshot', { detail: { list, fromCache: snap.metadata.fromCache } }));
+            }, (err) => {
+                window.dispatchEvent(new CustomEvent('cloud-shifts-error', { detail: { code: err && err.code, message: err && err.message } }));
+            });
+        }
+
+        function attachShiftAuthListener() {
+            if (authListenerAttached || !auth) return;
+            authListenerAttached = true;
+            onAuthStateChanged(auth, (user) => {
+                if (user) currentUser = user;
+                const info = currentGoogleUserInfo();
+                if (info) startShiftsSync(user); else stopShiftsSync();
+                window.dispatchEvent(new CustomEvent('cloud-auth-changed', { detail: info }));
+            });
+            getRedirectResult(auth).catch((err) => {
+                window.dispatchEvent(new CustomEvent('cloud-shifts-error', { detail: { code: err && err.code, message: err && err.message } }));
+            });
+        }
+
+        function requireShiftUser() {
+            const u = auth && auth.currentUser;
+            if (!db || !u || u.isAnonymous) throw new Error('Accedi con Google per sincronizzare i turni');
+            return u;
+        }
+
+        window.cloudShiftsAPI = {
+            getUser: currentGoogleUserInfo,
+            signIn: async () => {
+                if (!auth) throw new Error('Servizio cloud non ancora pronto, riprova tra qualche secondo');
+                const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (e) {
+                    if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) {
+                        await signInWithRedirect(auth, provider);
+                        return;
+                    }
+                    throw e;
+                }
+            },
+            signOut: async () => {
+                stopShiftsSync();
+                await signOut(auth);
+                try { await signInAnonymously(auth); } catch (e) {}   // la rubrica condivisa continua a funzionare
+                window.dispatchEvent(new CustomEvent('cloud-auth-changed', { detail: null }));
+            },
+            saveMonth: async (monthId, payload) => {
+                const u = requireShiftUser();
+                await setDoc(doc(db, 'artifacts', appId, 'users', u.uid, 'shifts', monthId),
+                    { data: payload.data, updatedAt: payload.updatedAt, deleted: false }, { merge: true });
+            },
+            deleteMonth: async (monthId, ts) => {
+                const u = requireShiftUser();
+                await setDoc(doc(db, 'artifacts', appId, 'users', u.uid, 'shifts', monthId),
+                    { deleted: true, data: '', updatedAt: ts }, { merge: true });
+            }
+        };
+
         window.retryCloudContactsSync = initCloudContactsSync;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1888,7 +2055,7 @@
          * - "MP[O]" -> turno doppio MP con P tolta (attivo = M)
          */
         function parseShiftCell(rawCell) {
-            const val = (rawCell || '/').trim();
+            const val = normalizeApostrophes((rawCell || '/').trim());
 
             // 1. Formato esplicito sostituzione: "VECCHIO[O]->NUOVO" (es. "N[O]->M", "P[O]->/", "MP[O]->M")
             const swapMatch = val.match(/^(.+?)\[O\]->(.+)$/i);
@@ -2024,6 +2191,209 @@
             return `bg-slate-200 text-slate-900 ${borderOverride || 'border border-slate-300'}`;
         }
 
+        // ==========================================
+        // SINCRONIZZAZIONE CLOUD DEI TURNI (ACCOUNT GOOGLE)
+        // I turni stanno in un'area PRIVATA dell'account: artifacts/{appId}/users/{uid}/shifts
+        // ==========================================
+        const SHIFT_TOMB_KEY = 'cannizzaro_shift_tombstones_v1';
+        let shiftTombstones = (() => { try { return JSON.parse(localStorage.getItem(SHIFT_TOMB_KEY) || '{}') || {}; } catch (e) { return {}; } })();
+        let shiftCloudUser = null;                       // null = non collegato
+        let shiftCloudState = { status: 'off', msg: '', last: 0 };
+        const shiftPushTimers = {};
+
+        function persistShiftTombstones() {
+            try { localStorage.setItem(SHIFT_TOMB_KEY, JSON.stringify(shiftTombstones)); } catch (e) {}
+        }
+
+        function shiftCloudHint(e) {
+            const c = (e?.code || e?.message || '').toLowerCase();
+            if (c.includes('unauthorized-domain')) return `Il dominio "${location.hostname || 'file locale'}" non è autorizzato: su Firebase vai in Authentication → Settings → Authorized domains e aggiungilo.`;
+            if (c.includes('operation-not-allowed')) return 'L\'accesso con Google non è attivo: su Firebase vai in Authentication → Sign-in method e abilita "Google".';
+            if (c.includes('permission-denied')) return 'Le regole di Firestore non permettono di salvare i turni: aggiungi la regola per users/{uid} (vedi istruzioni).';
+            if (c.includes('popup-closed') || c.includes('cancelled-popup')) return 'Accesso annullato.';
+            if (c.includes('not-supported-in-this-environment')) return 'Questo modo di aprire l\'app non supporta l\'accesso Google: aprila da un indirizzo https.';
+            if (c.includes('network') || c.includes('unavailable') || c.includes('offline')) return 'Nessuna connessione ai server Google: riprova quando sei online.';
+            return e?.message || 'Errore sconosciuto';
+        }
+
+        function setShiftCloudState(status, msg) {
+            shiftCloudState.status = status;
+            shiftCloudState.msg = msg || '';
+            if (status === 'ok') shiftCloudState.last = Date.now();
+            renderShiftAccountUI();
+        }
+
+        function renderShiftAccountUI() {
+            const u = shiftCloudUser;
+            const st = shiftCloudState.status;
+            const iconCls = !u ? 'fa-brands fa-google text-sky-600'
+                : st === 'error' ? 'fa-solid fa-cloud-bolt text-amber-600'
+                : st === 'syncing' ? 'fa-solid fa-cloud-arrow-up text-sky-600 animate-pulse'
+                : 'fa-solid fa-cloud-arrow-up text-emerald-600';
+            const title = !u ? 'Accedi con Google per salvare i turni sul tuo account' : `Sincronizzazione turni: ${u.email || u.name || 'account'}`;
+            const small = document.getElementById('shiftAccountBtn');
+            if (small) { small.title = title; small.innerHTML = `<i class="${iconCls}"></i>`; }
+            const big = document.getElementById('shiftAccountBtnEmpty');
+            if (big) big.innerHTML = u
+                ? `<i class="${iconCls}"></i><span>${(u.name || u.email || 'Account').split(' ')[0]}</span>`
+                : `<i class="${iconCls}"></i><span>Accedi con Google</span>`;
+
+            // contenuto del modal
+            const out = document.getElementById('shiftAccountOut');
+            const inn = document.getElementById('shiftAccountIn');
+            if (out && inn) {
+                out.classList.toggle('hidden', !!u);
+                inn.classList.toggle('hidden', !u);
+            }
+            if (u) {
+                const em = document.getElementById('shiftAccountEmail');
+                if (em) em.textContent = u.email || u.name || '';
+                const img = document.getElementById('shiftAccountAvatar');
+                if (img) { if (u.photo) { img.src = u.photo; img.classList.remove('hidden'); } else img.classList.add('hidden'); }
+                const stEl = document.getElementById('shiftAccountStatus');
+                if (stEl) {
+                    const when = shiftCloudState.last ? new Date(shiftCloudState.last).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '';
+                    stEl.innerHTML = st === 'syncing' ? '<i class="fa-solid fa-rotate fa-spin text-sky-600 mr-1"></i>Sincronizzazione in corso...'
+                        : st === 'error' ? `<i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i>${shiftCloudState.msg || 'Errore di sincronizzazione'}`
+                        : `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Turni sincronizzati${when ? ' alle ' + when : ''}`;
+                }
+            }
+            const err = document.getElementById('shiftAccountError');
+            if (err) {
+                const msg = !u ? shiftCloudState.msg : '';
+                err.textContent = msg;
+                err.classList.toggle('hidden', !msg);
+            }
+        }
+
+        function openShiftAccountModal() {
+            renderShiftAccountUI();
+            document.getElementById('shiftAccountModal').classList.remove('hidden');
+        }
+        function closeShiftAccountModal() {
+            document.getElementById('shiftAccountModal').classList.add('hidden');
+        }
+
+        async function shiftCloudSignIn() {
+            if (!window.cloudShiftsAPI) { setShiftCloudState('off', 'Servizio cloud non disponibile (controlla la connessione e riapri l\'app).'); return; }
+            setShiftCloudState('syncing', '');
+            try {
+                await window.cloudShiftsAPI.signIn();
+                // il resto lo fa l'evento cloud-auth-changed
+            } catch (e) {
+                setShiftCloudState('off', shiftCloudHint(e));
+            }
+        }
+
+        async function shiftCloudSignOut() {
+            try { await window.cloudShiftsAPI.signOut(); } catch (e) {}
+            closeShiftAccountModal();
+            showToast('Disconnesso. I turni restano su questo dispositivo.');
+        }
+
+        async function shiftCloudSyncNow() {
+            if (!shiftCloudUser) return;
+            setShiftCloudState('syncing', '');
+            try {
+                for (const id of Object.keys(shiftsDatabase)) await pushShiftMonth(id);
+                setShiftCloudState('ok', '');
+                showToast('Turni sincronizzati');
+            } catch (e) { setShiftCloudState('error', shiftCloudHint(e)); }
+        }
+
+        function touchShiftMonth(monthId) {
+            const m = shiftsDatabase[monthId];
+            if (!m) return;
+            m.updatedAt = Date.now();
+            delete shiftTombstones[monthId];
+            persistShiftTombstones();
+            persistShiftsDatabase();
+            scheduleShiftCloudPush(monthId);
+        }
+
+        function scheduleShiftCloudPush(monthId) {
+            if (!shiftCloudUser) return;
+            clearTimeout(shiftPushTimers[monthId]);
+            shiftPushTimers[monthId] = setTimeout(async () => {
+                try { await pushShiftMonth(monthId); setShiftCloudState('ok', ''); }
+                catch (e) { setShiftCloudState('error', shiftCloudHint(e)); }
+            }, 700);
+        }
+
+        async function pushShiftMonth(monthId) {
+            if (!shiftCloudUser || !window.cloudShiftsAPI) return;
+            const m = shiftsDatabase[monthId];
+            if (!m) return;
+            if (!m.updatedAt) { m.updatedAt = Date.now(); persistShiftsDatabase(); }
+            // Le foto restano solo sul dispositivo: nel cloud vanno solo i turni (pochi KB).
+            await window.cloudShiftsAPI.saveMonth(monthId, { data: JSON.stringify(m), updatedAt: m.updatedAt });
+        }
+
+        async function pushShiftTombstone(monthId, ts) {
+            if (!shiftCloudUser || !window.cloudShiftsAPI) return;
+            try { await window.cloudShiftsAPI.deleteMonth(monthId, ts); } catch (e) { setShiftCloudState('error', shiftCloudHint(e)); }
+        }
+
+        // Unione cloud <-> locale: vince per ogni mese la versione con updatedAt più recente.
+        async function applyCloudShiftSnapshot(list, fromCache) {
+            let changedLocal = false;
+            const cloudIds = new Set();
+            const toPush = [];
+            for (const c of list) {
+                cloudIds.add(c.id);
+                const local = shiftsDatabase[c.id];
+                const localTs = local ? (local.updatedAt || 0) : 0;
+                const ts = c.updatedAt || 0;
+                const tomb = shiftTombstones[c.id] || 0;
+
+                if (c.deleted) {
+                    if (local && localTs > ts) toPush.push(c.id);                 // ricreato dopo la cancellazione
+                    else if (local) { delete shiftsDatabase[c.id]; delete shiftPhotosMap[c.id]; changedLocal = true; }
+                    continue;
+                }
+                if (tomb > ts) {                                                   // cancellato qui mentre il cloud non lo sapeva
+                    if (!fromCache) pushShiftTombstone(c.id, tomb);
+                    continue;
+                }
+                if (!local || ts > localTs) {
+                    try {
+                        const obj = JSON.parse(c.data);
+                        obj.updatedAt = ts;
+                        shiftsDatabase[c.id] = obj;
+                        changedLocal = true;
+                    } catch (e) {}
+                } else if (localTs > ts) {
+                    toPush.push(c.id);
+                }
+            }
+            if (!fromCache) {
+                Object.keys(shiftsDatabase).forEach(id => { if (!cloudIds.has(id) && !toPush.includes(id)) toPush.push(id); });
+            }
+            if (changedLocal) {
+                persistShiftsDatabase();
+                persistShiftPhotos();
+                if (!shiftsDatabase[selectedShiftMonth]) selectedShiftMonth = '';
+                initShiftsSection();
+            }
+            if (!fromCache) {
+                try {
+                    for (const id of toPush) await pushShiftMonth(id);
+                    setShiftCloudState('ok', '');
+                } catch (e) { setShiftCloudState('error', shiftCloudHint(e)); }
+            }
+        }
+
+        window.addEventListener('cloud-auth-changed', (e) => {
+            shiftCloudUser = e.detail || null;
+            if (shiftCloudUser) setShiftCloudState('syncing', '');
+            else setShiftCloudState('off', '');
+            renderShiftAccountUI();
+            if (shiftCloudUser) { showToast(`Accesso eseguito: ${shiftCloudUser.email || shiftCloudUser.name || 'account'}`); closeShiftAccountModal(); }
+        });
+        window.addEventListener('cloud-shifts-snapshot', (e) => applyCloudShiftSnapshot(e.detail.list, e.detail.fromCache));
+        window.addEventListener('cloud-shifts-error', (e) => setShiftCloudState('error', shiftCloudHint(e.detail)));
+        window.addEventListener('DOMContentLoaded', renderShiftAccountUI);
+
         function initShiftsSection() {
             updateApiKeyButtonIndicator();
             const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
@@ -2124,10 +2494,16 @@
         function askDeleteCurrentShiftMonth() {
             const monthObj = shiftsDatabase[selectedShiftMonth];
             if (!monthObj) return;
-            delete shiftsDatabase[selectedShiftMonth];
-            delete shiftPhotosMap[selectedShiftMonth];
+            if (!confirm(`Eliminare i turni di ${monthObj.label}?` + (shiftCloudUser ? ' Verranno rimossi anche dagli altri dispositivi.' : ''))) return;
+            const delId = selectedShiftMonth;
+            const delTs = Date.now();
+            delete shiftsDatabase[delId];
+            delete shiftPhotosMap[delId];
+            shiftTombstones[delId] = delTs;
+            persistShiftTombstones();
             persistShiftsDatabase();
             persistShiftPhotos();
+            pushShiftTombstone(delId, delTs);
             selectedShiftMonth = "";
             initShiftsSection();
             showToast(`Foglio turni di ${monthObj.label} rimosso`);
@@ -2386,6 +2762,7 @@
             const monthObj = shiftsDatabase[selectedShiftMonth];
             if (!monthObj) return;
             const rawArr = monthObj.doctors[selectedShiftDoctor] || [];
+            const flaggedDays = new Set((monthObj.flags && monthObj.flags[selectedShiftDoctor]) || []);
             const selectedDay = parseInt(document.getElementById('shiftQueryDayInput').value) || 1;
 
             document.getElementById('calendarMonthHeader').textContent = monthObj.label;
@@ -2442,7 +2819,8 @@
                 const isWeekend = weekdayIdx === 5 || weekdayIdx === 6;
 
                 cellsHtml += `
-                    <button type="button" onclick="onCalendarDayTap(${d})" class="h-11 rounded-lg p-0.5 flex flex-col items-center justify-between transition active:scale-95 ${isSelected ? 'ring-2 ring-hospital-700 bg-sky-50/90 shadow-xs' : 'bg-slate-50/70 hover:bg-slate-100'} border border-slate-200/80">
+                    <button type="button" onclick="onCalendarDayTap(${d})" class="relative h-11 rounded-lg p-0.5 flex flex-col items-center justify-between transition active:scale-95 ${isSelected ? 'ring-2 ring-hospital-700 bg-sky-50/90 shadow-xs' : 'bg-slate-50/70 hover:bg-slate-100'} border border-slate-200/80">
+                        ${flaggedDays.has(d) ? '<span class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-amber-500"></span>' : ''}
                         <span class="text-[9px] font-extrabold leading-none ${isWeekend ? 'text-red-600' : 'text-slate-600'}">${d}</span>
                         <span class="w-full py-0.5 rounded-md font-mono font-extrabold text-[10px] leading-tight text-center truncate ${badgeStyle}">
                             ${renderShiftCellHtml(cell)}
@@ -2452,6 +2830,12 @@
             }
 
             grid.innerHTML = cellsHtml;
+            const flagNote = document.getElementById('shiftFlagNote');
+            if (flagNote) {
+                flagNote.classList.toggle('hidden', flaggedDays.size === 0);
+                const cnt = document.getElementById('shiftFlagCount');
+                if (cnt) cnt.textContent = flaggedDays.size;
+            }
             renderShiftQueryResult();
         }
 
@@ -2531,10 +2915,10 @@
 
         function buildFormattedShiftFromModal() {
             if (currentEditMode === 'standard') {
-                return (document.getElementById('editShiftCodeInput').value || '/').trim() || '/';
+                return normalizeApostrophes(document.getElementById('editShiftCodeInput').value || '/').trim() || '/';
             }
-            const removed = (document.getElementById('editSwapRemovedInput').value || '').trim();
-            const added = (document.getElementById('editSwapAddedInput').value || '/').trim() || '/';
+            const removed = normalizeApostrophes(document.getElementById('editSwapRemovedInput').value || '').trim();
+            const added = normalizeApostrophes(document.getElementById('editSwapAddedInput').value || '/').trim() || '/';
 
             if (!removed || removed === '/') {
                 return added;
@@ -2555,18 +2939,22 @@
 
         function saveEditedShift() {
             if (!editingShiftDay) return;
+            const day = editingShiftDay;
             const monthObj = shiftsDatabase[selectedShiftMonth];
             const formatted = buildFormattedShiftFromModal();
 
             if (!monthObj.doctors[selectedShiftDoctor]) {
                 monthObj.doctors[selectedShiftDoctor] = Array(monthObj.daysCount).fill('/');
             }
-            monthObj.doctors[selectedShiftDoctor][editingShiftDay - 1] = formatted;
+            monthObj.doctors[selectedShiftDoctor][day - 1] = formatted;
+            if (monthObj.flags && monthObj.flags[selectedShiftDoctor]) {
+                monthObj.flags[selectedShiftDoctor] = monthObj.flags[selectedShiftDoctor].filter(d => d !== day);
+            }
 
-            persistShiftsDatabase();
+            touchShiftMonth(selectedShiftMonth);
             closeEditShiftModal();
             renderShiftCalendarAndStats();
-            showToast(`Turno del giorno ${editingShiftDay} aggiornato`);
+            showToast(`Turno del giorno ${day} aggiornato`);
         }
 
         function openShiftLegendModal() {
@@ -2598,144 +2986,645 @@
             }
         }
 
+        // ==========================================
+        // LETTURA FOTO TURNI: RADDRIZZAMENTO + GRIGLIA + LETTURA A FASCE DI RIGHE
+        // ==========================================
+        const GEMINI_SHIFT_MODEL = 'gemini-3-flash-preview';
+        const SHIFT_BAND_ROWS = 4;      // righe di medici per ogni richiesta all'AI
+        const SHIFT_PREVIEW_MAX = 1400; // risoluzione anteprima / rilevamento griglia
+        const SHIFT_FULL_MAX = 3200;    // risoluzione massima per i ritagli inviati all'AI
+        const MONTHS_IT = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+        const VALID_SHIFT_BASES = new Set(['/', 'M', 'P', 'N', 'MP', 'F', 'CS', 'H', '104', 'RB', '118', 'FS', 'RF', 'RC']);
+
+        let shiftScan = null; // stato dell'anteprima: { src, srcPrev, quarter, angle, rot, grid, showGrid, timer }
+
+        function normalizeApostrophes(s) {
+            return String(s == null ? '' : s).replace(/[’‘´`′ʼ]/g, "'");
+        }
+
+        function normalizeShiftToken(t) {
+            let s = normalizeApostrophes(t == null ? '/' : t).trim().replace(/\s+/g, '');
+            s = s.replace(/\[o\]/gi, '[O]').replace(/->|→|=>/g, '->');
+            if (s === '' || s === '-' || s === '—' || s === '–' || s === '.') return '/';
+            return s.toUpperCase();
+        }
+
+        function isValidShiftBase(code) {
+            const c = String(code || '').replace(/'/g, '').toUpperCase();
+            return VALID_SHIFT_BASES.has(c) || c === '-';
+        }
+
+        function isValidShiftCell(raw) {
+            const p = parseShiftCell(raw);
+            const codes = [p.activeCode];
+            if (p.removedCode) codes.push(p.removedCode);
+            return codes.every(isValidShiftBase);
+        }
+
+        function setScanProgress(msg) {
+            ['shiftScanProgressText', 'shiftScanProgressTextEmpty'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = msg;
+            });
+        }
+
+        function showScanProgress(show) {
+            ['shiftScanProgress', 'shiftScanProgressEmpty'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('hidden', !show);
+            });
+        }
+
+        // ---------- Canvas helpers ----------
+        function loadFileToCanvas(file, maxDim) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    const k = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+                    const w = Math.max(1, Math.round(img.naturalWidth * k));
+                    const h = Math.max(1, Math.round(img.naturalHeight * k));
+                    const c = document.createElement('canvas');
+                    c.width = w; c.height = h;
+                    c.getContext('2d').drawImage(img, 0, 0, w, h);
+                    URL.revokeObjectURL(url);
+                    resolve(c);
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Immagine non leggibile')); };
+                img.src = url;
+            });
+        }
+
+        // Ruota di "deg" gradi (positivo = senso orario), espandendo la tela e riempiendo di bianco.
+        // maxDim limita il lato maggiore del risultato.
+        function rotateCanvas(src, deg, maxDim) {
+            const rad = deg * Math.PI / 180;
+            const cos = Math.abs(Math.cos(rad)), sin = Math.abs(Math.sin(rad));
+            const nw0 = src.width * cos + src.height * sin;
+            const nh0 = src.width * sin + src.height * cos;
+            const k = maxDim ? Math.min(1, maxDim / Math.max(nw0, nh0)) : 1;
+            const nw = Math.max(1, Math.round(nw0 * k));
+            const nh = Math.max(1, Math.round(nh0 * k));
+            const c = document.createElement('canvas');
+            c.width = nw; c.height = nh;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, nw, nh);
+            ctx.translate(nw / 2, nh / 2);
+            ctx.rotate(rad);
+            ctx.scale(k, k);
+            ctx.drawImage(src, -src.width / 2, -src.height / 2);
+            return c;
+        }
+
+        function canvasToJpeg(canvas, maxDim, quality) {
+            const k = Math.min(1, maxDim / Math.max(canvas.width, canvas.height));
+            if (k >= 1) return canvas.toDataURL('image/jpeg', quality);
+            const c = document.createElement('canvas');
+            c.width = Math.round(canvas.width * k);
+            c.height = Math.round(canvas.height * k);
+            c.getContext('2d').drawImage(canvas, 0, 0, c.width, c.height);
+            return c.toDataURL('image/jpeg', quality);
+        }
+
+        // Mappa "inchiostro" (linee e testo scuri) con soglia adattiva locale: regge ombre e luce non uniforme.
+        function getInkMap(canvas, targetW) {
+            const k = Math.min(1, targetW / Math.max(canvas.width, canvas.height));
+            const w = Math.max(1, Math.round(canvas.width * k));
+            const h = Math.max(1, Math.round(canvas.height * k));
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            const ctx = c.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(canvas, 0, 0, w, h);
+            const d = ctx.getImageData(0, 0, w, h).data;
+            const gray = new Uint8Array(w * h);
+            for (let i = 0, j = 0; i < d.length; i += 4, j++) gray[j] = (d[i] * 77 + d[i + 1] * 150 + d[i + 2] * 29) >> 8;
+
+            const W1 = w + 1;
+            const integ = new Uint32Array(W1 * (h + 1));
+            for (let y = 0; y < h; y++) {
+                let rs = 0;
+                for (let x = 0; x < w; x++) {
+                    rs += gray[y * w + x];
+                    integ[(y + 1) * W1 + x + 1] = integ[y * W1 + x + 1] + rs;
+                }
+            }
+            const r = Math.max(6, Math.round(Math.max(w, h) / 110));
+            const ink = new Uint8Array(w * h);
+            for (let y = 0; y < h; y++) {
+                const y0 = Math.max(0, y - r), y1 = Math.min(h, y + r + 1);
+                for (let x = 0; x < w; x++) {
+                    const x0 = Math.max(0, x - r), x1 = Math.min(w, x + r + 1);
+                    const area = (y1 - y0) * (x1 - x0);
+                    const sum = integ[y1 * W1 + x1] - integ[y0 * W1 + x1] - integ[y1 * W1 + x0] + integ[y0 * W1 + x0];
+                    ink[y * w + x] = gray[y * w + x] < (sum / area) - 20 ? 1 : 0;
+                }
+            }
+            return { ink, w, h };
+        }
+
+        // ---------- Stima dell'inclinazione (le linee orizzontali della griglia devono diventare nitide) ----------
+        function estimateShiftSkew(canvas) {
+            const { ink, w, h } = getInkMap(canvas, 800);
+            let count = 0;
+            for (let i = 0; i < ink.length; i++) if (ink[i]) count++;
+            if (count < 200) return 0;
+            const step = Math.max(1, Math.floor(count / 60000));
+            const xs = [], ys = [];
+            let n = 0;
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    if (ink[y * w + x]) {
+                        if ((n++ % step) === 0) { xs.push(x); ys.push(y); }
+                    }
+                }
+            }
+            const score = (deg) => {
+                const rad = deg * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
+                const off = Math.ceil(w * Math.abs(s)) + 2;
+                const size = Math.ceil(h * c + w * Math.abs(s)) + 2 * off + 6;
+                const bins = new Float32Array(size);
+                for (let i = 0; i < xs.length; i++) {
+                    bins[Math.round(xs[i] * s + ys[i] * c) + off]++;
+                }
+                let sc = 0;
+                for (let i = 1; i < size; i++) { const dd = bins[i] - bins[i - 1]; sc += dd * dd; }
+                return sc;
+            };
+            let best = 0, bestScore = -1, total = 0, cnt = 0;
+            for (let a = -15; a <= 15.0001; a += 0.5) {
+                const sc = score(a);
+                total += sc; cnt++;
+                if (sc > bestScore) { bestScore = sc; best = a; }
+            }
+            if (bestScore < (total / cnt) * 1.1) return 0; // nessuna griglia riconoscibile
+            let fine = best, fineScore = bestScore;
+            for (let a = best - 0.5; a <= best + 0.5001; a += 0.05) {
+                const sc = score(a);
+                if (sc > fineScore) { fineScore = sc; fine = a; }
+            }
+            return Math.max(-15, Math.min(15, Math.round(fine * 10) / 10));
+        }
+
+        // ---------- Rilevamento della griglia (linee orizzontali e verticali lunghe) ----------
+        function clusterPeaks(arr, ratio, minGap) {
+            let max = 0;
+            for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
+            if (max <= 0) return [];
+            const thr = max * ratio;
+            const out = [];
+            let i = 0;
+            while (i < arr.length) {
+                if (arr[i] >= thr) {
+                    let j = i, wsum = 0, psum = 0, last = i;
+                    while (j < arr.length && (arr[j] >= thr || j - last <= 1)) {
+                        if (arr[j] >= thr) { wsum += arr[j]; psum += arr[j] * j; last = j; }
+                        j++;
+                    }
+                    out.push(psum / wsum);
+                    i = j;
+                } else i++;
+            }
+            const merged = [];
+            for (const p of out) {
+                if (merged.length && p - merged[merged.length - 1] < minGap) merged[merged.length - 1] = (merged[merged.length - 1] + p) / 2;
+                else merged.push(p);
+            }
+            return merged;
+        }
+
+        function pruneOuterLines(lines) {
+            const L = lines.slice();
+            const median = (a) => { const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
+            for (let pass = 0; pass < 4 && L.length > 4; pass++) {
+                const gaps = L.slice(1).map((v, i) => v - L[i]);
+                const m = median(gaps);
+                if (gaps[0] > 2.2 * m) { L.shift(); continue; }
+                if (gaps[gaps.length - 1] > 2.2 * m) { L.pop(); continue; }
+                break;
+            }
+            return L;
+        }
+
+        function detectShiftGrid(canvas) {
+            const { ink, w, h } = getInkMap(canvas, SHIFT_PREVIEW_MAX);
+            const minRunH = Math.max(14, Math.round(w * 0.012));
+            const rowSum = new Float32Array(h);
+            for (let y = 0; y < h; y++) {
+                let run = 0, tot = 0;
+                const o = y * w;
+                for (let x = 0; x <= w; x++) {
+                    if (x < w && ink[o + x]) run++;
+                    else { if (run >= minRunH) tot += run; run = 0; }
+                }
+                rowSum[y] = tot;
+            }
+            const minRunV = Math.max(14, Math.round(h * 0.012));
+            const colSum = new Float32Array(w);
+            for (let x = 0; x < w; x++) {
+                let run = 0, tot = 0;
+                for (let y = 0; y <= h; y++) {
+                    if (y < h && ink[y * w + x]) run++;
+                    else { if (run >= minRunV) tot += run; run = 0; }
+                }
+                colSum[x] = tot;
+            }
+            const rows = pruneOuterLines(clusterPeaks(rowSum, 0.5, 5));
+            let cols = clusterPeaks(colSum, 0.45, 5);
+            if (cols.length >= 3) cols = pruneOuterLines(cols);
+            const okCols = cols.length >= 8;
+            return {
+                w, h, rows, cols,
+                xLeft: okCols ? cols[0] : 0,
+                xRight: okCols ? cols[cols.length - 1] : w,
+                ok: rows.length >= 4
+            };
+        }
+
+        // Trova quali intervalli tra le linee orizzontali sono le righe dei medici.
+        // headerHint = quante righe di intestazione ha indicato l'AI; si provano anche valori vicini.
+        function pickDoctorRows(lines, headerHint, doctorCount) {
+            const n = lines.length - 1;
+            if (n < 2 || doctorCount < 1) return null;
+            const cands = [];
+            [headerHint, headerHint - 1, headerHint + 1, 1, 2, 3].forEach(h => {
+                if (Number.isInteger(h) && h >= 1 && h < n && !cands.includes(h)) cands.push(h);
+            });
+            const build = (h) => {
+                const rows = [];
+                for (let i = 0; i < doctorCount; i++) rows.push([lines[h + i], lines[h + i + 1]]);
+                return { header: [lines[0], lines[h]], rows };
+            };
+            for (const h of cands) if (n - h === doctorCount) return build(h);                              // corrispondenza esatta
+            for (const h of cands) if (n - h > doctorCount && n - h - doctorCount <= 3) return build(h);   // righe extra in fondo (totali/legenda)
+            return null;
+        }
+
+        function composeCrop(full, f, xL, xR, parts, maxW) {
+            const sx = Math.max(0, Math.floor((xL - 8) * f));
+            const ex = Math.min(full.width, Math.ceil((xR + 8) * f));
+            const sw = Math.max(1, ex - sx);
+            const k = Math.min(1, maxW / sw);
+            const segs = parts.map(([a, b]) => {
+                const sy = Math.max(0, Math.floor((a - 3) * f));
+                const ey = Math.min(full.height, Math.ceil((b + 3) * f));
+                return { sy, sh: Math.max(1, ey - sy) };
+            });
+            const gap = 10;
+            const totalH = Math.round((segs.reduce((s, g) => s + g.sh, 0) + gap * (segs.length - 1)) * k);
+            const c = document.createElement('canvas');
+            c.width = Math.max(1, Math.round(sw * k));
+            c.height = Math.max(1, totalH);
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, c.width, c.height);
+            let dy = 0;
+            segs.forEach(g => {
+                ctx.drawImage(full, sx, g.sy, sw, g.sh, 0, dy, sw * k, g.sh * k);
+                dy += (g.sh + gap) * k;
+            });
+            return c.toDataURL('image/jpeg', 0.92);
+        }
+
+        // ---------- Anteprima: raddrizza e controlla ----------
+        function drawShiftGridOverlay(ctx, grid) {
+            const lw = Math.max(1, grid.w / 700);
+            ctx.save();
+            ctx.lineWidth = lw;
+            ctx.strokeStyle = 'rgba(239,68,68,0.85)';
+            grid.rows.forEach(y => { ctx.beginPath(); ctx.moveTo(grid.xLeft, y); ctx.lineTo(grid.xRight, y); ctx.stroke(); });
+            if (grid.cols.length >= 8) {
+                ctx.strokeStyle = 'rgba(14,165,233,0.6)';
+                const y0 = grid.rows[0] ?? 0, y1 = grid.rows[grid.rows.length - 1] ?? grid.h;
+                grid.cols.forEach(x => { ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); });
+            }
+            ctx.restore();
+        }
+
+        function syncShiftStraightenUI() {
+            const st = shiftScan;
+            if (!st) return;
+            const slider = document.getElementById('shiftAngleSlider');
+            if (slider) slider.value = st.angle;
+            const label = document.getElementById('shiftAngleLabel');
+            if (label) label.textContent = `${st.angle > 0 ? '+' : ''}${st.angle.toFixed(1)}°`;
+        }
+
+        function renderShiftStraightenPreview() {
+            const st = shiftScan;
+            if (!st) return;
+            const rot = rotateCanvas(st.srcPrev, st.quarter * 90 + st.angle, SHIFT_PREVIEW_MAX);
+            st.rot = rot;
+            st.grid = detectShiftGrid(rot);
+            const cv = document.getElementById('shiftStraightenCanvas');
+            cv.width = rot.width; cv.height = rot.height;
+            const ctx = cv.getContext('2d');
+            ctx.drawImage(rot, 0, 0);
+            if (st.showGrid && st.grid.ok) drawShiftGridOverlay(ctx, st.grid);
+            const status = document.getElementById('shiftGridStatus');
+            if (status) {
+                if (st.grid.ok) {
+                    const nr = st.grid.rows.length - 1;
+                    const nc = st.grid.cols.length >= 8 ? st.grid.cols.length - 1 : null;
+                    status.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Griglia rilevata: ${nr} righe${nc ? `, ${nc} colonne` : ''}. Se le linee rosse non seguono la tabella, regola l'inclinazione.`;
+                } else {
+                    status.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i>Griglia non rilevata: l'AI leggerà la foto intera (meno precisa). Prova a regolare inclinazione/rotazione.`;
+                }
+            }
+        }
+
+        function scheduleShiftPreview() {
+            const st = shiftScan;
+            if (!st) return;
+            clearTimeout(st.timer);
+            st.timer = setTimeout(renderShiftStraightenPreview, 90);
+        }
+
+        function onShiftAngleInput(v) {
+            if (!shiftScan) return;
+            shiftScan.angle = parseFloat(v) || 0;
+            syncShiftStraightenUI();
+            scheduleShiftPreview();
+        }
+
+        function autoShiftAngle() {
+            const st = shiftScan;
+            if (!st) return;
+            const base = rotateCanvas(st.srcPrev, st.quarter * 90, SHIFT_PREVIEW_MAX);
+            st.angle = estimateShiftSkew(base);
+            syncShiftStraightenUI();
+            renderShiftStraightenPreview();
+        }
+
+        function rotateShiftQuarter(dir) {
+            const st = shiftScan;
+            if (!st) return;
+            st.quarter = (st.quarter + dir + 4) % 4;
+            autoShiftAngle();
+        }
+
+        function toggleShiftGridOverlay() {
+            if (!shiftScan) return;
+            shiftScan.showGrid = !shiftScan.showGrid;
+            renderShiftStraightenPreview();
+        }
+
+        function closeShiftStraightenModal() {
+            document.getElementById('shiftStraightenModal').classList.add('hidden');
+            if (shiftScan) clearTimeout(shiftScan.timer);
+            shiftScan = null;
+        }
+
         async function handleShiftPhotoUpload(event) {
             const file = event.target.files?.[0];
             if (!file) return;
             event.target.value = '';
-
-            const progressBox = document.getElementById('shiftScanProgress');
-            const progressBoxEmpty = document.getElementById('shiftScanProgressEmpty');
-            if (progressBox) progressBox.classList.remove('hidden');
-            if (progressBoxEmpty) progressBoxEmpty.classList.remove('hidden');
-
-            let compressedDataUrl = '';
             try {
-                compressedDataUrl = await compressImageToDataUrl(file, 1400, 0.82);
-                const base64Data = compressedDataUrl.split(',')[1];
-                const mimeType = 'image/jpeg';
-
-                const apiKey = getSavedGeminiApiKey();
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(apiKey)}`;
-
-                const promptText = `Analizza questa foto della tabella dei turni mensili medici (Ospedale Cannizzaro - Anestesia e Rianimazione).
-Estrai con massima precisione:
-1. Il mese e l'anno (es. "2026-11" per nov-26, oppure "2026-12" per dic-26) e l'etichetta leggibile (es. "Dicembre 2026").
-2. Il numero di giorni del mese (28, 30 o 31) e il giorno della settimana del giorno 1 (0=Lunedì, 1=Martedì, 2=Mercoledì, 3=Giovedì, 4=Venerdì, 5=Sabato, 6=Domenica).
-3. L'elenco di tutti i medici (righe) e per ciascuno l'array esatto dei turni dal giorno 1 all'ultimo giorno del mese.
-
-SIMBOLI UFFICIALI PRESENTI SUI TURNI:
-- M' / M = Mattina
-- P' / P = Pomeriggio
-- MP' / MP = 12 ore
-- N' / N = Notte
-- F = Ferie
-- CS = Congedo Straordinario
-- H = Malattia
-- 104 = Permesso 104
-- Rb = Riposo Biologico
-- 118 = Turno 118
-- FS = Festività Soppresse
-- / (o cella vuota) = Libero
-
-CORREZIONI A PENNA (TURNI TOLTI O SOSTITUITI PER CAMBIO):
-- I fogli sono stampati ma soggetti a correzioni a penna: quando un turno viene tolto per cambio viene cerchiato oppure barrato con una linea/sbarra a penna.
-- Se una sigla è SOLO cerchiata o barrata senza sostituzione, scrivi "SIGLA[O]" (es. "N[O]", "P[O]", "M[O]").
-- Se una sigla è cerchiata/barrata E accanto/sopra è stato scritto a penna un nuovo turno sostitutivo (es. N barrato e scritto M), usa il formato "VECCHIO[O]->NUOVO" (es. "N[O]->M").
-- Nei turni doppi da 12 ore "MP" o "MP'", se il cerchio/barratura riguarda solo M scrivi "M[O]P" (o "M[O]P'"), se riguarda solo P scrivi "MP[O]" (o "MP'[O]").`;
-
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [
-                            { text: promptText },
-                            { inlineData: { mimeType: mimeType, data: base64Data } }
-                        ]
-                    }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "OBJECT",
-                            properties: {
-                                monthId: { type: "STRING", description: "Formato YYYY-MM es. 2026-12" },
-                                label: { type: "STRING", description: "Es. Dicembre 2026" },
-                                year: { type: "INTEGER" },
-                                month: { type: "INTEGER" },
-                                daysCount: { type: "INTEGER" },
-                                firstDayWeekday: { type: "INTEGER", description: "0=Lunedi, 6=Domenica" },
-                                doctorsList: {
-                                    type: "ARRAY",
-                                    items: {
-                                        type: "OBJECT",
-                                        properties: {
-                                            name: { type: "STRING" },
-                                            shifts: { type: "ARRAY", items: { type: "STRING" } }
-                                        },
-                                        required: ["name", "shifts"]
-                                    }
-                                }
-                            },
-                            required: ["monthId", "label", "daysCount", "firstDayWeekday", "doctorsList"]
-                        }
-                    }
-                };
-
-                const response = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response || !response.ok) {
-                    if (response && (response.status === 400 || response.status === 401 || response.status === 403)) {
-                        openApiKeyModal(false);
-                        showToast('Inserisci una Gemini API Key valida per leggere la tabella');
-                        return;
-                    }
-                    throw new Error(`HTTP ${response ? response.status : 'network'}`);
-                }
-
-                const result = await response.json();
-                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (!jsonText) {
-                    throw new Error("Risposta vuota dall'AI");
-                }
-
-                const parsed = JSON.parse(jsonText);
-                const doctorsMap = {};
-                (parsed.doctorsList || []).forEach(doc => {
-                    if (doc.name && Array.isArray(doc.shifts)) {
-                        const normalized = doc.shifts.slice(0, parsed.daysCount);
-                        while (normalized.length < parsed.daysCount) normalized.push('/');
-                        doctorsMap[doc.name.trim()] = normalized;
-                    }
-                });
-
-                if (Object.keys(doctorsMap).length === 0) throw new Error("Nessun medico rilevato");
-
-                shiftsDatabase[parsed.monthId] = {
-                    id: parsed.monthId,
-                    label: parsed.label || parsed.monthId,
-                    year: parsed.year || 2026,
-                    month: parsed.month || 11,
-                    daysCount: parsed.daysCount || 30,
-                    firstDayWeekday: typeof parsed.firstDayWeekday === 'number' ? parsed.firstDayWeekday : 0,
-                    doctors: doctorsMap
-                };
-
-                selectedShiftMonth = parsed.monthId;
-                shiftPhotosMap[selectedShiftMonth] = compressedDataUrl;
-                localStorage.setItem(SHIFT_STORAGE_KEYS.SELECTED_MONTH, selectedShiftMonth);
-                persistShiftsDatabase();
-                persistShiftPhotos();
-                initShiftsSection();
-                showToast(`Turni di ${parsed.label} generati con successo!`);
+                showToast('Preparazione foto...');
+                const src = await loadFileToCanvas(file, SHIFT_FULL_MAX);
+                const srcPrev = rotateCanvas(src, 0, SHIFT_PREVIEW_MAX);
+                shiftScan = { src, srcPrev, quarter: 0, angle: 0, rot: null, grid: null, showGrid: true, timer: null };
+                shiftScan.angle = estimateShiftSkew(srcPrev);
+                document.getElementById('shiftStraightenModal').classList.remove('hidden');
+                syncShiftStraightenUI();
+                renderShiftStraightenPreview();
             } catch (err) {
-                showToast('Errore lettura foto: verifica la Chiave AI e riprova');
-            } finally {
-                if (progressBox) progressBox.classList.add('hidden');
-                if (progressBoxEmpty) progressBoxEmpty.classList.add('hidden');
+                shiftScan = null;
+                showToast('Impossibile leggere la foto, riprova');
             }
+        }
+
+        async function confirmShiftStraighten() {
+            const st = shiftScan;
+            if (!st || !st.rot) return;
+            clearTimeout(st.timer);
+            document.getElementById('shiftStraightenModal').classList.add('hidden');
+            showScanProgress(true);
+            setScanProgress('Preparazione immagine...');
+            try {
+                const full = rotateCanvas(st.src, st.quarter * 90 + st.angle, SHIFT_FULL_MAX);
+                const f = full.width / st.rot.width;
+                const out = await extractShiftTable(full, f, st.grid, getSavedGeminiApiKey());
+                shiftsDatabase[out.monthId] = out.monthObj;
+                selectedShiftMonth = out.monthId;
+                shiftPhotosMap[out.monthId] = canvasToJpeg(full, 1600, 0.78);
+                localStorage.setItem(SHIFT_STORAGE_KEYS.SELECTED_MONTH, selectedShiftMonth);
+                persistShiftPhotos();
+                touchShiftMonth(out.monthId);
+                initShiftsSection();
+                showToast(out.flaggedCount > 0
+                    ? `Turni di ${out.monthObj.label} generati: ${out.flaggedCount} celle da ricontrollare (punto arancione)`
+                    : `Turni di ${out.monthObj.label} generati con successo!`);
+            } catch (err) {
+                if (err && err.code === 'AUTH') {
+                    openApiKeyModal(false);
+                    showToast('Inserisci una Gemini API Key valida per leggere la tabella');
+                } else {
+                    showToast('Errore lettura foto: ' + ((err && err.message) ? err.message : 'riprova'));
+                }
+            } finally {
+                showScanProgress(false);
+                shiftScan = null;
+            }
+        }
+
+        // ---------- Chiamate a Gemini ----------
+        async function geminiShiftJson(apiKey, promptText, schema, dataUrls) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_SHIFT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const parts = [{ text: promptText }].concat(dataUrls.map(u => ({ inlineData: { mimeType: 'image/jpeg', data: u.split(',')[1] } })));
+            const payload = {
+                contents: [{ role: 'user', parts }],
+                generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema }
+            };
+            const res = await fetchWithRetry(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!res || !res.ok) {
+                let msg = '';
+                try { const j = await res.json(); msg = (j && j.error && j.error.message) || ''; } catch (e) {}
+                const err = new Error(res ? (msg || `HTTP ${res.status}`) : 'servizio AI non raggiungibile o troppe richieste, riprova tra un minuto');
+                if (res && (res.status === 401 || res.status === 403 || /API key|API_KEY/i.test(msg))) err.code = 'AUTH';
+                throw err;
+            }
+            const j = await res.json();
+            const text = (j?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+            if (!text) throw new Error("risposta vuota dall'AI");
+            return JSON.parse(text);
+        }
+
+        const SHIFT_SYMBOLS_PROMPT = `SIMBOLI UFFICIALI:
+- M' / M = Mattina; P' / P = Pomeriggio; MP' / MP = 12 ore; N' / N = Notte
+- F = Ferie; CS = Congedo Straordinario; H = Malattia; 104 = Permesso 104; Rb = Riposo Biologico; 118 = Turno 118; FS = Festività Soppresse
+- / (o cella vuota) = Libero
+Il segno ' (apice) dopo la sigla fa parte della sigla (M', P', N', MP'): scrivilo sempre come apostrofo dritto '.
+
+CORREZIONI A PENNA (turni tolti o sostituiti per cambio):
+- Quando un turno viene tolto per cambio la sigla è cerchiata oppure barrata a penna.
+- Se una sigla è SOLO cerchiata/barrata senza sostituzione scrivi "SIGLA[O]" (es. "N[O]", "P[O]", "M[O]").
+- Se è cerchiata/barrata E accanto o sopra è scritto a penna un nuovo turno, scrivi "VECCHIO[O]->NUOVO" (es. "N[O]->M").
+- Nei turni doppi "MP" o "MP'": se il cerchio riguarda solo M scrivi "M[O]P" (o "M[O]P'"), se riguarda solo P scrivi "MP[O]" (o "MP'[O]").`;
+
+        const SHIFT_META_SCHEMA = {
+            type: 'OBJECT',
+            properties: {
+                year: { type: 'INTEGER' },
+                month: { type: 'INTEGER', description: '1-12' },
+                headerRowCount: { type: 'INTEGER' },
+                doctorNames: { type: 'ARRAY', items: { type: 'STRING' } }
+            },
+            required: ['year', 'month', 'headerRowCount', 'doctorNames']
+        };
+
+        const SHIFT_BAND_SCHEMA = {
+            type: 'OBJECT',
+            properties: {
+                rows: {
+                    type: 'ARRAY',
+                    items: {
+                        type: 'OBJECT',
+                        properties: {
+                            name: { type: 'STRING' },
+                            shifts: { type: 'ARRAY', items: { type: 'STRING' } },
+                            uncertainDays: { type: 'ARRAY', items: { type: 'INTEGER' } }
+                        },
+                        required: ['name', 'shifts']
+                    }
+                }
+            },
+            required: ['rows']
+        };
+
+        function buildShiftMetaPrompt() {
+            return `Analizza questa foto raddrizzata della tabella dei turni mensili dei medici (Ospedale Cannizzaro - Anestesia e Rianimazione).
+Estrai:
+1. year e month (1-12) del foglio turni.
+2. headerRowCount: quante righe della griglia si trovano SOPRA la prima riga di un medico (numeri dei giorni, giorni della settimana, eventuale riga di titolo racchiusa nella griglia). Di solito 1 o 2.
+3. doctorNames: i nomi di TUTTI i medici, uno per riga, nell'ordine dall'alto in basso, senza saltarne nessuno e senza includere intestazioni, totali o legende.`;
+        }
+
+        function buildShiftBandPrompt(daysCount, names, note) {
+            return `Questa è una porzione, ritagliata e raddrizzata, della tabella dei turni mensili dei medici (Anestesia e Rianimazione). In alto c'è l'intestazione con i numeri dei giorni (1-${daysCount}); sotto ci sono le righe dei medici.
+Righe da leggere, dall'alto in basso (esattamente ${names.length}): ${names.map((n, i) => `${i + 1}. ${n}`).join('; ')}.
+Per ogni riga restituisci esattamente ${daysCount} celle: una per ciascun giorno da 1 a ${daysCount}, da sinistra a destra, subito dopo la colonna del nome. Usa le linee verticali della griglia e i numeri dei giorni dell'intestazione per non perdere il conto delle colonne. Non saltare le celle vuote: scrivi "/".
+Resta sulla riga: leggi ogni riga seguendo le sue linee orizzontali, senza mescolare celle di righe diverse.
+
+${SHIFT_SYMBOLS_PROMPT}
+
+In "uncertainDays" elenca i giorni (1-${daysCount}) in cui non sei sicuro di aver letto bene la cella.${note || ''}`;
+        }
+
+        async function readShiftBand(apiKey, dataUrl, daysCount, names) {
+            let note = '';
+            let rows = [];
+            for (let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const out = await geminiShiftJson(apiKey, buildShiftBandPrompt(daysCount, names, note), SHIFT_BAND_SCHEMA, [dataUrl]);
+                    rows = Array.isArray(out.rows) ? out.rows : [];
+                    const ok = rows.length === names.length && rows.every(r => Array.isArray(r.shifts) && r.shifts.length === daysCount);
+                    if (ok) return rows;
+                    note = `\nATTENZIONE: nel tentativo precedente hai restituito ${rows.length} righe e/o un numero di celle diverso da ${daysCount}. Restituisci esattamente ${names.length} righe, ognuna con esattamente ${daysCount} celle.`;
+                } catch (e) {
+                    if (e && e.code === 'AUTH') throw e;
+                    if (attempt === 1 && !rows.length) throw e;
+                }
+            }
+            return rows;
+        }
+
+        function sameDoctorName(a, b) {
+            const n = s => String(s || '').toLowerCase().replace(/[^a-zà-ÿ]/g, '');
+            const x = n(a), y = n(b);
+            return x.length >= 3 && y.length >= 3 && (x === y || x.includes(y) || y.includes(x));
+        }
+
+        function mapRowsToNames(names, rows) {
+            if (rows.length === names.length) return names.map((n, i) => ({ name: n, row: rows[i] }));
+            const used = new Set();
+            return names.map(n => {
+                const idx = rows.findIndex((r, j) => !used.has(j) && sameDoctorName(r.name, n));
+                if (idx >= 0) { used.add(idx); return { name: n, row: rows[idx] }; }
+                return { name: n, row: null };
+            });
+        }
+
+        async function extractShiftTable(full, f, grid, apiKey) {
+            // 1) Panoramica: mese, anno, righe di intestazione, nomi dei medici
+            setScanProgress('Lettura mese e nomi dei medici...');
+            const meta = await geminiShiftJson(apiKey, buildShiftMetaPrompt(), SHIFT_META_SCHEMA, [canvasToJpeg(full, 2200, 0.9)]);
+
+            const year = parseInt(meta.year), month = parseInt(meta.month);
+            if (!(year >= 2000 && year <= 2100) || !(month >= 1 && month <= 12)) throw new Error('mese/anno non riconosciuti');
+            const daysCount = new Date(year, month, 0).getDate();
+            const firstDayWeekday = (new Date(year, month - 1, 1).getDay() + 6) % 7; // 0 = Lunedì
+            const monthId = `${year}-${String(month).padStart(2, '0')}`;
+            const label = `${MONTHS_IT[month - 1]} ${year}`;
+
+            const seen = {};
+            const names = (meta.doctorNames || []).map(n => String(n || '').trim()).filter(Boolean).map(n => {
+                seen[n] = (seen[n] || 0) + 1;
+                return seen[n] > 1 ? `${n} (${seen[n]})` : n;
+            });
+            if (!names.length) throw new Error('nessun medico rilevato');
+
+            // 2) Fasce di righe guidate dalla griglia (oppure foto intera se la griglia non torna)
+            const geo = (grid && grid.ok) ? pickDoctorRows(grid.rows, parseInt(meta.headerRowCount), names.length) : null;
+            const tasks = [];
+            if (geo) {
+                for (let i = 0; i < names.length; i += SHIFT_BAND_ROWS) {
+                    const slice = geo.rows.slice(i, i + SHIFT_BAND_ROWS);
+                    tasks.push({
+                        names: names.slice(i, i + SHIFT_BAND_ROWS),
+                        dataUrl: composeCrop(full, f, grid.xLeft, grid.xRight, [geo.header, [slice[0][0], slice[slice.length - 1][1]]], 2400),
+                        label: `righe ${i + 1}-${Math.min(i + SHIFT_BAND_ROWS, names.length)} di ${names.length}`
+                    });
+                }
+            } else {
+                const dataUrl = (grid && grid.ok)
+                    ? composeCrop(full, f, grid.xLeft, grid.xRight, [[grid.rows[0], grid.rows[grid.rows.length - 1]]], 2400)
+                    : canvasToJpeg(full, 2400, 0.92);
+                tasks.push({ names, dataUrl, label: 'tabella intera' });
+            }
+
+            const results = new Array(tasks.length);
+            let done = 0, failed = 0, next = 0;
+            const worker = async () => {
+                while (next < tasks.length) {
+                    const idx = next++;
+                    const t = tasks[idx];
+                    setScanProgress(`Lettura ${t.label}${geo ? ` (${done}/${tasks.length} completate)` : ''}...`);
+                    try {
+                        results[idx] = await readShiftBand(apiKey, t.dataUrl, daysCount, t.names);
+                    } catch (e) {
+                        if (e && e.code === 'AUTH') throw e;
+                        results[idx] = []; failed++;
+                    }
+                    done++;
+                }
+            };
+            await Promise.all(Array.from({ length: Math.min(2, tasks.length) }, worker));
+            if (failed === tasks.length) throw new Error('lettura non riuscita, riprova');
+
+            // 3) Normalizzazione, controllo sigle e segnalazione celle dubbie
+            const doctors = {}, flags = {};
+            let flaggedCount = 0;
+            tasks.forEach((t, idx) => {
+                mapRowsToNames(t.names, results[idx] || []).forEach(({ name, row }) => {
+                    let arr = (row && Array.isArray(row.shifts)) ? row.shifts.map(normalizeShiftToken) : [];
+                    const broken = !row || arr.length !== daysCount;
+                    arr = arr.slice(0, daysCount);
+                    while (arr.length < daysCount) arr.push('/');
+                    const uncertain = new Set((row && Array.isArray(row.uncertainDays)) ? row.uncertainDays.map(Number) : []);
+                    const flagged = [];
+                    arr.forEach((cellVal, i) => {
+                        if (broken || uncertain.has(i + 1) || !isValidShiftCell(cellVal)) flagged.push(i + 1);
+                    });
+                    doctors[name] = arr;
+                    if (flagged.length) { flags[name] = flagged; flaggedCount += flagged.length; }
+                });
+            });
+
+            return {
+                monthId, flaggedCount,
+                monthObj: { id: monthId, label, year, month, daysCount, firstDayWeekday, doctors, flags }
+            };
         }
 
         function compressImageToDataUrl(file, maxDim, quality) {
