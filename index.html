@@ -2498,28 +2498,74 @@
             return events;
         }
 
+        // Memoria degli eventi già esportati (per medico e giorno): serve a annullare nel calendario
+        // i turni che nel frattempo hai tolto o cambiato in "libero".
+        const SHIFT_CAL_EXPORTED_KEY = 'cannizzaro_shift_cal_exported_v1';
+        function loadShiftCalExported() {
+            try { return JSON.parse(localStorage.getItem(SHIFT_CAL_EXPORTED_KEY) || '{}') || {}; } catch (e) { return {}; }
+        }
+        function shiftCalSlug(doctor) {
+            return doctor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'medico';
+        }
+
+        function planShiftCalExport(months, doctor, includeAbsences) {
+            const slug = shiftCalSlug(doctor);
+            const prev = loadShiftCalExported()[slug] || {};
+            const events = [], cancels = [], record = {}, covered = [];
+            months.forEach(m => {
+                const byDate = {};
+                buildShiftEvents(m, doctor, includeAbsences).forEach(ev => { byDate[icsDate(ev.date)] = ev; });
+                for (let d = 1; d <= m.daysCount; d++) {
+                    const key = icsDate(new Date(m.year, m.month - 1, d));
+                    covered.push(key);
+                    if (byDate[key]) {
+                        const ev = byDate[key];
+                        events.push(ev);
+                        record[key] = { dtstart: ev.dtstart, dtend: ev.dtend, allDay: ev.allDay, summary: ev.summary };
+                    } else if (prev[key]) {
+                        cancels.push(Object.assign({ key }, prev[key]));   // esportato in passato, ora non c'è più
+                    }
+                }
+            });
+            return { slug, events, cancels, record, covered };
+        }
+
+        function commitShiftCalExport(plan) {
+            const all = loadShiftCalExported();
+            const cur = all[plan.slug] || {};
+            plan.covered.forEach(k => { delete cur[k]; });
+            Object.assign(cur, plan.record);
+            all[plan.slug] = cur;
+            try { localStorage.setItem(SHIFT_CAL_EXPORTED_KEY, JSON.stringify(all)); } catch (e) {}
+        }
+
         function buildShiftIcs(months, doctor, includeAbsences) {
-            const slug = doctor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'medico';
+            const plan = planShiftCalExport(months, doctor, includeAbsences);
+            const slug = plan.slug;
             const now = new Date();
             const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
             const seq = Math.floor(now.getTime() / 1000); // cresce a ogni esportazione: reimportando gli eventi si aggiornano
             const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Cannizzaro Staff Navigator//Turni//IT', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${icsEscape('Turni ' + doctor)}`];
-            let count = 0;
-            months.forEach(m => {
-                buildShiftEvents(m, doctor, includeAbsences).forEach(ev => {
-                    count++;
-                    lines.push('BEGIN:VEVENT',
-                        `UID:${slug}-${icsDate(ev.date)}@cannizzaro-staff`,
-                        `DTSTAMP:${stamp}`, `SEQUENCE:${seq}`,
-                        ev.allDay ? `DTSTART;VALUE=DATE:${ev.dtstart}` : `DTSTART:${ev.dtstart}`,
-                        ev.allDay ? `DTEND;VALUE=DATE:${ev.dtend}` : `DTEND:${ev.dtend}`,
-                        `SUMMARY:${icsEscape(ev.summary)}`);
-                    if (ev.location) lines.push(`LOCATION:${icsEscape(ev.location)}`);
-                    lines.push(`DESCRIPTION:${icsEscape(ev.description)}`, ev.allDay ? 'TRANSP:TRANSPARENT' : 'TRANSP:OPAQUE', 'END:VEVENT');
-                });
+            plan.events.forEach(ev => {
+                lines.push('BEGIN:VEVENT',
+                    `UID:${slug}-${icsDate(ev.date)}@cannizzaro-staff`,
+                    `DTSTAMP:${stamp}`, `SEQUENCE:${seq}`,
+                    ev.allDay ? `DTSTART;VALUE=DATE:${ev.dtstart}` : `DTSTART:${ev.dtstart}`,
+                    ev.allDay ? `DTEND;VALUE=DATE:${ev.dtend}` : `DTEND:${ev.dtend}`,
+                    `SUMMARY:${icsEscape(ev.summary)}`);
+                if (ev.location) lines.push(`LOCATION:${icsEscape(ev.location)}`);
+                lines.push(`DESCRIPTION:${icsEscape(ev.description)}`, ev.allDay ? 'TRANSP:TRANSPARENT' : 'TRANSP:OPAQUE', 'END:VEVENT');
+            });
+            plan.cancels.forEach(c => {
+                lines.push('BEGIN:VEVENT',
+                    `UID:${slug}-${c.key}@cannizzaro-staff`,
+                    `DTSTAMP:${stamp}`, `SEQUENCE:${seq}`,
+                    c.allDay ? `DTSTART;VALUE=DATE:${c.dtstart}` : `DTSTART:${c.dtstart}`,
+                    c.allDay ? `DTEND;VALUE=DATE:${c.dtend}` : `DTEND:${c.dtend}`,
+                    `SUMMARY:${icsEscape(c.summary || 'Turno')}`, 'STATUS:CANCELLED', 'TRANSP:TRANSPARENT', 'END:VEVENT');
             });
             lines.push('END:VCALENDAR');
-            return { text: lines.map(icsFold).join('\r\n') + '\r\n', count, slug };
+            return { text: lines.map(icsFold).join('\r\n') + '\r\n', count: plan.events.length, cancelCount: plan.cancels.length, slug, plan };
         }
 
         function getShiftCalMonths() {
@@ -2530,10 +2576,14 @@
 
         function updateShiftCalPreview() {
             const abs = document.getElementById('shiftCalAbs').checked;
-            const n = getShiftCalMonths().reduce((s, m) => s + buildShiftEvents(m, selectedShiftDoctor, abs).length, 0);
-            document.getElementById('shiftCalPreview').textContent = n > 0 ? `Verranno creati ${n} eventi per Dott. ${selectedShiftDoctor}.` : 'Nessun evento da esportare con queste impostazioni.';
-            document.getElementById('shiftCalDownloadBtn').disabled = n === 0;
-            document.getElementById('shiftCalDownloadBtn').classList.toggle('opacity-50', n === 0);
+            const plan = planShiftCalExport(getShiftCalMonths(), selectedShiftDoctor, abs);
+            const n = plan.events.length, c = plan.cancels.length;
+            let txt = n > 0 ? `Verranno creati o aggiornati ${n} eventi per Dott. ${selectedShiftDoctor}.` : 'Nessun evento da esportare con queste impostazioni.';
+            if (c > 0) txt += ` Verranno annullati ${c} turni che avevi esportato e che ora non ci sono più.`;
+            document.getElementById('shiftCalPreview').textContent = txt;
+            const btn = document.getElementById('shiftCalDownloadBtn');
+            btn.disabled = (n + c) === 0;
+            btn.classList.toggle('opacity-50', (n + c) === 0);
         }
 
         function openShiftCalModal() {
@@ -2548,8 +2598,8 @@
 
         function downloadShiftIcs() {
             const months = getShiftCalMonths();
-            const { text, count, slug } = buildShiftIcs(months, selectedShiftDoctor, document.getElementById('shiftCalAbs').checked);
-            if (!count) { showToast('Nessun evento da esportare'); return; }
+            const { text, count, cancelCount, slug, plan } = buildShiftIcs(months, selectedShiftDoctor, document.getElementById('shiftCalAbs').checked);
+            if (!count && !cancelCount) { showToast('Nessun evento da esportare'); return; }
             const fileTag = months.length === 1 ? months[0].label.replace(/\s+/g, '_') : 'tutti_i_mesi';
             const blob = new Blob([text], { type: 'text/calendar;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -2557,8 +2607,9 @@
             a.href = url; a.download = `Turni_${fileTag}_${slug}.ics`;
             document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(url), 4000);
+            commitShiftCalExport(plan);
             closeShiftCalModal();
-            showToast(`${count} eventi esportati: aprili per aggiungerli al calendario`);
+            showToast(`${count} eventi esportati${cancelCount ? `, ${cancelCount} annullati` : ''}: aprili per aggiornare il calendario`);
         }
 
         function initShiftsSection() {
