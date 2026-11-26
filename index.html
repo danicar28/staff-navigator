@@ -69,6 +69,11 @@
         #shiftQueryDayInput { -moz-appearance: textfield; appearance: textfield; }
         #shiftQueryDayInput::-webkit-outer-spin-button,
         #shiftQueryDayInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        /* Trascinamento protocolli (modalità gestione) */
+        .proto-dragging { opacity: .5; outline: 2px solid #0ea5e9; }
+        .proto-drop-before { box-shadow: 0 -3px 0 0 #0284c7; }
+        .proto-drop-after { box-shadow: 0 3px 0 0 #0284c7; }
+        body.proto-drag-active { user-select: none; -webkit-user-select: none; }
         .pb-safe {
             padding-bottom: env(safe-area-inset-bottom, 0.4rem);
         }
@@ -1453,7 +1458,7 @@
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const customCannizzaroFirebaseConfig = {
             apiKey: "AIzaSyCaQaGf1-dIJKuvYM7s0Qk9mFqoCw_Vkaw",
@@ -1821,6 +1826,13 @@
                         remove: async (protoId) => {
                             if (!currentUser || !db || !protoId) throw new Error('Database non connesso');
                             await deleteDoc(doc(protocolsColRef, protoId));
+                        },
+                        // Riordino: aggiorna in un colpo solo (atomico) le chiavi di ordinamento
+                        reorder: async (items) => {
+                            if (!currentUser || !db) throw new Error('Database non connesso');
+                            const batch = writeBatch(db);
+                            items.forEach(({ id, sortKey }) => batch.update(doc(protocolsColRef, id), { sortKey, updatedAt: Date.now() }));
+                            await batch.commit();
                         }
                     };
                 } catch (protoErr) {
@@ -5670,7 +5682,17 @@ Alterazioni ECG da cercare (moderata e grave): onde T appuntite, onde P appiatti
             return category;
         }
 
+        function getVisibleProtocols() {
+            const query = (document.getElementById('protocolSearchInput')?.value || '').toLowerCase().trim();
+            return protocolsDatabase.filter(p => {
+                const matchCat = currentProtocolCategory === 'ALL' || p.category === currentProtocolCategory;
+                const haystack = `${p.title} ${p.category} ${p.code || ''} ${p.summary} ${p.content}`.toLowerCase();
+                return matchCat && (!query || haystack.includes(query));
+            });
+        }
+
         function renderProtocolsList() {
+            if (protoDrag) { protoDrag.needsRender = true; return; }   // non ridisegnare mentre si trascina
             const container = document.getElementById('protocolsList');
             const emptyBox = document.getElementById('emptyProtocols');
             const badgeDesk = document.getElementById('protocolliBadgeDesk');
@@ -5688,12 +5710,7 @@ Alterazioni ECG da cercare (moderata e grave): onde T appuntite, onde P appiatti
 
             if (badgeDesk) badgeDesk.textContent = protocolsDatabase.length;
 
-            const filtered = protocolsDatabase.filter(p => {
-                const matchCat = currentProtocolCategory === 'ALL' || p.category === currentProtocolCategory;
-                const haystack = `${p.title} ${p.category} ${p.code || ''} ${p.summary} ${p.content}`.toLowerCase();
-                const matchQuery = !query || haystack.includes(query);
-                return matchCat && matchQuery;
-            });
+            const filtered = getVisibleProtocols();
 
             if (countLabel) countLabel.textContent = `${filtered.length}`;
 
@@ -5704,24 +5721,180 @@ Alterazioni ECG da cercare (moderata e grave): onde T appuntite, onde P appiatti
             }
 
             if (emptyBox) emptyBox.classList.add('hidden');
-            container.innerHTML = filtered.map(p => {
+            const admin = isProtoAdmin();
+            container.innerHTML = (admin ? '<div class="col-span-full text-[10px] font-bold text-emerald-700 px-1">Gestione attiva: trascina ≡ (o usa ▲ ▼) per riordinare i protocolli</div>' : '') + filtered.map((p, idx) => {
                 const barCls = getProtocolCategoryBarClass(p.category);
                 const shortCat = getProtocolCategoryShortName(p.category);
+                const arrows = admin ? `
+                        <div class="flex items-stretch border-l border-slate-200 shrink-0">
+                            <button type="button" onclick="moveProtocol('${p.id}', -1)" ${idx === 0 ? 'disabled' : ''} class="w-8 flex items-center justify-center text-slate-500 active:bg-sky-100 disabled:opacity-25" aria-label="Sposta su"><i class="fa-solid fa-chevron-up text-[11px]"></i></button>
+                            <button type="button" onclick="moveProtocol('${p.id}', 1)" ${idx === filtered.length - 1 ? 'disabled' : ''} class="w-8 flex items-center justify-center text-slate-500 border-l border-slate-100 active:bg-sky-100 disabled:opacity-25" aria-label="Sposta giù"><i class="fa-solid fa-chevron-down text-[11px]"></i></button>
+                            <div onpointerdown="protoDragStart(event, '${p.id}')" oncontextmenu="return false" style="touch-action:none" class="w-9 flex items-center justify-center text-slate-400 border-l border-slate-100 cursor-grab select-none" title="Trascina per spostare" aria-label="Trascina per spostare"><i class="fa-solid fa-grip-lines text-[14px]"></i></div>
+                        </div>` : '';
                 return `
-                    <button type="button" onclick="openProtocolViewer('${p.id}')" class="bg-white active:bg-sky-50 transition rounded-lg border border-slate-200 text-left flex items-stretch overflow-hidden">
-                        <span class="w-1 shrink-0 ${barCls}"></span>
-                        <div class="flex-1 min-w-0 px-2 py-1.5">
-                            <h4 class="font-bold text-[12px] text-slate-900 leading-tight line-clamp-2">${escapeHtml(p.title)}</h4>
-                            <div class="flex items-center gap-1.5 mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400">
-                                <span class="truncate">${escapeHtml(shortCat)}</span>
-                                ${p.code ? `<span class="font-mono normal-case shrink-0">· ${escapeHtml(p.code)}</span>` : ''}
-                                ${getProtocolDiagramKey(p) ? '<i class="fa-solid fa-diagram-project text-emerald-600 shrink-0" title="Include schema grafico"></i>' : ''}
+                    <div data-proto-id="${p.id}" class="bg-white rounded-lg border border-slate-200 flex items-stretch overflow-hidden">
+                        <button type="button" onclick="openProtocolViewer('${p.id}')" class="flex-1 min-w-0 active:bg-sky-50 transition text-left flex items-stretch">
+                            <span class="w-1 shrink-0 ${barCls}"></span>
+                            <div class="flex-1 min-w-0 px-2 py-1.5">
+                                <h4 class="font-bold text-[12px] text-slate-900 leading-tight line-clamp-2">${escapeHtml(p.title)}</h4>
+                                <div class="flex items-center gap-1.5 mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+                                    <span class="truncate">${escapeHtml(shortCat)}</span>
+                                    ${p.code ? `<span class="font-mono normal-case shrink-0">· ${escapeHtml(p.code)}</span>` : ''}
+                                    ${getProtocolDiagramKey(p) ? '<i class="fa-solid fa-diagram-project text-emerald-600 shrink-0" title="Include schema grafico"></i>' : ''}
+                                </div>
                             </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-[9px] text-slate-300 self-center pr-2 shrink-0"></i>
-                    </button>
+                            ${admin ? '' : '<i class="fa-solid fa-chevron-right text-[9px] text-slate-300 self-center pr-2 shrink-0"></i>'}
+                        </button>${arrows}
+                    </div>
                 `;
             }).join('');
+        }
+
+        // Riordino (solo con gestione attiva)
+        async function commitProtocolOrder(next) {
+            const changes = [];
+            next.forEach((p, idx) => { if (p.sortKey !== idx) changes.push({ id: p.id, sortKey: idx }); });
+            if (!changes.length) { renderProtocolsList(); return; }
+            next.forEach((p, idx) => { p.sortKey = idx; });
+            protocolsDatabase = next;
+            persistProtocolsDatabase();
+            renderProtocolsList();
+            try {
+                const res = await withProtoTimeout(window.cloudProtocolsAPI.reorder(changes));
+                if (res !== 'ok') showToast('Connessione lenta: nuovo ordine in coda');
+            } catch (err) {
+                console.error(err);
+                showToast(protoCloudErrorMessage(err));
+            }
+        }
+
+        function protoReorderReady() {
+            if (!window.cloudProtocolsAPI || !window.cloudProtocolsAPI.reorder) {
+                showToast('Database non connesso: riprova tra qualche secondo');
+                return false;
+            }
+            return true;
+        }
+
+        // Frecce: scambia con il protocollo vicino nella lista visibile
+        async function moveProtocol(protoId, dir) {
+            if (!isProtoAdmin()) { requireProtoAdmin(() => moveProtocol(protoId, dir)); return; }
+            if (!protoReorderReady()) return;
+            touchProtoAdmin();
+            const visible = getVisibleProtocols();
+            const i = visible.findIndex(p => p.id === protoId);
+            const j = i + dir;
+            if (i < 0 || j < 0 || j >= visible.length) return;
+            const ia = protocolsDatabase.findIndex(p => p.id === visible[i].id);
+            const ib = protocolsDatabase.findIndex(p => p.id === visible[j].id);
+            const next = protocolsDatabase.slice();
+            [next[ia], next[ib]] = [next[ib], next[ia]];
+            await commitProtocolOrder(next);
+        }
+
+        // Trascinamento con la maniglia ≡ (mouse e touch)
+        let protoDrag = null;
+
+        function protoScrollParent(el) {
+            for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+                const oy = getComputedStyle(n).overflowY;
+                if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 2) return n;
+            }
+            return null;
+        }
+
+        function protoDragStart(e, protoId) {
+            if (protoDrag) return;
+            if (!isProtoAdmin()) { requireProtoAdmin(null); return; }
+            if (!protoReorderReady()) return;
+            e.preventDefault();
+            touchProtoAdmin();
+            const handle = e.currentTarget;
+            const card = handle.closest('[data-proto-id]');
+            protoDrag = { id: protoId, card, handle, pointerId: e.pointerId, x: e.clientX, y: e.clientY, targetId: null, after: false, raf: 0, scroller: protoScrollParent(card) };
+            try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+            card.classList.add('proto-dragging');
+            document.body.classList.add('proto-drag-active');
+            handle.addEventListener('pointermove', protoDragMove);
+            handle.addEventListener('pointerup', protoDragEnd);
+            handle.addEventListener('pointercancel', protoDragCancel);
+            protoDragLoop();
+        }
+
+        function protoDragUpdateTarget() {
+            const d = protoDrag;
+            if (!d) return;
+            document.querySelectorAll('.proto-drop-before, .proto-drop-after').forEach(el => el.classList.remove('proto-drop-before', 'proto-drop-after'));
+            const under = document.elementFromPoint(d.x, d.y);
+            const card = under && under.closest ? under.closest('[data-proto-id]') : null;
+            if (card && card.dataset.protoId === d.id) { d.targetId = null; return; }
+            if (card) {
+                const r = card.getBoundingClientRect();
+                d.after = d.y > r.top + r.height / 2;
+                d.targetId = card.dataset.protoId;
+            }
+            if (d.targetId) {
+                const t = document.querySelector(`[data-proto-id="${d.targetId}"]`);
+                if (t) t.classList.add(d.after ? 'proto-drop-after' : 'proto-drop-before');
+            }
+        }
+
+        function protoDragMove(e) {
+            if (!protoDrag || e.pointerId !== protoDrag.pointerId) return;
+            protoDrag.x = e.clientX;
+            protoDrag.y = e.clientY;
+            protoDragUpdateTarget();
+        }
+
+        function protoDragLoop() {
+            const d = protoDrag;
+            if (!d) return;
+            const top = d.scroller ? d.scroller.getBoundingClientRect().top : 0;
+            const bottom = d.scroller ? d.scroller.getBoundingClientRect().bottom : window.innerHeight;
+            const zone = 90;
+            let dy = 0;
+            if (d.y < top + zone) dy = -Math.ceil((top + zone - d.y) / 6);
+            else if (d.y > bottom - zone) dy = Math.ceil((d.y - (bottom - zone)) / 6);
+            if (dy) {
+                if (d.scroller) d.scroller.scrollTop += dy; else window.scrollBy(0, dy);
+                protoDragUpdateTarget();
+            }
+            d.raf = requestAnimationFrame(protoDragLoop);
+        }
+
+        function protoDragCleanup() {
+            const d = protoDrag;
+            if (!d) return null;
+            cancelAnimationFrame(d.raf);
+            d.card.classList.remove('proto-dragging');
+            document.body.classList.remove('proto-drag-active');
+            document.querySelectorAll('.proto-drop-before, .proto-drop-after').forEach(el => el.classList.remove('proto-drop-before', 'proto-drop-after'));
+            d.handle.removeEventListener('pointermove', protoDragMove);
+            d.handle.removeEventListener('pointerup', protoDragEnd);
+            d.handle.removeEventListener('pointercancel', protoDragCancel);
+            try { d.handle.releasePointerCapture(d.pointerId); } catch (err) {}
+            protoDrag = null;
+            return d;
+        }
+
+        function protoDragCancel() {
+            const d = protoDragCleanup();
+            if (d && d.needsRender) renderProtocolsList();
+        }
+
+        function protoDragEnd() {
+            const d = protoDragCleanup();
+            if (!d) return;
+            if (!d.targetId) { if (d.needsRender) renderProtocolsList(); return; }
+            const arr = protocolsDatabase.slice();
+            const from = arr.findIndex(p => p.id === d.id);
+            if (from < 0) { renderProtocolsList(); return; }
+            const [item] = arr.splice(from, 1);
+            let to = arr.findIndex(p => p.id === d.targetId);
+            if (to < 0) { renderProtocolsList(); return; }
+            if (d.after) to++;
+            arr.splice(to, 0, item);
+            commitProtocolOrder(arr);
         }
 
         function escapeHtml(str) {
@@ -5860,6 +6033,7 @@ Alterazioni ECG da cercare (moderata e grave): onde T appuntite, onde P appiatti
             if (newBtn) newBtn.classList.toggle('hidden', !admin);
             const exportBtn = document.getElementById('protoExportBtn');
             if (exportBtn) exportBtn.classList.toggle('hidden', !admin);
+            renderProtocolsList();
 
             const editBtn = document.getElementById('viewerEditProtocolBtn');
             const delBtn = document.getElementById('viewerDeleteProtocolBtn');
