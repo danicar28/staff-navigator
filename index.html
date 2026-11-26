@@ -1315,7 +1315,8 @@
                         <i class="fa-solid fa-staff-snake"></i>
                     </div>
                     <div class="bg-white p-2.5 rounded-xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed">
-                        Chiedi a voce o scrivi: es. <em>"Qual è il mio turno domani?"</em>, <em>"Dov'è Neurologia?"</em> oppure <em>"Interno UTIC"</em>.
+                        Chiedi a voce o scrivi sui turni (<em>"Con chi sono di turno sabato?"</em>, <em>"Quante notti faccio?"</em>), sui reparti (<em>"Dov'è Neurologia?"</em>) o sugli interni (<em>"Interno UTIC"</em>).
+                        <div class="flex flex-wrap gap-1 mt-2"><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Con chi sono domani?</button><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Chi c'è stanotte?</button><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Quante notti faccio?</button><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Prossima notte</button><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Turni di questa settimana</button><button type="button" onclick="processAssistantQuery(this.textContent.trim(), false)" class="px-2 py-1 rounded-full bg-sky-50 border border-sky-200 text-hospital-800 font-bold text-[10px] active:scale-95">Chi è libero domani?</button></div>
                     </div>
                 </div>
             </div>
@@ -6958,57 +6959,505 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
             processAssistantQuery(text, false);
         }
 
-        function answerShiftAssistantQuery(q) {
-            const monthKeys = Object.keys(shiftsDatabase).sort().reverse();
-            if (monthKeys.length === 0) {
-                return "Non hai ancora caricato nessun foglio turni. Vai nella scheda Turni e scatta o carica la foto della tabella per iniziare.";
-            }
-
-            const monthObj = shiftsDatabase[selectedShiftMonth] || shiftsDatabase[monthKeys[0]];
-            if (!monthObj) return null;
-
-            const isShiftQuery = q.includes('turno') || q.includes('turni') || q.includes('lavoro') || q.includes('guardia') || q.includes('notte') || q.includes('smonto') || q.includes('ferie') || q.includes('libero');
-            if (!isShiftQuery) return null;
-
-            let targetDoc = defaultShiftDoctor || selectedShiftDoctor;
-            Object.keys(monthObj.doctors).forEach(docName => {
-                if (q.includes(docName.toLowerCase())) {
-                    targetDoc = docName;
-                }
+        // ==========================================
+        // ASSISTENTE TURNI: colleghi, organico del giorno, conteggi, prossimi turni
+        // Tutto in locale sui turni salvati. Risposte brevi.
+        // ==========================================
+        const AST_MONTHS = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+        const AST_WD_LONG = ['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];   // indice = getDay()
+        const AST_WD_SHORT = ['dom','lun','mar','mer','gio','ven','sab'];                               // indice = getDay()
+        const AST_WD_NORM = ['lunedi','martedi','mercoledi','giovedi','venerdi','sabato','domenica'];   // 0 = lunedì
+        const AST_SLOTS = { 'M': ['M'], 'P': ['P'], 'MP': ['M', 'P'], 'N': ['N'], '118': ['118'] };
+        const AST_HOURS = { 'M': 6, 'P': 6, 'MP': 12, 'N': 12 };
+        const AST_LEAVE = ['F', 'CS', 'H', '104', 'FS'];
+        const AST_REST = ['RB', 'RC', 'RF'];
+        const AST_NUMWORDS = (() => {
+            const m = {};
+            const u = ['', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove'];
+            ['dieci', 'undici', 'dodici', 'tredici', 'quattordici', 'quindici', 'sedici', 'diciassette', 'diciotto', 'diciannove'].forEach((w, i) => { m[w] = 10 + i; });
+            u.forEach((w, i) => { if (w) m[w] = i; });
+            [['venti', 20], ['trenta', 30]].forEach(([t, n]) => {
+                m[t] = n;
+                u.forEach((w, i) => { if (i) m[((w === 'uno' || w === 'otto') ? t.slice(0, -1) : t) + w] = n + i; });
             });
+            m['primo'] = 1;
+            return m;
+        })();
 
-            const now = new Date();
-            let targetDay = now.getDate();
-            let dayLabel = `oggi (${targetDay} ${monthObj.label})`;
+        function astNorm(t) {
+            return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’‘`´]/g, "'").replace(/\s+/g, ' ').trim();
+        }
+        function astPrepare(nq) {
+            let s = nq.replace(/[?!,;:]/g, ' ').replace(/\s+/g, ' ').trim();
+            s = s.replace(/\b(il|del|al|dal|giorno|l')\s*([a-z]+)\b/g, (m, a, w) => (w !== 'primo' && AST_NUMWORDS[w] !== undefined) ? `${a} ${AST_NUMWORDS[w]}` : m);
+            s = s.replace(new RegExp(`\\b([a-z]+)\\s+(${AST_MONTHS.join('|')})\\b`, 'g'), (m, w, mo) => AST_NUMWORDS[w] !== undefined ? `${AST_NUMWORDS[w]} ${mo}` : m);
+            return s;
+        }
+        function astMid(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+        function astAddDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+        function astKey(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+        function astMonthObj(d) { return shiftsDatabase[astKey(d)] || null; }
+        function astCap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+        function astPl(n, s, p) { return `${n} ${n === 1 ? s : p}`; }
+        function astRanges(days) {
+            const out = []; let i = 0;
+            while (i < days.length) {
+                let j = i;
+                while (j + 1 < days.length && days[j + 1] === days[j] + 1) j++;
+                out.push(j > i ? `${days[i]}-${days[j]}` : `${days[i]}`);
+                i = j + 1;
+            }
+            return out.join(', ');
+        }
+        function astDayLabel(d, today) {
+            const base = `${AST_WD_LONG[d.getDay()]} ${d.getDate()} ${AST_MONTHS[d.getMonth()]}`;
+            const diff = Math.round((astMid(d) - astMid(today)) / 86400000);
+            if (diff === 0) return `oggi (${base})`;
+            if (diff === 1) return `domani (${base})`;
+            if (diff === 2) return `dopodomani (${base})`;
+            if (diff === -1) return `ieri (${base})`;
+            return base;
+        }
+        function astShortDay(d) { return `${AST_WD_SHORT[d.getDay()]} ${d.getDate()}`; }
+        function astNoMonth(d) { return `Non ho i turni di ${AST_MONTHS[d.getMonth()]} ${d.getFullYear()} caricati.`; }
+        function astKindShort(base) { return ({ 'M': 'mattina', 'P': 'pomeriggio', 'MP': '12 ore', 'N': 'notte', '118': '118' })[base] || base; }
 
-            if (q.includes('dopodomani')) {
-                targetDay = now.getDate() + 2;
-                dayLabel = `dopodomani (${targetDay} ${monthObj.label})`;
-            } else if (q.includes('domani')) {
-                targetDay = now.getDate() + 1;
-                dayLabel = `domani (${targetDay} ${monthObj.label})`;
+        // Interpreta la cella: sigla effettivamente svolta (tenendo conto di cambi/barrati) e reparto (apostrofo = TIPO)
+        function astInfo(raw) {
+            const cell = parseShiftCell(raw);
+            if (cell.isFullCircled) return { base: '/', tipo: false, removed: true };
+            const code = cell.activeCode || '/';
+            let base = code.replace(/'/g, '').toUpperCase();
+            if (base === '-' || base === '') base = '/';
+            const tipo = code.includes("'") || /^MP'\[O\]$/i.test(cell.raw || '');
+            return { base, tipo, removed: false };
+        }
+        function astShiftText(info) {
+            const t = info.removed ? 'Libero' : describeSingleCode(info.base);
+            return info.tipo ? `${t} (TIPO)` : t;
+        }
+        function astRaw(doc, d) {
+            const m = astMonthObj(d);
+            if (!m || !m.doctors[doc]) return undefined;
+            return m.doctors[doc][d.getDate() - 1] || '/';
+        }
+        function astOverlap(a, b) {
+            const sa = AST_SLOTS[a], sb = AST_SLOTS[b];
+            return !!(sa && sb && sa.some(x => sb.includes(x)));
+        }
+        function astAllDoctors() {
+            const set = new Set();
+            Object.values(shiftsDatabase).forEach(m => Object.keys(m.doctors || {}).forEach(n => set.add(n)));
+            return [...set];
+        }
+        function astFindDoctor(nq, exclude) {
+            let best = null;
+            astAllDoctors().forEach(n => {
+                const nn = astNorm(n).replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+                if (!nn || n === exclude) return;
+                let score = 0;
+                if (new RegExp('\\b' + nn.replace(/ /g, '\\s+') + '\\b').test(nq)) score = 3;
+                else if (nn.split(' ').filter(t => t.length >= 4).some(t => new RegExp(`\\b${t}\\b`).test(nq))) score = 2;
+                if (score && (!best || score > best.score)) best = { name: n, score };
+            });
+            return best ? best.name : null;
+        }
+        function astPickYear(mo, today) {
+            for (const y of [today.getFullYear(), today.getFullYear() + 1, today.getFullYear() - 1]) {
+                if (shiftsDatabase[`${y}-${String(mo).padStart(2, '0')}`]) return y;
+            }
+            let best = today.getFullYear(), bestDiff = Infinity;
+            for (const y of [today.getFullYear() - 1, today.getFullYear(), today.getFullYear() + 1]) {
+                const diff = Math.abs(new Date(y, mo - 1, 15) - today);
+                if (diff < bestDiff) { bestDiff = diff; best = y; }
+            }
+            return best;
+        }
+        function astMakeDate(d, mo, year, today) {
+            const y = year || astPickYear(mo, today);
+            const dt = new Date(y, mo - 1, d);
+            return (dt.getMonth() === mo - 1 && dt.getDate() === d) ? { date: dt } : { invalid: true };
+        }
+        function astDayOnly(d, today) {
+            const cand = [];
+            if (d >= today.getDate()) cand.push(0);
+            cand.push(1);
+            if (d < today.getDate()) cand.push(0);
+            cand.push(-1);
+            for (const off of cand) {
+                const base = new Date(today.getFullYear(), today.getMonth() + off, 1);
+                const dt = new Date(base.getFullYear(), base.getMonth(), d);
+                if (dt.getMonth() === base.getMonth() && shiftsDatabase[astKey(dt)]) return { date: dt };
+            }
+            const sel = shiftsDatabase[selectedShiftMonth];
+            if (sel && d <= sel.daysCount) return { date: new Date(sel.year, sel.month - 1, d) };
+            const cur = new Date(today.getFullYear(), today.getMonth(), d);
+            return cur.getMonth() === today.getMonth() ? { date: cur } : { invalid: true };
+        }
+        // Restituisce {date} | {invalid:true} | null (nessuna data nella frase)
+        function astParseDate(nq, today) {
+            const add = n => ({ date: astAddDays(today, n) });
+            if (/\bdopodomani\b/.test(nq)) return add(2);
+            if (/\bdomani\b/.test(nq)) return add(1);
+            if (/\bl'altro ieri\b|\baltroieri\b/.test(nq)) return add(-2);
+            if (/\bieri\b/.test(nq)) return add(-1);
+            if (/\b(oggi|stanotte|stasera|stamattina|stamani|questa notte|questa sera)\b/.test(nq)) return add(0);
+            let m = nq.match(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?\b/);
+            if (m && +m[2] >= 1 && +m[2] <= 12 && +m[1] >= 1 && +m[1] <= 31) {
+                return astMakeDate(+m[1], +m[2], m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : null, today);
+            }
+            m = nq.match(new RegExp(`\\b(\\d{1,2})\\s*(?:di\\s+)?(${AST_MONTHS.join('|')})(?:\\s+(\\d{4}))?\\b`));
+            if (m) return astMakeDate(+m[1], AST_MONTHS.indexOf(m[2]) + 1, m[3] ? +m[3] : null, today);
+            m = nq.match(/\b(lunedi|martedi|mercoledi|giovedi|venerdi|sabato|domenica)\b/);
+            if (m) {
+                const cur = (today.getDay() + 6) % 7;
+                let diff = (AST_WD_NORM.indexOf(m[1]) - cur + 7) % 7;
+                if (diff === 0 && /\bprossim[oa]\b/.test(nq)) diff = 7;
+                return add(diff);
+            }
+            m = nq.match(/\b(?:il|del|al|dal|giorno|per il|l')\s*(\d{1,2})\b(?!\s*(?:ore|notti|turni|:))/) || nq.match(/\b(\d{1,2})\b(?!\s*(?:ore|notti|turni|mattin|pomerigg|:))/);
+            if (m && +m[1] >= 1 && +m[1] <= 31) return astDayOnly(+m[1], today);
+            return null;
+        }
+        function astResolveMonth(nq, today) {
+            let target;
+            const m = nq.match(new RegExp(`\\b(${AST_MONTHS.join('|')})(?:\\s+(\\d{4}))?\\b`));
+            if (m) {
+                const mo = AST_MONTHS.indexOf(m[1]) + 1;
+                target = new Date(m[2] ? +m[2] : astPickYear(mo, today), mo - 1, 1);
+            } else if (/\b(prossimo mese|mese prossimo|mese dopo)\b/.test(nq)) {
+                target = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            } else if (/\b(mese scorso|scorso mese|mese passato|mese precedente)\b/.test(nq)) {
+                target = new Date(today.getFullYear(), today.getMonth() - 1, 1);
             } else {
-                const numMatch = q.match(/\b([1-9]|[12][0-9]|3[01])\b/);
-                if (numMatch) {
-                    targetDay = parseInt(numMatch[1]);
-                    dayLabel = `il giorno ${targetDay} ${monthObj.label}`;
+                const cur = new Date(today.getFullYear(), today.getMonth(), 1);
+                const sel = shiftsDatabase[selectedShiftMonth];
+                target = (shiftsDatabase[astKey(cur)] || !sel) ? cur : new Date(sel.year, sel.month - 1, 1);
+            }
+            return { target, obj: shiftsDatabase[astKey(target)] || null, key: astKey(target), mon: AST_MONTHS[target.getMonth()], label: `${AST_MONTHS[target.getMonth()]} ${target.getFullYear()}` };
+        }
+        function astNeedName() {
+            return 'Non so qual è il tuo nome nei turni: scegli il medico nella scheda Turni e impostalo come predefinito.';
+        }
+
+        // --- "Che turno ho domani / il 15 dicembre / sabato?" (anche di un collega) ---
+        function astOwnShift(nq, today, me) {
+            const other = astFindDoctor(nq, me);
+            const doc = other || me;
+            if (!doc) return astNeedName();
+            const p = astParseDate(nq, today);
+            if (p && p.invalid) return 'Quella data non esiste.';
+            const d = p ? p.date : today;
+            const m = astMonthObj(d);
+            if (!m) return astNoMonth(d);
+            if (!m.doctors[doc]) return `${doc} non compare nei turni di ${m.label}.`;
+            const desc = describeParsedCell(parseShiftCell(astRaw(doc, d)));
+            const past = astMid(d) < astMid(today);
+            const verb = other ? (past ? 'aveva' : 'ha') : (past ? 'avevi' : 'hai');
+            return `${other ? `<strong>${doc}</strong>: ` : ''}${astCap(astDayLabel(d, today))} ${verb}: <strong>${desc}</strong>.`;
+        }
+
+        // --- "Con chi sono di turno domani?" ---
+        function astColleagues(nq, today, me) {
+            if (!me) return astNeedName();
+            const p = astParseDate(nq, today);
+            if (p && p.invalid) return 'Quella data non esiste.';
+            const d = p ? p.date : today;
+            const m = astMonthObj(d);
+            if (!m) return astNoMonth(d);
+            if (!m.doctors[me]) return `Non compari nei turni di ${m.label}.`;
+            const mine = astInfo(astRaw(me, d));
+            const label = astCap(astDayLabel(d, today));
+            if (!AST_SLOTS[mine.base]) return `${label} non sei di turno: <strong>${astShiftText(mine)}</strong>.`;
+            if (/\bnott[ei]\b|\bstanotte\b/.test(nq) && mine.base !== 'N') return `${label} non sei di notte: <strong>${astShiftText(mine)}</strong>.`;
+            const same = [], other = [];
+            Object.keys(m.doctors).forEach(n => {
+                if (n === me) return;
+                const inf = astInfo(m.doctors[n][d.getDate() - 1] || '/');
+                if (!astOverlap(mine.base, inf.base)) return;
+                const entry = inf.base !== mine.base ? `${n} (${astKindShort(inf.base)})` : n;
+                (inf.tipo === mine.tipo ? same : other).push(entry);
+            });
+            const myWard = mine.tipo ? 'TIPO' : 'Rianimazione', otherWard = mine.tipo ? 'Rianimazione' : 'TIPO';
+            let out = `${label} hai <strong>${astShiftText(mine)}</strong>.`;
+            if (!same.length && !other.length) return out + '<br>Nessun altro collega in turno con te.';
+            out += same.length ? `<br>In ${myWard} con te: ${same.join(', ')}.` : `<br>Nessun collega con te in ${myWard}.`;
+            if (other.length) out += `<br>In ${otherWard}: ${other.join(', ')}.`;
+            return out;
+        }
+
+        // --- "Chi c'è di turno domani / di notte il 28 / chi è libero / chi è in ferie / chi smonta" ---
+        function astRoster(nq, today, me) {
+            const p = astParseDate(nq, today);
+            if (p && p.invalid) return 'Quella data non esiste.';
+            const d = p ? p.date : today;
+            const m = astMonthObj(d);
+            if (!m) return astNoMonth(d);
+            const label = astDayLabel(d, today);
+            const names = Object.keys(m.doctors);
+            const infoOf = (n, day) => astInfo(m.doctors[n][day.getDate() - 1] || '/');
+            const tagged = (n, inf) => n + (inf.tipo ? ' (TIPO)' : '');
+
+            if (/\bsmont\w*/.test(nq)) {
+                const prev = astAddDays(d, -1);
+                const pm = astMonthObj(prev);
+                if (!pm) return astNoMonth(prev);
+                const list = names.filter(n => pm.doctors[n] && astInfo(pm.doctors[n][prev.getDate() - 1] || '/').base === 'N');
+                return list.length ? `Smontano ${label} alle 8 (notte di ${astShortDay(prev)}): ${list.join(', ')}.` : `Nessuno smonta ${label}.`;
+            }
+            if (/\b(ferie|assent\w*|malattia|permess\w*)\b/.test(nq)) {
+                const list = names.map(n => ({ n, inf: infoOf(n, d) })).filter(e => AST_LEAVE.includes(e.inf.base));
+                return list.length ? `${astCap(label)} in ferie/assenza: ${list.map(e => `${e.n} (${describeSingleCode(e.inf.base)})`).join(', ')}.` : `${astCap(label)} nessuno è in ferie o assente.`;
+            }
+            if (/\bliber[oia]\b|\bliberi\b|\briposo\b/.test(nq)) {
+                const list = names.filter(n => { const b = infoOf(n, d).base; return b === '/' || AST_REST.includes(b); });
+                return list.length ? `Liberi ${label}: ${list.join(', ')}.` : `${astCap(label)} nessuno è libero.`;
+            }
+            let filter = null;
+            if (/\bnott[ei]\b|\bstanotte\b/.test(nq)) filter = ['N'];
+            else if (/\bmattin\w*|\bstamattina\b/.test(nq)) filter = ['M'];
+            else if (/\bpomerigg\w*/.test(nq)) filter = ['P'];
+            else if (/\b12 ore\b|\bmp\b/.test(nq)) filter = ['M', 'P'];
+            const entries = names.map(n => ({ n, inf: infoOf(n, d) })).filter(e => AST_SLOTS[e.inf.base]);
+            if (filter) {
+                const list = entries.filter(e => AST_SLOTS[e.inf.base].some(s => filter.includes(s)));
+                const kind = filter.length === 2 ? 'Turno 12 ore' : ({ N: 'Di notte', M: 'Di mattina', P: 'Di pomeriggio' })[filter[0]];
+                if (!list.length) return `Nessuno ${kind.toLowerCase()} ${label}.`;
+                return `<strong>${kind}</strong> ${label}: ${list.map(e => tagged(e.n, e.inf) + ((filter.length === 1 && e.inf.base === 'MP') ? ' (12 ore)' : '')).join(', ')}.`;
+            }
+            const groups = [['M', 'Mattina'], ['P', 'Pomeriggio'], ['MP', '12 ore'], ['N', 'Notte'], ['118', 'Turno 118']];
+            const lines = groups.map(([b, name]) => {
+                const list = entries.filter(e => e.inf.base === b);
+                return list.length ? `<strong>${name}</strong>: ${list.map(e => tagged(e.n, e.inf)).join(', ')}` : '';
+            }).filter(Boolean);
+            return lines.length ? `<strong>${astCap(label)}</strong><br>${lines.join('<br>')}` : `${astCap(label)} nessuno risulta di turno.`;
+        }
+
+        // --- "Quante notti faccio? / Quanti turni a dicembre? / Quante ore? / Quante notti mi restano?" ---
+        function astCount(nq, today, me) {
+            const other = astFindDoctor(nq, me);
+            const doc = other || me;
+            if (!doc) return astNeedName();
+            const r = astResolveMonth(nq, today);
+            if (!r.obj) return `Non ho i turni di ${r.label} caricati.`;
+            const arr = r.obj.doctors[doc];
+            if (!arr) return `${doc} non compare nei turni di ${r.label}.`;
+            const rest = /\b(restano|rimangono|rimanenti|rimasti|ancora|mancano|da oggi)\b/.test(nq);
+            let startDay = 1;
+            if (rest) {
+                const endOfMonth = new Date(r.target.getFullYear(), r.target.getMonth() + 1, 0);
+                if (astMid(today) > endOfMonth) startDay = r.obj.daysCount + 1;
+                else if (astKey(today) === r.key) startDay = today.getDate();
+            }
+            const c = {}, days = {}; const wk = { sat: [], sun: [] };
+            for (let d = startDay; d <= r.obj.daysCount; d++) {
+                const inf = astInfo(arr[d - 1] || '/');
+                c[inf.base] = (c[inf.base] || 0) + 1;
+                (days[inf.base] = days[inf.base] || []).push(d);
+                if (AST_SLOTS[inf.base]) {
+                    const wd = new Date(r.target.getFullYear(), r.target.getMonth(), d).getDay();
+                    if (wd === 6) wk.sat.push(d); else if (wd === 0) wk.sun.push(d);
                 }
             }
+            const n = k => c[k] || 0;
+            const work = n('M') + n('P') + n('MP') + n('N');
+            const ore = 6 * n('M') + 6 * n('P') + 12 * n('MP') + 12 * n('N');
+            const freeN = n('/');
+            const restN = AST_REST.reduce((s, k) => s + n(k), 0);
+            const when = rest ? `da oggi a fine ${r.mon}` : `a ${r.mon}`;
+            const subj = other ? `<strong>${other}</strong> ` : '';
+            const whenStr = other ? when : astCap(when);
+            const fai = other ? 'fa' : 'fai', hai = other ? 'ha' : 'hai';
+            const lead = (verb) => rest
+                ? (other ? `<strong>${other}</strong>: da oggi a fine ${r.mon} restano` : `Da oggi a fine ${r.mon} ti restano`)
+                : `${subj}${whenStr} ${verb}`;
 
-            if (targetDay < 1 || targetDay > monthObj.daysCount) {
-                return `Il giorno richiesto (${targetDay}) è fuori dal calendario di ${monthObj.label} (${monthObj.daysCount} giorni).`;
+            const asked = [];
+            if (/\bnott\w*/.test(nq)) asked.push('N');
+            if (/\bmattin\w*/.test(nq)) asked.push('M');
+            if (/\bpomerigg\w*/.test(nq)) asked.push('P');
+            if (/\b12 ore\b|\bmp\b/.test(nq)) asked.push('MP');
+            const wantFerie = /\bferie\b/.test(nq);
+            const wantFree = /\bliber[oi]\b|\briposo\b|\briposi\b/.test(nq);
+            const wantWeekend = /\b(weekend|fine settimana|sabat\w*|domenic\w*|festiv\w*)\b/.test(nq);
+            const wantHours = /\bore\b/.test(nq) && !asked.includes('MP');
+            const nouns = { N: ['notte', 'notti'], M: ['mattina', 'mattine'], P: ['pomeriggio', 'pomeriggi'], MP: ['turno da 12 ore', 'turni da 12 ore'] };
+
+            if (wantFerie) {
+                const f = n('F');
+                return f ? `${lead(hai)} <strong>${astPl(f, 'giorno di ferie', 'giorni di ferie')}</strong>: ${astRanges(days['F'])}.` : `${astCap(when)} ${other ? `${other} non ha` : 'non hai'} giorni di ferie.`;
             }
+            if (wantFree) {
+                return `${lead(hai)} <strong>${astPl(freeN, 'giorno libero', 'giorni liberi')}</strong>${restN ? ` e ${restN} di riposo (RB/RC/RF)` : ''}.`;
+            }
+            if (wantWeekend) {
+                const s = wk.sat.length, u = wk.sun.length;
+                if (!s && !u) return `${subj}${whenStr} ${other ? 'non lavora' : 'non lavori'} né di sabato né di domenica.`;
+                const list = [...wk.sat.map(x => `sab ${x}`), ...wk.sun.map(x => `dom ${x}`)];
+                return `${subj}${whenStr} ${other ? 'lavora' : 'lavori'} <strong>${astPl(s, 'sabato', 'sabati')}</strong> e <strong>${astPl(u, 'domenica', 'domeniche')}</strong>: ${list.join(', ')}.`;
+            }
+            if (asked.length) {
+                const parts = asked.map(k => `<strong>${astPl(n(k), nouns[k][0], nouns[k][1])}</strong>`);
+                if (asked.every(k => !n(k))) return `${rest ? `Da oggi a fine ${r.mon} non ${other ? 'restano a ' + other : 'ti restano'}` : `${astCap(when)} ${other ? `${other} non fa` : 'non fai'}`} ${asked.map(k => nouns[k][1]).join(' né ')}.`;
+                const listDays = (asked.length === 1 && (asked[0] === 'N' || asked[0] === 'MP') && n(asked[0])) ? `: ${astRanges(days[asked[0]])}` : '';
+                return `${lead(fai)} ${parts.join(' e ')}${listDays}.`;
+            }
+            if (wantHours) {
+                return `${lead(fai)} circa <strong>${ore} ore</strong> di turno (${astPl(work, 'turno', 'turni')}).${n('118') ? ` Esclusi ${n('118')} turni 118.` : ''}`;
+            }
+            // riepilogo
+            const parts = [];
+            if (n('N')) parts.push(astPl(n('N'), 'notte', 'notti'));
+            if (n('M')) parts.push(astPl(n('M'), 'mattina', 'mattine'));
+            if (n('P')) parts.push(astPl(n('P'), 'pomeriggio', 'pomeriggi'));
+            if (n('MP')) parts.push(astPl(n('MP'), 'turno da 12 ore', 'turni da 12 ore'));
+            if (n('118')) parts.push(`${n('118')} x 118`);
+            if (!parts.length) return `${subj}${whenStr} nessun turno di lavoro.`;
+            let out = `${subj}${whenStr}: ${parts.join(', ')}.<br>Totale <strong>${astPl(work, 'turno', 'turni')}</strong>, circa <strong>${ore} ore</strong>.`;
+            const extra = [];
+            if (n('F')) extra.push(`ferie ${n('F')}`);
+            if (restN) extra.push(`riposi ${restN}`);
+            if (n('H')) extra.push(`malattia ${n('H')}`);
+            if (extra.length) out += `<br>Inoltre: ${extra.join(', ')}.`;
+            return out;
+        }
 
-            const rawCell = (monthObj.doctors[targetDoc] || [])[targetDay - 1] || '/';
-            const cell = parseShiftCell(rawCell);
-            const desc = describeParsedCell(cell);
+        // --- "Qual è la mia prossima notte? / Prossimo turno / Quando smonto / Prossime ferie / Prossimo giorno libero" ---
+        function astNext(nq, today, now, me) {
+            const other = astFindDoctor(nq, me);
+            const doc = other || me;
+            if (!doc) return astNeedName();
+            let kind = 'work', noun = 'turno', fem = false;
+            if (/\bsmont\w*/.test(nq)) { kind = 'smonto'; noun = 'notte'; fem = true; }
+            else if (/\bnott[ei]\b/.test(nq)) { kind = 'N'; noun = 'notte'; fem = true; }
+            else if (/\bmattin\w*/.test(nq)) { kind = 'M'; noun = 'mattina'; fem = true; }
+            else if (/\bpomerigg\w*/.test(nq)) { kind = 'P'; noun = 'pomeriggio'; }
+            else if (/\b12 ore\b|\bmp\b/.test(nq)) { kind = 'MP'; noun = 'turno da 12 ore'; }
+            else if (/\bferie\b/.test(nq)) { kind = 'F'; noun = 'ferie'; fem = true; }
+            else if (/\bliber[oia]\b|\briposo\b/.test(nq)) { kind = 'free'; noun = 'giorno libero'; }
+            if (!astMonthObj(today)) return astNoMonth(today);
+            const hour = now.getHours();
+            const matches = (inf, i) => {
+                if (kind === 'work') { if (!AST_WORK_LIST.includes(inf.base)) return false; }
+                else if (kind === 'smonto') { if (inf.base !== 'N') return false; }
+                else if (kind === 'free') { if (!(inf.base === '/' || AST_REST.includes(inf.base))) return false; }
+                else if (inf.base !== kind) return false;
+                if (i === 0) {   // turno di oggi già finito?
+                    if (inf.base === 'M' && hour >= 14) return false;
+                    if ((inf.base === 'P' || inf.base === 'MP') && hour >= 20) return false;
+                }
+                return true;
+            };
+            const found = []; let last = null;
+            for (let i = 0; i < 150 && found.length < 3; i++) {
+                const d = astAddDays(today, i);
+                const m = astMonthObj(d);
+                if (!m || !m.doctors[doc]) break;
+                last = d;
+                const inf = astInfo(m.doctors[doc][d.getDate() - 1] || '/');
+                if (matches(inf, i)) found.push({ d, inf });
+                if (kind === 'F' && found.length) break;
+            }
+            const who = other ? `<strong>${other}</strong>: ` : '';
+            if (!found.length) {
+                return `${who}Nei turni caricati${last ? ` (fino a ${astShortDay(last)} ${AST_MONTHS[last.getMonth()]})` : ''} non trovo ${kind === 'F' ? 'ferie' : `nessun${fem ? 'a' : ''} ${noun}`}.`;
+            }
+            const first = found[0];
+            if (kind === 'F') {
+                let end = first.d;
+                for (let i = 1; i < 60; i++) {
+                    const d = astAddDays(first.d, i);
+                    const m = astMonthObj(d);
+                    if (!m || !m.doctors[doc] || astInfo(m.doctors[doc][d.getDate() - 1] || '/').base !== 'F') break;
+                    end = d;
+                }
+                return `${who}Prossime ferie: <strong>dal ${astShortDay(first.d)} al ${astShortDay(end)} ${AST_MONTHS[end.getMonth()]}</strong>.`;
+            }
+            const article = kind === 'work' ? 'Prossimo' : (fem ? 'Prossima' : 'Prossimo');
+            const generic = kind === 'work';
+            let out = generic
+                ? `${who}${article} ${noun}: <strong>${astShiftText(first.inf)}</strong>, ${astDayLabel(first.d, today)}.`
+                : `${who}${article} ${noun}: <strong>${astDayLabel(first.d, today)}</strong>.`;
+            if (kind === 'smonto') out = `${who}Prossima notte: <strong>${astDayLabel(first.d, today)}</strong>. Smonti <strong>${astDayLabel(astAddDays(first.d, 1), today)}</strong> alle 8.`;
+            else if (found.length > 1) out += `<br>Poi: ${found.slice(1).map(f => astShortDay(f.d) + (generic ? ` ${astShiftText(f.inf)}` : '')).join(', ')}.`;
+            return out;
+        }
+        const AST_WORK_LIST = ['M', 'P', 'MP', 'N', '118'];
 
-            return `Dott. ${targetDoc}, ${dayLabel} hai: ${desc}.`;
+        // --- "I miei turni di questa settimana / del weekend" ---
+        function astWeek(nq, today, me) {
+            const other = astFindDoctor(nq, me);
+            const doc = other || me;
+            if (!doc) return astNeedName();
+            const next = /\bprossim[oa]\b|\bsettimana prossima\b/.test(nq);
+            const monday = astAddDays(today, -((today.getDay() + 6) % 7));
+            let days, title;
+            if (/\b(weekend|fine settimana)\b/.test(nq)) {
+                let sat = astAddDays(monday, 5);
+                if (next) sat = astAddDays(sat, 7);
+                days = [sat, astAddDays(sat, 1)];
+                title = next ? 'Prossimo weekend' : 'Weekend';
+            } else {
+                const start = next ? astAddDays(monday, 7) : monday;
+                days = Array.from({ length: 7 }, (_, i) => astAddDays(start, i));
+                title = next ? 'Prossima settimana' : 'Questa settimana';
+            }
+            const lines = days.map(d => {
+                const m = astMonthObj(d);
+                const isToday = astMid(d).getTime() === astMid(today).getTime();
+                const head = isToday ? `<strong>${astShortDay(d)}</strong>` : astShortDay(d);
+                if (!m) return `${head}: non caricato`;
+                if (!m.doctors[doc]) return `${head}: --`;
+                return `${head}: ${astShiftText(astInfo(m.doctors[doc][d.getDate() - 1] || '/'))}`;
+            });
+            return `<strong>${title}</strong>${other ? ` di ${other}` : ''}<br>${lines.join('<br>')}`;
+        }
+
+        // --- "Quando lavoro con Rossi?" ---
+        function astDocWith(nq, today, me, other) {
+            if (!me) return astNeedName();
+            const r = astResolveMonth(nq, today);
+            if (!r.obj) return `Non ho i turni di ${r.label} caricati.`;
+            const a = r.obj.doctors[me], b = r.obj.doctors[other];
+            if (!a || !b) return `Non trovo i turni di ${!a ? 'te' : other} in ${r.label}.`;
+            const list = [];
+            for (let d = 1; d <= r.obj.daysCount; d++) {
+                const x = astInfo(a[d - 1] || '/'), y = astInfo(b[d - 1] || '/');
+                if (astOverlap(x.base, y.base)) list.push(`${d} (${astKindShort(x.base)})`);
+            }
+            return list.length
+                ? `Con <strong>${other}</strong> a ${r.mon} lavori insieme <strong>${astPl(list.length, 'giorno', 'giorni')}</strong>: ${list.join(', ')}.`
+                : `A ${r.mon} non hai turni in comune con ${other}.`;
+        }
+
+        function answerShiftAssistantQuery(q, nowOverride) {
+            const now = nowOverride || new Date();
+            const today = astMid(now);
+            const nq = astPrepare(astNorm(q));
+            const shiftWords = /\b(turn[oi]|guardi[ae]|nott[ei]|stanotte|mattin[ae]|stamattina|pomerigg[io]|lavor\w*|smont\w*|ferie|liber[oia]|riposo|riposi|colleg\w*|weekend|settiman\w*|mp)\b|\b12 ore\b|\bcon chi\b|\bquant\w* ore\b|\bore di turno\b/.test(nq);
+            const whoIsThere = /\bchi (c'?e|ce)\b/.test(nq) && astParseDate(nq, today);
+            if (!shiftWords && !whoIsThere) return null;
+
+            if (Object.keys(shiftsDatabase).length === 0) {
+                return 'Non hai ancora caricato nessun foglio turni. Vai nella scheda Turni e scatta o carica la foto della tabella per iniziare.';
+            }
+            const me = defaultShiftDoctor || selectedShiftDoctor || '';
+            const other = astFindDoctor(nq, me);
+            const hasDate = !!astParseDate(nq, today);
+            const asksWho = /\bchi\b/.test(nq);
+
+            if (/\bquant[ie]\b|\bquante\b/.test(nq) && /(nott|turn|mattin|pomerigg|\bore\b|ferie|liber|riposo|riposi|weekend|sabat|domenic|festiv|lavor|giorni)/.test(nq)) return astCount(nq, today, me);
+            if (other && /\bcon\b/.test(nq) && /\b(quando|giorni|quali|che giorni|in che)\b/.test(nq)) return astDocWith(nq, today, me, other);
+            if (/\b(settiman\w*|weekend|fine settimana)\b/.test(nq) && !asksWho) return astWeek(nq, today, me);
+            if ((/\bprossim\w*/.test(nq) || (/\bquando\b/.test(nq) && !hasDate)) && /(nott|mattin|pomerigg|12 ore|\bmp\b|turno|liber|riposo|ferie|smont)/.test(nq) && !asksWho) return astNext(nq, today, now, me);
+            if (/\bcon chi\b|\bcolleg\w*|\bcon me\b/.test(nq)) return astColleagues(nq, today, me);
+            if (asksWho) return astRoster(nq, today, me);
+            return astOwnShift(nq, today, me);
         }
 
         function processAssistantQuery(queryText, speakResponse) {
             appendMessage('user', queryText);
-            const q = queryText.toLowerCase().trim();
+            const q = queryText.toLowerCase().replace(/[?!,;:]/g, ' ').replace(/\s+/g, ' ').trim();
             let reply = "";
 
             const shiftReply = answerShiftAssistantQuery(q);
@@ -7037,14 +7486,14 @@ Ripetere il ROTEM (Extem e Fibtem) dopo la somministrazione di fibrinogeno (entr
                     const topC = matchedContacts[0];
                     reply = `Per <strong>${topC.name}</strong> (${topC.location}): interno <strong>${topC.phone}</strong>.`;
                 } else {
-                    reply = `Nessun risultato esatto per "${queryText}". Prova a chiedere "Qual è il mio turno domani?", "Dov'è Neurologia?" o "Interno UTIC".`;
+                    reply = `Nessun risultato per "${queryText}". Prova: "Con chi sono domani?", "Quante notti faccio?", "Dov'è Neurologia?" o "Interno UTIC".`;
                 }
             }
 
             setTimeout(() => {
                 appendMessage('bot', reply);
                 if (speakResponse && 'speechSynthesis' in window) {
-                    const plainText = reply.replace(/<[^>]*>?/gm, ' ');
+                    const plainText = reply.replace(/<br\s*\/?>/gi, '. ').replace(/<[^>]*>?/gm, ' ');
                     const utterance = new SpeechSynthesisUtterance(plainText);
                     utterance.lang = 'it-IT';
                     window.speechSynthesis.speak(utterance);
